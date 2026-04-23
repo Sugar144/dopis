@@ -1,9 +1,10 @@
 <template>
   <div class="carousel">
     <!--
-      Swiper w/ EffectCoverflow gives the premium "record-sleeve" depth we
-      want without hand-rolling it. slidesPerView='auto' lets cards keep
-      their own width so the carousel adapts to viewport.
+      Each slide carries ONLY the pizza disc now. All copy lives in the
+      single text block below the Swiper, synced to activeIndex.
+      That removes the "letter soup" you saw between neighbour slides
+      while keeping the coverflow depth on the discs themselves.
     -->
     <Swiper
       :modules="modules"
@@ -15,7 +16,7 @@
       :speed="650"
       :initial-slide="initialIndex"
       :coverflow-effect="{
-        rotate: 18,
+        rotate: 22,
         stretch: 0,
         depth: 260,
         modifier: 1,
@@ -40,48 +41,56 @@
         :key="pizza.id"
         class="carousel__slide"
       >
-        <article
-          class="card"
-          :class="{ 'card--active': index === activeIndex }"
+        <button
+          type="button"
+          class="disc"
+          :class="{ 'disc--active': index === activeIndex }"
+          :style="{ '--accent': pizza.accent }"
+          :aria-label="`Ver ${pizza.name}`"
           @click="$emit('details', pizza)"
         >
-          <!-- Pizza artwork. Swap the <FakePizza /> block for an <img>
-               (or optimized <picture>) once real product photos arrive. -->
-          <div class="card__plate" :style="{ '--accent': pizza.accent }">
-            <img
-              v-if="pizza.image"
-              :src="pizza.image"
-              :alt="`Pizza ${pizza.name}`"
-              class="card__img"
-            />
-            <div v-else class="fake-pizza" aria-hidden="true">
-              <span class="fake-pizza__sauce"></span>
-              <span
-                v-for="t in toppingPositions(pizza.id)"
-                :key="t.k"
-                class="fake-pizza__topping"
-                :style="t.style"
-              ></span>
-            </div>
-          </div>
-
-          <h2 class="card__name">{{ pizza.name }}</h2>
-          <p class="card__tagline">{{ pizza.tagline }}</p>
-          <p class="card__desc">{{ pizza.description }}</p>
-          <div class="card__price">{{ pizza.price.toFixed(2) }} €</div>
-        </article>
+          <img
+            v-if="pizza.image"
+            :src="pizza.image"
+            :alt="`Pizza ${pizza.name}`"
+            class="disc__img"
+          />
+          <span v-else class="fake-pizza" aria-hidden="true">
+            <span class="fake-pizza__sauce"></span>
+            <span
+              v-for="t in toppingPositions(pizza.id)"
+              :key="t.k"
+              class="fake-pizza__topping"
+              :style="t.style"
+            ></span>
+          </span>
+        </button>
       </SwiperSlide>
     </Swiper>
 
     <button class="carousel__nav carousel__nav--prev" aria-label="Anterior pizza">‹</button>
     <button class="carousel__nav carousel__nav--next" aria-label="Siguiente pizza">›</button>
 
+    <!--
+      Single, authoritative text block. Swapping the :key on transition
+      gives a quick cross-fade whenever the active pizza changes —
+      prevents any visual stutter of stale text under new text.
+    -->
+    <transition name="copy" mode="out-in">
+      <div :key="active.id" class="copy">
+        <p class="copy__tagline">{{ active.tagline }}</p>
+        <h2 class="copy__name">{{ active.name }}</h2>
+        <p class="copy__desc">{{ active.description }}</p>
+        <p class="copy__price">{{ active.price.toFixed(2) }} €</p>
+      </div>
+    </transition>
+
     <div class="carousel__actions">
-      <button class="btn btn--primary" type="button" @click="$emit('order', current)">
+      <button class="btn btn--primary" type="button" @click="$emit('order', active)">
         <span>Pídela ahora</span>
-        <span class="btn__arrow">→</span>
+        <span class="btn__arrow" aria-hidden="true">→</span>
       </button>
-      <button class="btn btn--ghost" type="button" @click="$emit('details', current)">
+      <button class="btn btn--ghost" type="button" @click="$emit('details', active)">
         Ver ingredientes
       </button>
     </div>
@@ -110,18 +119,13 @@ const emit = defineEmits(['active-change', 'order', 'details'])
 const modules = [EffectCoverflow, Navigation, Pagination, Keyboard]
 
 const activeIndex = ref(props.initialIndex)
-const current = computed(() => props.pizzas[activeIndex.value] ?? props.pizzas[0])
+const active = computed(() => props.pizzas[activeIndex.value] ?? props.pizzas[0])
 
 function onSlideChange(swiper) {
-  // Use realIndex so loop-mode duplicate slides resolve to the source pizza.
   activeIndex.value = swiper.realIndex
   emit('active-change', swiper.realIndex)
 }
 
-/*
-  Deterministic fake-topping layout per pizza. Stable across renders
-  so there's no topping jitter while Swiper transitions.
-*/
 function toppingPositions(seed) {
   const count = 7
   return Array.from({ length: count }, (_, k) => {
@@ -148,51 +152,47 @@ function toppingPositions(seed) {
   position: relative;
   max-width: 1100px;
   margin: 0 auto;
-  padding-bottom: 90px;
+  padding-bottom: 40px;
 }
 
 .carousel__swiper {
   overflow: visible !important;
-  padding: 30px 0 48px;
+  padding: 18px 0 24px;
 }
 
 .carousel__slide {
-  width: 320px;
+  width: 260px;
   display: flex;
   justify-content: center;
 }
 
-.card {
-  width: 100%;
-  text-align: center;
-  color: var(--ink-100);
-  transition: opacity 500ms ease, transform 500ms ease;
-  opacity: 0.4;
-  cursor: pointer;
-}
-.card--active {
-  opacity: 1;
-}
-
-.card__plate {
-  width: 230px;
-  height: 230px;
-  margin: 0 auto 24px;
+/* A slide is just a clickable pizza disc */
+.disc {
   position: relative;
-  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.55))
-          drop-shadow(0 0 42px color-mix(in oklab, var(--accent, #c94d3a) 40%, transparent));
-  transition: filter 500ms ease;
+  width: 220px;
+  height: 220px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 500ms ease, filter 500ms ease, transform 500ms ease;
+  filter: drop-shadow(0 26px 42px rgba(0, 0, 0, 0.55));
 }
-
-.card__img {
-  position: absolute;
-  inset: 0;
+.disc--active {
+  opacity: 1;
+  filter:
+    drop-shadow(0 30px 48px rgba(0, 0, 0, 0.6))
+    drop-shadow(0 0 36px color-mix(in oklab, var(--accent, #d7172a) 50%, transparent));
+}
+.disc__img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  border-radius: 50%;
 }
 
-/* Fallback painted pizza while real photos aren't ready */
+/* Fallback painted pizza until real photos are plugged in */
 .fake-pizza {
   position: absolute;
   inset: 0;
@@ -208,7 +208,7 @@ function toppingPositions(seed) {
   border-radius: 50%;
   background:
     radial-gradient(circle at 46% 44%, #f3d988 0%, #e4b355 38%, transparent 65%),
-    radial-gradient(circle at 50% 50%, var(--accent, #c94d3a) 0%, #872820 90%);
+    radial-gradient(circle at 50% 50%, var(--accent, #d7172a) 0%, #7a0916 90%);
 }
 .fake-pizza__topping {
   position: absolute;
@@ -218,49 +218,64 @@ function toppingPositions(seed) {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45), inset -2px -2px 4px rgba(0, 0, 0, 0.25);
 }
 
-.card__name {
-  font-family: var(--font-serif);
-  font-size: 38px;
-  margin: 0 0 6px;
-  letter-spacing: 0.008em;
-  line-height: 1;
+/* Single text block — synced to active slide */
+.copy {
+  text-align: center;
+  max-width: 520px;
+  margin: 10px auto 24px;
+  padding: 0 20px;
+  color: var(--ink-100);
 }
-.card__tagline {
-  color: var(--ink-300);
+.copy__tagline {
   font-size: 11px;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.32em;
   text-transform: uppercase;
-  margin: 0 0 14px;
+  color: var(--brand-red);
+  margin: 0 0 10px;
+  font-weight: 500;
 }
-.card__desc {
-  font-size: 14px;
-  line-height: 1.55;
-  color: rgba(244, 235, 217, 0.72);
-  max-width: 280px;
-  margin: 0 auto;
-}
-.card__price {
-  margin-top: 16px;
+.copy__name {
   font-family: var(--font-serif);
-  font-size: 24px;
-  color: var(--ink-300);
+  font-size: clamp(36px, 5vw, 56px);
+  margin: 0 0 12px;
+  line-height: 1;
+  color: var(--brand-white);
+  letter-spacing: 0.005em;
+}
+.copy__desc {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(245, 243, 238, 0.72);
+  margin: 0 0 12px;
+}
+.copy__price {
+  font-family: var(--font-serif);
+  font-size: 22px;
+  color: var(--brand-red);
+  margin: 0;
 }
 
-/* Nav arrows — discreet glass buttons on either side */
+.copy-enter-active,
+.copy-leave-active {
+  transition: opacity 260ms ease, transform 260ms ease;
+}
+.copy-enter-from { opacity: 0; transform: translateY(8px); }
+.copy-leave-to   { opacity: 0; transform: translateY(-8px); }
+
+/* Nav arrows */
 .carousel__nav {
   position: absolute;
-  top: 38%;
+  top: 110px; /* aligned with centre of disc row */
   width: 48px;
   height: 48px;
   border-radius: 50%;
-  border: 1px solid rgba(244, 235, 217, 0.2);
-  background: rgba(15, 10, 8, 0.5);
-  color: var(--ink-100);
+  border: 1px solid rgba(245, 243, 238, 0.22);
+  background: rgba(10, 7, 7, 0.55);
+  color: var(--brand-white);
   font-size: 26px;
   cursor: pointer;
   display: grid;
   place-items: center;
-  transform: translateY(-50%);
   z-index: 20;
   transition: all 220ms ease;
   backdrop-filter: blur(6px);
@@ -269,9 +284,9 @@ function toppingPositions(seed) {
   line-height: 1;
 }
 .carousel__nav:hover {
-  border-color: var(--ink-300);
-  color: var(--ink-300);
-  transform: translateY(-50%) scale(1.05);
+  border-color: var(--brand-red);
+  color: var(--brand-red);
+  transform: scale(1.05);
 }
 .carousel__nav--prev { left: -8px; }
 .carousel__nav--next { right: -8px; }
@@ -281,7 +296,7 @@ function toppingPositions(seed) {
   display: flex;
   justify-content: center;
   gap: 14px;
-  margin-top: 10px;
+  margin-top: 6px;
   flex-wrap: wrap;
 }
 .btn {
@@ -292,20 +307,21 @@ function toppingPositions(seed) {
   font-size: 12px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  border-radius: 999px;
+  border-radius: 2px;
   cursor: pointer;
   transition: all 240ms ease;
   border: 1px solid transparent;
   font-weight: 600;
 }
 .btn--primary {
-  background: linear-gradient(180deg, #d9a55a 0%, #a87429 100%);
-  color: #1a0f07;
-  box-shadow: 0 12px 30px rgba(168, 116, 41, 0.35);
+  background: var(--brand-red);
+  color: var(--brand-white);
+  box-shadow: 0 10px 24px rgba(215, 23, 42, 0.35);
 }
 .btn--primary:hover {
+  background: var(--brand-red-deep);
   transform: translateY(-2px);
-  box-shadow: 0 18px 40px rgba(168, 116, 41, 0.55);
+  box-shadow: 0 16px 32px rgba(215, 23, 42, 0.5);
 }
 .btn__arrow {
   transition: transform 240ms ease;
@@ -315,25 +331,25 @@ function toppingPositions(seed) {
 }
 .btn--ghost {
   background: transparent;
-  color: var(--ink-100);
-  border-color: rgba(244, 235, 217, 0.28);
+  color: var(--brand-white);
+  border-color: rgba(245, 243, 238, 0.35);
 }
 .btn--ghost:hover {
-  border-color: var(--ink-300);
-  color: var(--ink-300);
+  border-color: var(--brand-white);
+  color: var(--brand-white);
+  background: rgba(245, 243, 238, 0.05);
 }
 
-/* Pagination dots styled as minimalist bars */
 .carousel__pager {
   display: flex;
   justify-content: center;
   gap: 10px;
-  margin-top: 24px;
+  margin-top: 22px;
 }
 :deep(.carousel__dot) {
   width: 22px;
   height: 2px;
-  background: rgba(244, 235, 217, 0.25);
+  background: rgba(245, 243, 238, 0.22);
   border: none;
   border-radius: 0;
   opacity: 1;
@@ -343,14 +359,13 @@ function toppingPositions(seed) {
 }
 :deep(.carousel__dot--active) {
   width: 40px;
-  background: var(--ink-300);
+  background: var(--brand-red);
 }
 
 @media (max-width: 640px) {
-  .carousel__slide { width: 260px; }
-  .card__plate { width: 180px; height: 180px; margin-bottom: 18px; }
-  .card__name { font-size: 30px; }
-  .carousel__nav { display: none; }
-  .carousel { padding-bottom: 70px; }
+  .carousel__slide { width: 210px; }
+  .disc { width: 170px; height: 170px; }
+  .carousel__nav { top: 85px; display: none; }
+  .copy__name { font-size: 32px; }
 }
 </style>

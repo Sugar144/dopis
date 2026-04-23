@@ -1,45 +1,56 @@
 <template>
   <section class="hero">
     <!-- Atmospheric backdrop: vignette + accent glow + film grain.
-         All purely decorative, pointer-events-none. -->
+         Purely decorative, pointer-events-none. -->
     <div class="hero__backdrop" aria-hidden="true">
       <div class="backdrop__vignette"></div>
       <div class="backdrop__glow" :style="glowStyle"></div>
       <div class="backdrop__grain"></div>
     </div>
 
-    <!-- Intro copy. Present only until the box starts opening. -->
+    <!-- Intro copy is only rendered while the box is still closed -->
     <transition name="intro">
-      <div
-        v-if="stage === 'closed' || stage === 'growing'"
-        class="hero__intro"
-      >
-        <p class="eyebrow">Edición limitada · Napoli 1987</p>
+      <div v-if="stage === 'closed' || stage === 'growing'" class="hero__intro">
+        <p class="eyebrow">Edición limitada · Queso de cabra y cebolla caramelizada</p>
         <h1 class="headline">
           La pizza que
           <br />
           <em>merece ser abierta.</em>
         </h1>
         <p class="subhead">
-          Cada caja que abres es una receta que nuestros maestros pizzeros
-          han cuidado durante cuatro generaciones.
+          Cada caja que abres contiene una pizza única, hecha con ingredientes naturales y mucho
+          cariño.
         </p>
       </div>
     </transition>
 
-    <!-- Stage: the 3D box lives inside the scene-frame. GSAP tweens the
-         frame's scale/yOffset for a cinematic push-in / pull-back move. -->
+    <!--
+      "Toca la caja" hint — lives ABOVE the box now (you couldn't see it
+      before because it was underneath the box and clipped by overflow on
+      the scene's 3D context). Sits in the orchestrator so it's not
+      affected by the 3D context of the box itself.
+    -->
+    <transition name="hint">
+      <div v-if="stage === 'closed'" class="hero__hint" aria-hidden="true">
+        <span class="hero__hint-bar"></span>
+        <span class="hero__hint-text">Abre la tuya</span>
+      </div>
+    </transition>
+
+    <!-- Stage: the 3D box. GSAP tweens scale/yOffset for the cinematic move. -->
     <div class="hero__scene" :class="[`hero__scene--${stage}`]">
       <div class="scene-frame" :style="sceneFrameStyle">
         <PizzaBox3D
           :stage="boxStage"
           :accent="activePizza.accent"
+          :show-pizza="stage !== 'open'"
           @box-click="openBox"
         />
       </div>
     </div>
 
-    <!-- Carousel reveals after the box has finished opening. -->
+    <!-- Carousel appears once the box is fully open. The box stays
+         visible behind it, acting as the stage. -->
     <transition name="carousel">
       <div v-if="stage === 'open'" class="hero__carousel">
         <PizzaCarousel
@@ -52,14 +63,9 @@
       </div>
     </transition>
 
-    <!-- Reset lets users re-experience the reveal. Visible once opened. -->
+    <!-- Reset lets users re-experience the reveal -->
     <transition name="fade">
-      <button
-        v-if="stage === 'open'"
-        class="hero__reset"
-        type="button"
-        @click="resetBox"
-      >
+      <button v-if="stage === 'open'" class="hero__reset" type="button" @click="resetBox">
         ← cerrar la caja
       </button>
     </transition>
@@ -84,9 +90,8 @@ const router = useRouter()
                                   ↑
                                   └── reset → closed
 
-  The CSS transitions on the 3D box happen automatically via
-  `.pizza3d--opening` / `.pizza3d--open`; GSAP only animates the
-  scene-frame (scale + yOffset), so CSS and JS never fight each other.
+  CSS owns the lid rotation (compositor-friendly), GSAP owns the scene
+  frame transform. They never fight.
 */
 const stage = ref('closed')
 const activeIndex = ref(0)
@@ -110,7 +115,7 @@ const sceneFrameStyle = computed(() => ({
 
 const glowStyle = computed(() => ({
   '--glow-accent': activePizza.value.accent,
-  '--glow-intensity': stage.value === 'closed' ? '0.35' : '0.65',
+  '--glow-intensity': stage.value === 'closed' ? '0.35' : '0.7',
 }))
 
 let timeline = null
@@ -120,38 +125,37 @@ function openBox() {
 
   stage.value = 'growing'
 
-  // Kill any previous tween to avoid overlap when spam-clicking.
   if (timeline) timeline.kill()
 
   timeline = gsap.timeline()
 
-  // Phase 1 — grow: the box scales up and lifts, intro fades out.
+  // Phase 1 — grow: box scales up, intro fades out.
   timeline.to(sceneAnim, {
-    scale: 1.2,
+    scale: 1.22,
     yOffset: -30,
     duration: 0.85,
     ease: 'power3.out',
   })
 
-  // Phase 2 — open: hand over to CSS for the lid rotation (smooth,
-  // compositor-friendly) by flipping the stage.
+  // Phase 2 — open: hand over to CSS for the lid rotation.
   timeline.call(() => {
     stage.value = 'opening'
   })
 
-  // Phase 3 — settle: slight pull-back so the carousel has room below.
+  // Phase 3 — settle: pull the box back to the top so the carousel
+  // has room below and the box reads as a scenic backdrop.
   timeline.to(
     sceneAnim,
     {
-      scale: 0.88,
-      yOffset: -140,
+      scale: 0.72,
+      yOffset: -200,
       duration: 0.95,
       ease: 'power2.inOut',
     },
     '+=0.05',
   )
 
-  // Phase 4 — open is fully committed: reveal carousel + CTAs.
+  // Phase 4 — commit: carousel fades in, box pizza fades out.
   timeline.call(() => {
     stage.value = 'open'
   })
@@ -174,7 +178,6 @@ function onActiveChange(index) {
 }
 
 function onOrder(pizza) {
-  // Placeholder — swap for your real checkout/route once it exists.
   router.push({
     name: 'pizza-detail',
     params: { slug: pizza.slug },
@@ -197,7 +200,7 @@ onBeforeUnmount(() => {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 120px 24px 60px;
+  padding: 120px 24px 40px;
   overflow: hidden;
   isolation: isolate;
 }
@@ -213,10 +216,10 @@ onBeforeUnmount(() => {
   position: absolute;
   inset: 0;
   background: radial-gradient(
-    ellipse 80% 62% at 50% 42%,
-    rgba(70, 40, 22, 0.55) 0%,
-    rgba(15, 10, 8, 0.12) 50%,
-    rgba(0, 0, 0, 0.85) 100%
+    ellipse 82% 62% at 50% 42%,
+    rgba(54, 24, 24, 0.55) 0%,
+    rgba(15, 10, 10, 0.14) 50%,
+    rgba(0, 0, 0, 0.9) 100%
   );
 }
 .backdrop__glow {
@@ -228,15 +231,16 @@ onBeforeUnmount(() => {
   transform: translate(-50%, -50%);
   background: radial-gradient(
     circle at center,
-    color-mix(in oklab, var(--glow-accent, #c94d3a) 55%, transparent) 0%,
+    color-mix(in oklab, var(--glow-accent, #d7172a) 55%, transparent) 0%,
     transparent 62%
   );
   filter: blur(70px);
   opacity: var(--glow-intensity, 0.45);
-  transition: opacity 900ms ease, background 900ms ease;
+  transition:
+    opacity 900ms ease,
+    background 900ms ease;
   mix-blend-mode: screen;
 }
-/* Film grain — tiny inline SVG noise, stays crisp at any zoom */
 .backdrop__grain {
   position: absolute;
   inset: -50%;
@@ -246,18 +250,30 @@ onBeforeUnmount(() => {
   animation: grain-drift 8s steps(6) infinite;
 }
 @keyframes grain-drift {
-  0%   { transform: translate(0, 0); }
-  20%  { transform: translate(-2%, 3%); }
-  40%  { transform: translate(3%, -1%); }
-  60%  { transform: translate(-1%, -3%); }
-  80%  { transform: translate(2%, 2%); }
-  100% { transform: translate(0, 0); }
+  0% {
+    transform: translate(0, 0);
+  }
+  20% {
+    transform: translate(-2%, 3%);
+  }
+  40% {
+    transform: translate(3%, -1%);
+  }
+  60% {
+    transform: translate(-1%, -3%);
+  }
+  80% {
+    transform: translate(2%, 2%);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
 }
 
 /* ---- Intro copy ---- */
 .hero__intro {
   position: absolute;
-  top: 110px;
+  top: 104px;
   left: 50%;
   transform: translateX(-50%);
   text-align: center;
@@ -270,7 +286,7 @@ onBeforeUnmount(() => {
   font-size: 10px;
   letter-spacing: 0.42em;
   text-transform: uppercase;
-  color: var(--ink-300);
+  color: var(--brand-red);
   margin: 0 0 18px;
   font-weight: 500;
 }
@@ -280,26 +296,90 @@ onBeforeUnmount(() => {
   font-size: clamp(42px, 6vw, 72px);
   line-height: 1.02;
   margin: 0;
-  letter-spacing: 0.005em;
+  color: var(--brand-white);
 }
 .headline em {
   font-style: italic;
-  color: var(--ink-300);
+  color: var(--brand-red);
 }
 .subhead {
   margin: 24px auto 0;
   max-width: 420px;
   font-size: 14px;
   line-height: 1.65;
-  color: rgba(244, 235, 217, 0.65);
+  color: rgba(245, 243, 238, 0.65);
 }
 
 .intro-enter-active,
 .intro-leave-active {
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
 }
-.intro-enter-from { opacity: 0; transform: translate(-50%, 16px); }
-.intro-leave-to   { opacity: 0; transform: translate(-50%, -16px); }
+.intro-enter-from {
+  opacity: 0;
+  transform: translate(-50%, 16px);
+}
+.intro-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -16px);
+}
+
+/* ---- Click hint above the box ---- */
+.hero__hint {
+  position: absolute;
+  /* Calibrated to sit just above the floating box (box is ~340px tall,
+     centred by the grid; the hint sits at ~60% of the way up) */
+  bottom: calc(40% - 240px);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column-reverse; /* text on top, bar pointing down to box */
+  align-items: center;
+  gap: 10px;
+  z-index: 6;
+  color: rgba(245, 243, 238, 0.9);
+  pointer-events: none;
+}
+.hero__hint-bar {
+  width: 1px;
+  height: 32px;
+  background: linear-gradient(to top, rgba(245, 243, 238, 0.7), transparent);
+  animation: hint-pulse 1.8s ease-in-out infinite;
+  transform-origin: bottom;
+}
+.hero__hint-text {
+  font-size: 10px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+}
+
+.hint-enter-active,
+.hint-leave-active {
+  transition:
+    opacity 400ms ease,
+    transform 400ms ease;
+}
+.hint-enter-from {
+  opacity: 0;
+  transform: translate(-50%, -8px);
+}
+.hint-leave-to {
+  opacity: 0;
+  transform: translate(-50%, -8px);
+}
+
+@keyframes hint-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scaleY(0.55);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
 
 /* ---- Scene ---- */
 .hero__scene {
@@ -313,26 +393,38 @@ onBeforeUnmount(() => {
   will-change: transform;
 }
 
-/* ---- Carousel ---- */
+/* ---- Carousel (appears below the backdrop box) ---- */
 .hero__carousel {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 12px;
+  bottom: 20px;
   z-index: 3;
   padding: 0 24px;
 }
 .carousel-enter-active,
 .carousel-leave-active {
-  transition: opacity 500ms ease, transform 500ms ease;
+  transition:
+    opacity 500ms ease,
+    transform 500ms ease;
 }
-.carousel-enter-from { opacity: 0; transform: translateY(30px); }
-.carousel-leave-to   { opacity: 0; transform: translateY(30px); }
+.carousel-enter-from {
+  opacity: 0;
+  transform: translateY(30px);
+}
+.carousel-leave-to {
+  opacity: 0;
+  transform: translateY(30px);
+}
 
 .fade-enter-active,
-.fade-leave-active { transition: opacity 400ms ease; }
+.fade-leave-active {
+  transition: opacity 400ms ease;
+}
 .fade-enter-from,
-.fade-leave-to     { opacity: 0; }
+.fade-leave-to {
+  opacity: 0;
+}
 
 /* ---- Reset button ---- */
 .hero__reset {
@@ -340,25 +432,42 @@ onBeforeUnmount(() => {
   top: 90px;
   right: 28px;
   background: transparent;
-  border: 1px solid rgba(244, 235, 217, 0.25);
-  color: rgba(244, 235, 217, 0.75);
+  border: 1px solid rgba(245, 243, 238, 0.25);
+  color: rgba(245, 243, 238, 0.78);
   font-size: 11px;
   letter-spacing: 0.24em;
   text-transform: uppercase;
   padding: 10px 18px;
-  border-radius: 999px;
+  border-radius: 2px;
   cursor: pointer;
   z-index: 20;
   transition: all 220ms ease;
 }
 .hero__reset:hover {
-  border-color: var(--ink-300);
-  color: var(--ink-300);
+  border-color: var(--brand-red);
+  color: var(--brand-red);
 }
 
 @media (max-width: 768px) {
-  .hero__intro { top: 84px; }
-  .hero__reset { top: 72px; right: 16px; padding: 8px 14px; font-size: 10px; }
-  .hero { padding: 96px 16px 40px; }
+  .hero__intro {
+    top: 84px;
+  }
+  .hero__reset {
+    top: 72px;
+    right: 16px;
+    padding: 8px 14px;
+    font-size: 10px;
+  }
+  .hero {
+    padding: 96px 16px 20px;
+  }
+  .hero__hint {
+    top: calc(50% - 200px);
+  }
+}
+@media (max-width: 420px) {
+  .hero__hint {
+    top: calc(50% - 170px);
+  }
 }
 </style>

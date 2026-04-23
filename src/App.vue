@@ -15,16 +15,23 @@
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
 
-  /* Warm dark palette — trattoria-at-night */
-  --ink-100: #f4ebd9;
-  --ink-200: #e2d2ae;
-  --ink-300: #c9a25a;
-  --ink-400: #a57c37;
-  --ink-500: #6b4818;
+  /* Brand — corporate red / white / black */
+  --brand-red: #d7172a;
+  --brand-red-deep: #9c0d1c;
+  --brand-red-ink: #6a0813;
+  --brand-white: #f5f3ee;
+  --brand-black: #0d0b0a;
 
-  --bg-900: #0a0705;
-  --bg-800: #130d09;
-  --bg-700: #1c140f;
+  /* UI ink tokens — 100 is off-white, 300 is the brand red used as accent */
+  --ink-100: #f5f3ee;
+  --ink-200: #d9d4c8;
+  --ink-300: var(--brand-red);
+  --ink-400: #a0a0a0;
+
+  /* Dark room palette (the hero stage is lit from above, very dim edges) */
+  --bg-900: #0a0707;
+  --bg-800: #120d0d;
+  --bg-700: #1b1212;
 }
 
 *,
