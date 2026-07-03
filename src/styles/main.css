@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@config "../../tailwind.config.js";
+
+html {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-color: theme(colors.brand.background);
+  color: theme(colors.brand.text);
+}
