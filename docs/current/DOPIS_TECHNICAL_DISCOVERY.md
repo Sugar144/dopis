@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.6
+**Version:** 0.7
 **Date:** 2026-07-24
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -104,6 +104,14 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Jaime should be able to perform broad catalog administration without developer intervention.
 - Initial inventory scope is product availability plus unit stock for directly countable products.
 - Online payments, loyalty, customer history, business metrics, packs, and marketing capabilities are future product goals.
+- Monday and Tuesday are closed.
+- Wednesday and Thursday premises hours are 18:00–22:00.
+- Friday, Saturday, and Sunday premises hours are 18:00–23:00.
+- Pizza ordering begins at 19:00 and the earliest pizza pickup is 19:15.
+- Initial latest pickup is 21:45 on Wednesday and Thursday and 22:45 from Friday through Sunday.
+- Music is normally played during service, so ambient noise may make a standard tablet alert difficult to hear.
+- In the kitchen panel, customer name and pickup time are operationally more important than the public order identifier.
+- The current visual direction of the kitchen panel is considered a suitable starting point.
 
 ### 3.2 Provisional
 
@@ -127,6 +135,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
   - `COMPLETED`
   - `REJECTED`
   - `CANCELLED`
+  - `NO_SHOW`
 - Pickup choice should be expressed as:
   - `EARLIEST_AVAILABLE`, with a concrete estimated time or range;
   - `SCHEDULED`, using only currently feasible slots.
@@ -138,11 +147,25 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Pickup windows use an initial duration of 15 minutes.
 - Product and modifier production-point values are technically configured and calibrated; Jaime controls operational window capacity rather than editing the workload model directly.
 - Orders exceeding a configurable percentage of a pickup window's capacity must enter manual review, even if nominal capacity remains. The threshold requires validation with real kitchen operation.
-- Customers may eventually order a configurable number of days in advance. The initial launch horizon remains a configuration decision rather than a hard-coded same-day rule.
+- Initial launch accepts same-day orders only. A configurable multi-day advance-order horizon remains a future capability.
 - An order whose production load cannot safely fit within a single pickup window must enter manual review in the MVP.
 - Sellable-unit stock is provisionally reserved during checkout and committed only when the order is confirmed. Expired or abandoned holds release stock.
 - Stock used by an order under manual review is held for ten minutes; expiry releases stock and follows the defined order-expiry outcome.
 - Guest tracking should use a secure SMS-delivered access link that establishes a protected browser session without requiring an account.
+- Capacity should be configured through templates by weekday and time segment, with date-specific closure, exceptional-opening, special-hours, and special-capacity overrides.
+- A valid five-minute provisional checkout hold may complete during an ordering pause; carts without a valid hold cannot submit.
+- The final feasible order opportunity is calculated from cart workload, remaining capacity, pickup-window rules, lead time, and latest pickup rather than one fixed cutoff.
+- Staff explicitly trigger the start of preparation; accepting an order does not by itself mean that reserved stock has been consumed.
+- Cancellation before preparation releases reserved stock and future capacity.
+- Cancellation after preparation begins does not automatically restore consumed stock; unused future capacity is released.
+- A configurable non-collection grace period begins at the end of the confirmed pickup window; the initial working value is 30 minutes.
+- Staff attempt to contact the customer before manually marking an order as `NO_SHOW`.
+- Operational incidents may route later orders to manual review rather than automatically blocking the customer. The current working threshold is two relevant incidents within 90 days, pending privacy and operational validation.
+- An invalid telephone number is recorded as a distinct incident and may contribute to manual review, subject to fairness and privacy review.
+- Operational loss is initially recorded as an occurrence without calculating a monetary amount.
+- A failure to deliver the initial tracking SMS routes the order to manual review rather than automatic rejection.
+- A material pickup-estimate change updates the private tracking page and sends an SMS; an agreed pickup extension updates the tracking page without requiring another SMS.
+- The initial operational fallback uses a tablet plus a limited mobile backup. A ticket printer remains conditional on real operational testing.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -551,6 +574,36 @@ Recommended customer-facing distinction:
 - **in preparation:** kitchen work has started;
 - **ready:** the customer may collect it.
 
+### 7.5 Preparation, handover, and non-collection
+
+- A confirmed future order remains scheduled until it approaches its recommended preparation time.
+- Staff may begin preparation earlier; the action is permitted and recorded.
+- Preparation formally begins when staff select `Start preparation`.
+- `COMPLETED` is assigned only when staff confirm handover to the customer.
+- The working `NO_SHOW` process is:
+  1. wait until the end of the confirmed pickup window;
+  2. apply the configurable grace period, initially 30 minutes;
+  3. attempt customer contact;
+  4. allow an authorised extension within a configurable maximum;
+  5. let staff mark `NO_SHOW` manually.
+- If a customer explicitly says they will not collect an already prepared order, record a customer cancellation and an operational loss rather than an unexplained `NO_SHOW`.
+
+### 7.6 Operational queues and delays
+
+The panel should distinguish:
+
+- `Requires attention`;
+- active preparation;
+- `Ready for pickup`;
+- `Scheduled`;
+- shift history.
+
+Operational queues are ordered by the calculated recommended preparation time, not only by submission time. Delayed orders rise in prominence and show the elapsed delay without relying on hover.
+
+Delay handling distinguishes a warning from a serious delay. A serious delay produces a one-time audible escalation. Staff may start preparation, revise the estimate, or cancel.
+
+Cancelled orders and unresolved incidents remain visible until staff select `Incident reviewed`.
+
 ---
 
 ## 8. Kitchen tablet requirements
@@ -582,6 +635,23 @@ Operational fallback must still be defined for:
 
 A printer is not required for the MVP, but the business needs a documented fallback procedure.
 
+Additional working requirements from business discovery:
+
+- a new order produces an audible alert, remains highlighted, and requires explicit `Order seen` acknowledgement;
+- an unacknowledged order repeats its alert and pauses automatic acceptance after a configurable timeout;
+- the alert must be tested with the real music level, tablet position, and kitchen noise;
+- if the tablet loses connection, the panel retains the last visible data as clearly stale and prevents state-changing actions;
+- after an initial three-minute disconnection, new online orders pause;
+- recovery requires staff review and explicit `Resume`;
+- a mobile backup may view orders and change operational states, but need not expose full administration;
+- staff complete a readiness checklist and explicitly select `Open orders`;
+- the pre-opening checklist covers kitchen readiness, shift capacity, and sold-out products;
+- delivered orders leave the primary view but remain available in shift history;
+- customer name and pickup time have greater visual prominence than the order identifier;
+- no essential action or information may depend on hover.
+
+The digital panel remains the source of truth. A ticket printer is a conditional fallback only if real tests show that tablet and mobile alerts are insufficient. If introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
+
 ---
 
 ## 9. Catalog, inventory, and production capacity boundary
@@ -598,6 +668,15 @@ The system stores quantities for directly countable products, such as canned dri
 
 For pizzas, a per-product daily quantity should be optional rather than mandatory. Requiring Jaime to estimate every pizza variety each day would add maintenance without accurately representing shared dough, cheese, oven, and labour constraints.
 
+Working reservation semantics:
+
+- checkout holds countable stock provisionally for five minutes;
+- automatic confirmation commits stock;
+- manual review holds stock for an initial ten minutes;
+- expiry or abandonment releases the hold;
+- cancellation before preparation restores reserved or committed countable stock;
+- after `Start preparation`, consumed stock is not automatically restored.
+
 ### 9.3 Production capacity
 
 Kitchen capacity controls how much work may be committed to a pickup window. The first operational version must already distinguish simple and complex pizzas through weighted production points.
@@ -606,6 +685,7 @@ Initial model:
 
 - initial time-window duration of 15 minutes;
 - configurable maximum production points per window;
+- capacity templates may vary by weekday and time segment, with date-specific overrides;
 - each pizza has a base production-point value;
 - selected modifiers may add production points;
 - drinks and ready-made desserts normally consume zero points;
@@ -885,14 +965,16 @@ The current GitHub Pages deployment must not be mistaken for operational backend
 
 Business opening hours and pizza-ordering hours are distinct configuration concepts.
 
-Current reported schedule, interpreted provisionally:
+Confirmed weekly baseline:
 
+- Monday and Tuesday: closed.
 - Wednesday and Thursday: premises open from 18:00 to 22:00.
 - Friday, Saturday, and Sunday: premises open from 18:00 to 23:00.
 - Pizza ordering begins at 19:00.
 - Earliest pizza pickup is 19:15.
-- Monday and Tuesday status remains unconfirmed.
-- The reported opening time of “6” is interpreted as 18:00 and requires explicit confirmation before production.
+- Initial latest pickup is 21:45 on Wednesday and Thursday.
+- Initial latest pickup is 22:45 on Friday, Saturday, and Sunday.
+- Initial launch accepts same-day orders only.
 
 The system must configure separately:
 
@@ -912,13 +994,15 @@ The system must configure separately:
 Recommended operating-hours administration:
 
 1. A weekly default schedule.
-2. Date-specific closures or exceptional openings.
+2. Date-specific closure, exceptional opening, special hours, and special capacity.
 3. Manual online-ordering pause and resume.
 4. Temporary global delay applied to new estimates.
 5. Blocking or capacity reduction for individual pickup windows.
 6. Separate pizza-service hours from the premises' broader opening hours.
 
-The final order-submission time must be derived from the latest permitted pickup and the minimum lead time rather than assumed to equal the premises closing time.
+The final order-submission opportunity must be derived dynamically from the latest permitted pickup, minimum lead time, basket workload, remaining capacity, and temporary delays rather than assumed to equal the premises closing time.
+
+Online orders open only after staff complete the readiness checklist and explicitly select `Open orders`.
 
 ## 14. Main risks
 
@@ -926,6 +1010,10 @@ The final order-submission time must be derived from the latest permitted pickup
 |---|---|---|
 | Panel accessible without real backend authorisation | Exposure or manipulation of orders | Implement functional staff authentication from the first operational backend |
 | Tablet misses an order | Lost revenue and customer dissatisfaction | Sound, live updates, connection indicator, manual refresh, operational fallback |
+| Tablet alert is inaudible in a noisy kitchen | Order remains unseen | Persistent highlight, explicit acknowledgement, repeated alert, safety pause, real-device testing |
+| Panel loses connectivity | Staff act on stale information or unseen orders arrive | Stale indicator, blocked writes, mobile backup, timed pause, manual resume |
+| Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
+| Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
 | Customer receives premature confirmation | Kitchen may be unable to fulfil | Separate received and accepted states |
 | Future payment support forces redesign | Rework and payment inconsistencies | Model payment method/status now, integrate provider later |
@@ -958,26 +1046,33 @@ Still open:
 - capacity-point values and the initial calibration method;
 - the initial large-order manual-review threshold percentage;
 - whether and when a later release may automatically distribute large orders across consecutive pickup windows;
-- the initial `maximum_advance_days` value;
-- the exact latest pickup time and minimum lead time for each service day;
-- whether Monday and Tuesday are closed;
-- confirmation that the stated 18:00 opening interpretation is correct;
-- how staff should handle an expired alternative proposal when direct customer contact has already occurred.
+- the exact minimum lead-time calculation and calibration;
+- how staff should handle an expired alternative proposal when direct customer contact has already occurred;
+- whether the provisional two-incidents-in-90-days rule is operationally appropriate;
+- the full retention period and correction process for operational incidents;
+- the exact grace-period and pickup-extension settings after validation with Jaime.
 
 ### Tablet and notifications
 
 Resolved direction:
 
-- audible alert, visual highlighting, automatic updates, and connection status are sufficient for the first iteration;
-- no second staff notification channel is currently required.
+- audible alert, persistent visual highlighting, automatic updates, and connection status are required;
+- new orders require explicit acknowledgement;
+- repeated alerts and a safety pause protect against unattended orders;
+- a mobile device provides limited operational backup;
+- the initial launch does not require a printer;
+- a printer may be promoted only after real operational testing;
+- the digital panel remains the source of truth.
 
 Still open:
 
-- which physical tablet and browser will be used;
-- whether the tablet stays permanently logged in;
+- which physical tablet, browser, placement, and sound level will be used;
+- the timeout before an unacknowledged order pauses automatic acceptance;
+- whether staff use individual identities or shared operational access;
 - session lifetime and re-authentication behaviour;
 - screen wake and kiosk-mode behaviour;
-- operational fallback when the panel, Wi-Fi, or local server is unavailable.
+- the simultaneous tablet, mobile, network, and backend failure procedure;
+- the test criteria that would promote a ticket printer.
 
 ### Catalog and inventory
 
@@ -1021,6 +1116,10 @@ Still open:
 - Is a birthday benefit important enough to collect birth information?
 - How long should operational order data be retained?
 - Who responds to deletion or access requests?
+- Which operational incidents may affect manual review?
+- How long should incident data be retained beyond the provisional 90-day risk window?
+- How are incorrect incidents corrected and communicated?
+- How should invalid telephone numbers be treated without unfairly penalising customers?
 
 ### Business outcomes
 
@@ -1071,10 +1170,12 @@ Remaining:
 - normalise and validate the real menu;
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
+- validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
 - close modifier and allergen details;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
 - define SMS abstraction and retry behaviour;
+- define incident retention, correction, and fairness controls;
 - define exact MVP catalog administration;
 - freeze the operational MVP;
 - create architecture decision records;
@@ -1215,6 +1316,17 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.7 — 2026-07-24
+
+- Reconciled the three inherited discovery checkpoints plus `BD-DELTA-001` and `BD-DELTA-002` without replacing the established architecture baseline.
+- Confirmed weekly opening days and hours, pizza-service start, earliest pickup, latest pickup, and same-day ordering for launch.
+- Added capacity templates by weekday and time segment and date-specific service exceptions.
+- Refined checkout holds, pause behaviour, preparation start, cancellation release, non-collection handling, and operational incidents.
+- Added kitchen queues, order acknowledgement, repeated alerts, connectivity safety pause, manual resume, and limited mobile backup.
+- Kept the digital panel as the source of truth and the ticket printer as a conditional fallback after real operational testing.
+- Added privacy and fairness constraints for telephone-based incident routing.
+- Preserved implementation status as `NOT GRANTED`.
 
 ### 0.6 — 2026-07-24
 
