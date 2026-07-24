@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.11
+**Version:** 0.12
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -117,6 +117,8 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Gluten-free pizzas share the oven, workspace, and kitchen utensils used for other pizzas.
 - The current kitchen process therefore has a real cross-contact risk that must be communicated accurately.
 - Dopis currently accepts cash and card payments at the premises.
+- Dopis asks whether the customer wants a receipt rather than issuing one automatically to every customer.
+- Cash discrepancies frequently result from card payments being recorded incorrectly as cash.
 
 ### 3.2 Provisional
 
@@ -208,6 +210,22 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Product configuration determines whether remaining stock carries between service days or requires a new opening count.
 - Closing reconciliation records retained, discarded, or corrected quantities for applicable perishable products.
 - Each countable product may define its own low-stock threshold.
+- Authorised staff may correct an incorrectly recorded payment method, with an audit trail.
+- Only Jaime or the responsible shift lead may reverse an order marked paid in error, and a reason is required.
+- An order marked handed over in error may return to `READY`, preserving the correction history.
+- Shift close records expected-versus-actual cash differences and may include an explanation.
+- Jaime or the responsible shift lead confirms shift closure after reviewing open orders, payments, and incidents.
+- Before collecting name and telephone number, the interface explains that they are used to manage the order and communicate operational changes or incidents.
+- An operational telephone number does not create marketing permission, a customer account, or a commercial profile.
+- Any future marketing consent is separate, optional, explicit, and unchecked by default.
+- Telephone numbers remain hidden in kitchen queues and are revealed only through an explicit `Contact customer` action.
+- Telephone lookup may locate an order, but staff must also confirm the customer name or order identifier before disclosing information.
+- Telephone support initially discloses only order status and estimated pickup time.
+- Shift staff see the current order and relevant operational incidents, not the complete commercial history associated with a telephone number by default.
+- Personal-data access, correction, or deletion requests are referred to Jaime through a defined procedure rather than handled by kitchen staff during service.
+- Where appropriate, personal identifiers are deleted or anonymised while legitimately retainable business records are preserved.
+- SMS messages contain Dopis identification, a general status, and the private tracking link rather than the complete order detail.
+- The responsible operator signs out at shift end, and responsibility handover records who assumes the operational role.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -479,6 +497,14 @@ Initial fields:
 
 Only one staff role is initially required, but authorisation checks must exist on the backend.
 
+Operational responsibility also requires:
+
+- explicit current shift lead or responsible person;
+- responsibility handover history;
+- session close at the end of the shift;
+- honest distinction between individual and shared credentials;
+- revocation or deactivation when a person no longer works at Dopis.
+
 ### 6.6 Payment and handover preparation
 
 Initial active payment direction:
@@ -506,9 +532,19 @@ Suggested initial status values:
 - method after collection: `CASH` or `CARD`;
 - status before collection: `PENDING`;
 - status after successful collection: `PAID`;
-- failed or corrected payment states require explicit design.
+- failed or corrected payment states require explicit design;
+- correction events retain previous value, new value, actor, reason, and timestamp.
 
 Payment and delivery are separate auditable events.
+
+Correction authority:
+
+- authorised staff may correct the recorded payment method;
+- only Jaime or the responsible shift lead may reverse a mistaken `PAID` state;
+- a mistaken handover may return the order to `READY`;
+- every correction preserves an append-only event trail.
+
+Shift-close capability must compare expected and actual cash, allow an explanation, and require responsible approval after reviewing open orders, payments, and incidents.
 
 Future online payment remains outside the first MVP. The domain must later support optional online payment alongside pay-at-store without replacing the operational order lifecycle.
 
@@ -708,6 +744,9 @@ Each order preserves its source channel:
 - `COMPLETED` is assigned only when authorised staff confirm handover to the customer.
 - A different collector may identify the order using customer name and order number.
 - If no accepted payment method succeeds, the order is not handed over and an operational incident is recorded.
+- An incorrectly recorded payment method may be corrected by authorised staff with traceability.
+- A mistaken `PAID` state requires responsible-staff reversal and a reason.
+- A mistaken handover may return the order to `READY` without deleting the original event.
 - The working `NO_SHOW` process is:
   1. wait until the end of the confirmed pickup window;
   2. apply the configurable grace period, initially 30 minutes;
@@ -812,9 +851,15 @@ Additional working requirements from business discovery:
 - any authorised operator may mark an item sold out, while reactivation requires Jaime or the responsible shift lead;
 - delivered orders leave the primary view but remain available in shift history;
 - customer name and pickup time have greater visual prominence than the order identifier;
+- telephone numbers remain hidden in operational queues;
+- an explicit `Contact customer` action reveals the telephone number only when operationally needed;
+- the same telephone-visibility rule applies to tablet and mobile backup;
+- previous incidents appear as a minimal summary, with detail available only when operationally necessary;
 - no essential action or information may depend on hover.
 
 The digital panel remains the source of truth. A ticket printer is a conditional fallback only if real tests show that tablet and mobile alerts are insufficient. If introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
+
+At shift end, the responsible operator must close the operational session. A responsibility change during service records who hands over and who assumes the shift-lead function.
 
 ---
 
@@ -1153,6 +1198,7 @@ SMS policy for the first operational MVP:
 - acceptance: show on the web/tracking page, without an additional SMS;
 - ready: send SMS;
 - rejected or cancelled by staff: send SMS with the outcome and contact guidance;
+- SMS content is minimised to Dopis identification, general status, and private tracking link rather than full order detail;
 - every material estimate change appears in tracking;
 - staff decide whether each additional material change also requires an SMS;
 - an agreed pickup extension updates tracking without necessarily sending another SMS.
@@ -1161,36 +1207,109 @@ SMS policy for the first operational MVP:
 
 ## 11. Privacy and customer data baseline
 
-The first MVP should separate operational order data from future marketing and loyalty data.
+The first MVP separates operational order data from future marketing, loyalty, or customer-account data.
 
-### Operational order purpose
+### 11.1 Operational purpose and notice
 
-Candidate minimum data:
+Before requesting name and telephone number, the interface explains briefly that the data are used to:
+
+- manage and fulfil the order;
+- communicate status changes or operational incidents;
+- locate the current order when the customer contacts Dopis.
+
+Candidate operational data:
 
 - name;
 - telephone number;
 - ordered products;
 - pickup information;
 - timestamps;
-- operational status.
+- operational status;
+- relevant incident and correction events.
 
-### Marketing and loyalty purpose
+Providing a telephone number for an order does not automatically create:
 
-Future uses such as offers, birthday rewards, loyalty points, or customer profiling require separate business and privacy decisions. The system must not silently treat an operational telephone number as marketing permission.
+- a customer account;
+- a commercial profile;
+- marketing consent.
 
-### Technical baseline
+### 11.2 Marketing and loyalty separation
 
-- collect only fields required for the current purpose;
-- clearly explain why the data is collected;
-- define retention and deletion rules before production;
-- protect the kitchen panel and administration endpoints;
-- avoid storing sensitive payment-card data directly;
-- keep marketing consent separate from order submission;
-- support later anonymisation or deletion workflows;
-- obtain legal review before public production use.
+Any future commercial consent must be:
+
+- separate from checkout;
+- optional;
+- explicit;
+- unchecked by default;
+- revocable through a defined process.
+
+Operational telephone numbers must not be silently reused for promotions.
+
+### 11.3 Staff access and disclosure
+
+Operational access follows least-necessary visibility:
+
+- telephone numbers remain hidden in kitchen queues;
+- an explicit `Contact customer` action reveals the number when needed;
+- tablet and mobile backup follow the same rule;
+- staff may search by telephone when a customer calls;
+- before disclosing information, staff also confirm the customer name or order identifier;
+- telephone support initially discloses only order status and estimated pickup time;
+- shift staff see the current order and relevant incident summary;
+- complete commercial history is not exposed by default.
+
+Access events and administrative changes should be auditable where proportionate.
+
+### 11.4 Personal-data requests
+
+Requests to access, correct, or delete personal data are referred to Jaime through a documented procedure.
+
+Kitchen staff do not resolve these requests during active service.
+
+Where removal is appropriate, the accepted direction is to delete or anonymise identifying data while preserving only business, accounting, or operational records that may legitimately remain.
+
+The procedure, identity-verification method, response ownership, and legal retention exceptions must be defined before production.
+
+### 11.5 Retention and anonymisation
+
+Concrete retention periods remain open for:
+
+- identified orders;
+- telephone numbers;
+- operational incidents;
+- payment and cash-close records;
+- audit and correction events;
+- SMS delivery records.
+
+The provisional 90-day incident-risk window is not itself a retention policy.
+
+Metrics should use anonymised or aggregated data where identifiable records are no longer required.
+
+### 11.6 Communication minimisation
+
+SMS messages contain only:
+
+- Dopis identification;
+- general order status;
+- private tracking link.
+
+They do not include the complete order detail.
+
+### 11.7 Technical baseline
+
+- collect only data required for a defined purpose;
+- display the operational-purpose notice before collection;
+- protect kitchen and administration endpoints;
+- enforce role and session boundaries;
+- close responsible sessions at shift end;
+- separate operational data from future marketing consent;
+- avoid direct storage of payment-card data;
+- support correction, anonymisation, and deletion workflows;
+- retain auditability for material corrections;
+- define account deactivation when staff leave;
+- obtain legal and privacy review before public production.
 
 This section is a design baseline, not legal advice.
-
 ---
 
 ## 12. Analytics and business value
@@ -1217,7 +1336,13 @@ Candidate MVP metrics:
 - payment method actually collected;
 - payment failures and corrections;
 - non-payment incidents;
-- stock differences attributable to unregistered telephone or in-person sales.
+- stock differences attributable to unregistered telephone or in-person sales;
+- payment-method corrections;
+- mistaken paid-state reversals;
+- handover corrections;
+- expected-versus-actual cash difference;
+- unresolved open orders at shift close;
+- personal-data requests by type and resolution status, without exposing request content in routine analytics.
 
 Future business capabilities:
 
@@ -1354,6 +1479,13 @@ Online orders open only after staff complete the readiness checklist and explici
 | In-person telephone collection is excessive | Slower service and unnecessary personal-data collection | Validate necessity with Jaime and minimise data where operationally possible |
 | Payment and handover are collapsed into one action | Unpaid orders may be released or audit becomes unclear | Keep paid and handed-over events separate |
 | Payment method or delivery is corrected without traceability | Cash and order history become unreliable | Restrict correction authority and retain audit events |
+| Cash discrepancy is not reviewed at shift close | Repeated accounting errors remain unexplained | Compare expected and actual cash and require responsible confirmation |
+| Telephone numbers are visible throughout kitchen operations | Unnecessary personal-data exposure | Hide by default and reveal only through `Contact customer` |
+| Caller is identified only by telephone number | Order information may be disclosed to the wrong person | Also verify customer name or order identifier |
+| Operational telephone data is reused for marketing | Invalid consent and loss of trust | Separate optional explicit consent, unchecked by default |
+| Incident summaries expose excessive history | Staff see more personal context than needed | Default to minimal relevant summary and controlled detail access |
+| Data requests are handled informally during service | Incorrect disclosure, deletion, or missed request | Route to Jaime through a documented process |
+| Staff sessions remain active after shifts or employment | Unauthorised later access | Shift-end sign-out, responsibility handover, and account deactivation |
 | Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
 | Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
 | Shared ingredient depletion disables too many products | Unnecessary lost sales | Model configuration-level dependency rather than blanket product shutdown |
@@ -1508,10 +1640,9 @@ Still open:
 - who normally enters telephone and in-person orders;
 - whether every in-person order genuinely requires a telephone number;
 - when a responsible operator may override calculated capacity;
-- whether a receipt or payment proof is required;
-- who may correct a recorded payment method;
-- who may reverse or correct payment and handover events;
-- how cash differences are reconciled at shift close;
+- exact receipt issue and retention practice;
+- detailed permissions for payment and handover corrections beyond the accepted baseline;
+- how cash discrepancies are investigated and when escalation is required;
 - whether any exceptional unpaid handover is allowed and who authorises it;
 - how an erroneous handover is corrected;
 - which channel metrics Jaime needs to evaluate whether the web reduces calls;
@@ -1526,8 +1657,13 @@ Still open:
 - Which future marketing channel is preferred?
 - What constitutes explicit loyalty enrolment?
 - Is a birthday benefit important enough to collect birth information?
-- How long should operational order data be retained?
-- Who responds to deletion or access requests?
+- How long should identified orders, telephone numbers, incidents, payment records, and audit events be retained?
+- What exact procedure and identity checks will Jaime use for access, correction, or deletion requests?
+- Which accounting or legal records must remain identifiable?
+- Which data can be anonymised while preserving useful metrics?
+- Which staff roles receive administration access?
+- How are staff accounts revoked or disabled when employment ends?
+- How is the tablet physically protected outside service hours?
 - Which operational incidents may affect manual review?
 - How long should incident data be retained beyond the provisional 90-day risk window?
 - How are incorrect incidents corrected and communicated?
@@ -1546,7 +1682,9 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-CATALOG-APPROVAL`: authorised approvers, supplier-change review, and publication gates;
 - `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, carry-over, perishables, replenishment, adjustment reasons, and physical-sales reconciliation;
 - `JV-MANUAL-ORDERS`: telephone and in-person entry, required customer data, manual capacity overrides, and channel workflow;
-- `JV-PAYMENT`: cash/card operation, receipts, corrections, non-payment, handover, and cash-close procedure;
+- `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
+- `JV-PRIVACY`: operational notice, retention, anonymisation, data requests, staff visibility, and lawful record preservation;
+- `JV-ACCESS`: administrative permissions, shift responsibility, session closure, physical tablet protection, and staff-account deactivation;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -1601,7 +1739,8 @@ Remaining:
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
 - validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
-- validate manual order-entry roles, in-person telephone collection, payment correction, handover, receipts, and cash-close procedures;
+- validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
+- define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation with Jaime and legal review;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
@@ -1748,6 +1887,20 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.12 — 2026-07-25
+
+- Reconciled `BD-DELTA-008` against canonical version 0.11.
+- Confirmed optional receipt issuance and the common cash-discrepancy cause of card payments recorded as cash.
+- Added auditable payment-method correction, responsible reversal of mistaken paid states, and reversible mistaken handover.
+- Added expected-versus-actual cash reconciliation and responsible shift-close confirmation.
+- Added an operational-purpose notice before collecting name and telephone number.
+- Explicitly separated order contact data from customer accounts, commercial profiling, and future marketing consent.
+- Added hidden-by-default telephone access through `Contact customer`, caller verification, and minimal operational-history visibility.
+- Added a defined escalation path to Jaime for personal-data access, correction, and deletion requests.
+- Added anonymisation direction, retention questions, minimal SMS content, shift-end sign-out, and responsibility handover.
+- Added privacy, cash-control, session, and disclosure risks plus `JV-PRIVACY` and `JV-ACCESS` validation gates.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.11 — 2026-07-25
 
