@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.7
+**Version:** 0.8
 **Date:** 2026-07-24
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -112,6 +112,10 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Music is normally played during service, so ambient noise may make a standard tablet alert difficult to hear.
 - In the kitchen panel, customer name and pickup time are operationally more important than the public order identifier.
 - The current visual direction of the kitchen panel is considered a suitable starting point.
+- Vegan mozzarella has a materially higher ingredient cost than conventional mozzarella.
+- Gluten-free dough arrives sealed on an aluminium base.
+- Gluten-free pizzas share the oven, workspace, and kitchen utensils used for other pizzas.
+- The current kitchen process therefore has a real cross-contact risk that must be communicated accurately.
 
 ### 3.2 Provisional
 
@@ -166,6 +170,17 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - A failure to deliver the initial tracking SMS routes the order to manual review rather than automatic rejection.
 - A material pickup-estimate change updates the private tracking page and sends an SMS; an agreed pickup extension updates the tracking page without requiring another SMS.
 - The initial operational fallback uses a tablet plus a limited mobile backup. A ticket printer remains conditional on real operational testing.
+- Scheduled orders enter the active queue according to calculated workload and available capacity; the first warning appears at the recommended preparation-start time.
+- Staff may revise an estimate more than once. Every material revision appears on the private tracking page, while additional SMS messages are decided case by case.
+- For an important delay, the customer may reject the revised pickup time through tracking within an initial ten-minute response window. Silence does not count as acceptance and routes the order to manual review.
+- A delay attributable to Dopis is recorded as a local operational incident and must not worsen the customer's incident history.
+- Compensation is not yet confirmed for the MVP. Any rules for authorisation, limits, or future-use codes are conditional on Jaime approving compensation as an MVP capability.
+- Removing ingredients does not reduce the displayed pizza price as the current working rule.
+- Each paid extra may define its own maximum quantity.
+- A short kitchen note is permitted, but configured modifiers remain the primary mechanism and notes must not become an unrestricted modification channel.
+- If one option becomes unavailable, disable only that option when the product can still be configured validly.
+- Dietary and allergen consequences of substitutions or unavailability must be shown clearly.
+- Until wording and procedures are validated with Jaime, the site must not claim that gluten-free dough is suitable for coeliac customers or severe allergies.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -604,6 +619,41 @@ Delay handling distinguishes a warning from a serious delay. A serious delay pro
 
 Cancelled orders and unresolved incidents remain visible until staff select `Incident reviewed`.
 
+### 7.7 Customer response to an important delay
+
+For an important revised pickup estimate:
+
+1. the revised time appears on the private tracking page;
+2. the customer may reject it through a narrowly scoped tracking action;
+3. the initial response window is ten minutes;
+4. silence does not count as acceptance;
+5. no response routes the order to manual review;
+6. rejection places the order in `Requires attention`.
+
+Resolution depends on preparation state:
+
+- before preparation: staff may cancel or offer another feasible pickup time;
+- after preparation begins: staff contact the customer before resolving the order;
+- the customer may still reject the delay;
+- the final resolution and any operational loss are recorded.
+
+A cancellation caused by Dopis failing to meet its commitment is a local operational incident, not a customer incident. If preparation has not started, that cancellation does not create a prepared-product operational loss.
+
+### 7.8 Conditional compensation direction
+
+Compensation is not currently an accepted MVP capability.
+
+If Jaime promotes it into the MVP, the current conditional direction is:
+
+- only Jaime or the responsible shift lead may authorise it;
+- a configurable maximum applies;
+- only one compensation may be applied to one order;
+- future-order compensation may use a code delivered by SMS;
+- incidents are resolved only after staff record the agreed or applied solution;
+- compensation must not be emitted automatically from delay duration alone.
+
+Exact types, values, expiry, revocation, redemption, and retained evidence remain pending.
+
 ---
 
 ## 8. Kitchen tablet requirements
@@ -766,11 +816,36 @@ Suggested modifier-group fields:
 
 Half-and-half pizzas are excluded initially.
 
+Additional working rules:
+
+- ingredient removal does not reduce price unless Jaime later defines an explicit exception;
+- substitutions are configured per product rather than inferred from free text;
+- each extra may have an independent maximum quantity;
+- a short kitchen note is allowed only for constrained, previously accepted exceptions;
+- unavailable options are removed individually when a valid product configuration remains;
+- vegan mozzarella and other higher-cost substitutions may require their own price delta, pending Jaime's validation.
+
 ### 10.3 Allergen and dietary information
 
 The catalog must be able to store ingredients, regulated allergen information, dietary labels, and a cross-contact notice. A generic waiver must not be treated as a substitute for accurate product information and validated kitchen procedures.
 
 The exact customer-facing wording for gluten-free dough and cross-contact risk must be reviewed before production.
+
+Current verified operating facts are that the dough arrives sealed on an aluminium base but shares the oven, workspace, and utensils with products containing gluten. The customer interface must therefore:
+
+- disclose cross-contact risk clearly;
+- avoid claiming suitability for coeliac customers or severe allergies before validation;
+- show when a substitution changes allergens or vegan/vegetarian characteristics;
+- disable the option when staff cannot follow the validated operating procedure.
+
+Whether the customer must explicitly acknowledge the warning before adding gluten-free dough remains open.
+
+Public launch is blocked until Jaime validates:
+
+- the supplier information;
+- the actual preparation procedure;
+- the complete allergen matrix;
+- the exact customer-facing wording.
 
 ---
 
@@ -822,14 +897,22 @@ Confirmed practical security model:
 8. Sequential public order codes alone never authorise access.
 9. The tracking session can be revoked when necessary and expires after a configurable retention period.
 
-The status page is read-only for the normal order lifecycle. One narrowly scoped action may later be enabled to accept or decline a staff-proposed alternative pickup slot. Customer self-service cancellation remains deferred.
+The status page is read-only for the normal order lifecycle, except for narrowly scoped responses to:
+
+- accept or decline a staff-proposed alternative pickup slot;
+- reject an important revised pickup estimate.
+
+These actions do not give the customer general order-editing or self-service cancellation authority.
 
 SMS policy for the first operational MVP:
 
 - submission: send the secure tracking-access link;
 - acceptance: show on the web/tracking page, without an additional SMS;
 - ready: send SMS;
-- rejected or cancelled by staff: send SMS with the outcome and contact guidance.
+- rejected or cancelled by staff: send SMS with the outcome and contact guidance;
+- every material estimate change appears in tracking;
+- staff decide whether each additional material change also requires an SMS;
+- an agreed pickup extension updates tracking without necessarily sending another SMS.
 
 ---
 
@@ -1015,6 +1098,10 @@ Online orders open only after staff complete the readiness checklist and explici
 | Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
 | Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
+| Gluten-free messaging overstates safety | Health risk and misleading customer communication | Validated allergen matrix, cross-contact warning, no coeliac or severe-allergy suitability claim before approval |
+| Free-text notes bypass configured modifiers | Ambiguous or unsafe kitchen requests | Short constrained notes only; configured modifiers remain authoritative |
+| Delay-response workflow creates an unattended queue | Customer request remains unresolved | Ten-minute response window, manual-review routing, visible `Requires attention` queue |
+| Compensation is implemented before business approval | Scope expansion and inconsistent commercial treatment | Keep compensation conditional until Jaime validates inclusion, limits, and policy |
 | Customer receives premature confirmation | Kitchen may be unable to fulfil | Separate received and accepted states |
 | Future payment support forces redesign | Rework and payment inconsistencies | Model payment method/status now, integrate provider later |
 | Excessive customer data is collected | Privacy and security risk | Separate operational, loyalty, and marketing purposes |
@@ -1051,6 +1138,12 @@ Still open:
 - whether the provisional two-incidents-in-90-days rule is operationally appropriate;
 - the full retention period and correction process for operational incidents;
 - the exact grace-period and pickup-extension settings after validation with Jaime.
+- the exact threshold for an important delay and a material estimate revision;
+- whether the initial ten-minute customer delay-response window is operationally appropriate;
+- whether and when repeated estimate changes require additional SMS messages;
+- the final resolution policy when the customer rejects a delay after preparation has started;
+- whether compensation belongs in the MVP at all;
+- if promoted, compensation types, limits, expiry, revocation, redemption, and evidence requirements.
 
 ### Tablet and notifications
 
@@ -1105,7 +1198,17 @@ Still open:
 - whether any pizza has a daily product-specific limit;
 - who records stock deliveries, corrections, and waste;
 - whether modifiers require independent stock;
-- whether image upload belongs in the first admin interface.
+- whether image upload belongs in the first admin interface;
+- whether removing ingredients always preserves price;
+- the permitted substitution matrix by pizza;
+- free versus paid substitutions and the price delta for vegan mozzarella;
+- maximum quantity for each extra;
+- permitted kitchen-note exceptions;
+- supplier information for gluten-free dough;
+- exact gluten cross-contact wording and whether explicit acknowledgement is required;
+- the complete allergen matrix for products and modifiers;
+- how substitutions change allergen and vegan/vegetarian labelling;
+- when staff must disable gluten-free dough because the validated procedure cannot be followed.
 
 ### Customers and privacy
 
@@ -1120,6 +1223,20 @@ Still open:
 - How long should incident data be retained beyond the provisional 90-day risk window?
 - How are incorrect incidents corrected and communicated?
 - How should invalid telephone numbers be treated without unfairly penalising customers?
+
+### Pending external validation — Jaime
+
+The detailed validation register will be created as a structured artifact for the stakeholder-validation workflow. Until then, the canonical discovery tracks these current validation gates:
+
+- `JV-CAPACITY`: production points, capacity templates, and preparation timing;
+- `JV-DELAYS`: serious-delay thresholds, customer-contact rules, and delay-response timing;
+- `JV-COMPENSATION`: whether compensation belongs in the MVP and, if so, its permitted types and limits;
+- `JV-MODIFIERS`: allowed removals, substitutions, extras, limits, and pricing;
+- `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and online offer policy;
+- `JV-ALLERGENS`: complete product and modifier allergen information;
+- `JV-STAFF`: operational responsibility and shift-lead authority.
+
+These references are validation gates, not replacements for the future structured register.
 
 ### Business outcomes
 
@@ -1171,12 +1288,12 @@ Remaining:
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
-- close modifier and allergen details;
+- close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
-- define SMS abstraction and retry behaviour;
+- define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
 - define incident retention, correction, and fairness controls;
-- define exact MVP catalog administration;
+- decide whether compensation belongs in the MVP and define exact MVP catalog administration;
 - freeze the operational MVP;
 - create architecture decision records;
 - define API and database contracts.
@@ -1316,6 +1433,19 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.8 — 2026-07-24
+
+- Reconciled `BD-DELTA-003` and `BD-DELTA-004` against canonical version 0.7.
+- Added dynamic activation of scheduled orders and repeated estimate revision with tracking-page updates.
+- Added a ten-minute customer response path for rejecting an important delay, with manual-review and `Requires attention` routing.
+- Distinguished Dopis-caused delay incidents from customer incidents and preserved preparation-state-dependent resolution.
+- Kept compensation outside the confirmed MVP while recording conditional authority and limit rules pending Jaime's validation.
+- Added modifier boundaries for removals, substitutions, per-extra limits, constrained kitchen notes, and option-level unavailability.
+- Recorded the actual gluten-free dough handling facts and the resulting cross-contact risk.
+- Added a launch gate preventing claims of suitability for coeliac customers or severe allergies before supplier, process, allergen, and wording validation.
+- Added concise `JV-*` external-validation gates in preparation for the future structured stakeholder-validation register.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.7 — 2026-07-24
 
