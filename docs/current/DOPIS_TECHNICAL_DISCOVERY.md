@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.13
+**Version:** 0.14
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -120,6 +120,8 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Dopis asks whether the customer wants a receipt rather than issuing one automatically to every customer.
 - Cash discrepancies frequently result from card payments being recorded incorrectly as cash.
 - Dopis does not currently have a reliable baseline for comparing telephone, in-person, and web orders.
+- The current frontend already contains upselling elements.
+- Upselling is part of MVP discovery and must not be treated as validated only because it is visually present in the current frontend.
 
 ### 3.2 Provisional
 
@@ -241,6 +243,31 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - The pilot pauses for critical failures such as missing or materially late accepted orders, repeatedly unattended alerts, or incorrect allergen information.
 - An isolated manageable delay does not by itself require pausing the pilot.
 - At pilot completion, data, incidents, staff workload, and operation are reviewed before selecting the next capability.
+- Jaime can create, edit, deactivate, reorder, reprice, and manage availability or stock for products.
+- Ingredient, allergen, dietary, and other safety-sensitive catalog changes remain restricted to Jaime or an explicitly authorised responsible person.
+- Jaime receives a weekly pilot summary covering channel volume, peak periods, incidents, delays, channel-specific average order value, best-selling products, and frequent combinations.
+- On-time performance is measured through delayed-order count, percentage prepared within the promised window, and average delay.
+- Operational burden combines opening time, closing time, correction count, and Jaime's assessment.
+- Product-margin reporting remains outside the MVP until cost data are sufficiently validated.
+- Initial SMS scope includes private tracking access, ready notification, rejection, and cancellation.
+- A ticket printer is outside the initial scope and is reconsidered only if tablet and mobile backup prove insufficient during operational testing.
+- Until Jaime validates a compensation policy, staff may record the agreed resolution inside the incident without coupons, codes, automated rules, or promised future benefits.
+- Initial public content is available in Spanish and Catalan.
+- The first visit uses the browser language when supported, with a visible language selector and Spanish as fallback.
+- A product cannot be published until its required Spanish and Catalan texts are complete and reviewed.
+- Automatic translations are not published without human review.
+- Jaime or an authorised responsible person validates product names and descriptions.
+- Pizzas require a brief composition description; clearly named packaged drinks and desserts may use only the product name.
+- Product photographs are recommended but optional. Products without photographs render without an empty image placeholder.
+- Initial menu categories are pizzas, drinks, and desserts.
+- Jaime manually controls product order.
+- Temporary or special pizzas may have start and end dates.
+- Jaime may manually feature one or more products.
+- Sold-out products remain visible but cannot be added.
+- Jaime may hide a product for one service only.
+- Featured products appear first within a category; remaining products retain Jaime's manual order.
+- Initial discovery may close when the complete operating flow is defined and remaining material questions depend mainly on Jaime validation.
+- Online payment, loyalty, advanced marketing, and advanced analytics are not required to close first-MVP discovery.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -426,12 +453,18 @@ A future capability should be anticipated through stable boundaries and extensib
 Suggested fields:
 
 - `id`
-- `name`
-- `description`
+- `name_es`
+- `name_ca`
+- `description_es`
+- `description_ca`
 - `category_id`
 - `price`
 - `is_active`
 - `is_available`
+- `is_featured`
+- `available_from`
+- `available_until`
+- `hidden_service_date`
 - `stock_mode`
 - `stock_quantity`
 - `production_points`
@@ -810,16 +843,17 @@ A cancellation caused by Dopis failing to meet its commitment is a local operati
 
 Compensation is not currently an accepted MVP capability.
 
-If Jaime promotes it into the MVP, the current conditional direction is:
+Until Jaime validates a formal policy, staff may record the resolution actually agreed with the customer inside the incident.
 
-- only Jaime or the responsible shift lead may authorise it;
-- a configurable maximum applies;
-- only one compensation may be applied to one order;
-- future-order compensation may use a code delivered by SMS;
-- incidents are resolved only after staff record the agreed or applied solution;
-- compensation must not be emitted automatically from delay duration alone.
+The MVP must not assume:
 
-Exact types, values, expiry, revocation, redemption, and retained evidence remain pending.
+- coupon codes;
+- discount codes;
+- automatic compensation rules;
+- future credits;
+- loyalty benefits.
+
+If Jaime later validates compensation as an MVP capability, structured authorisation, type, value, responsibility, expiry, and fulfilment rules may be added.
 
 ---
 
@@ -872,7 +906,7 @@ Additional working requirements from business discovery:
 - previous incidents appear as a minimal summary, with detail available only when operationally necessary;
 - no essential action or information may depend on hover.
 
-The digital panel remains the source of truth. A ticket printer is a conditional fallback only if real tests show that tablet and mobile alerts are insufficient. If introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
+The digital panel remains the source of truth. A ticket printer is outside the initial MVP scope and is reconsidered only if operational tests show that tablet and mobile alerts are insufficient. If later introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
 
 At shift end, the responsible operator must close the operational session. A responsibility change during service records who hands over and who assumes the shift-lead function.
 
@@ -1030,10 +1064,14 @@ Provide protected catalog CRUD for:
 
 - categories;
 - products;
-- descriptions;
+- Spanish and Catalan names and descriptions;
 - prices;
 - active/inactive state;
 - available/sold-out state;
+- featured-product selection;
+- temporary start and end dates;
+- service-specific hiding;
+- optional image references;
 - unit stock where applicable;
 - daily limits and approximate critical-option uses where applicable;
 - pickup-window-specific availability;
@@ -1045,19 +1083,23 @@ Historical records must be preserved through order-item snapshots and soft delet
 
 Availability permissions are intentionally asymmetric: authorised staff may disable an item quickly, while reactivation requires Jaime or the responsible shift lead. Stock and availability changes retain operator, timestamp, and reason.
 
+Jaime may manage ordinary commercial catalog data. Ingredient, allergen, dietary, and other safety-sensitive changes require Jaime or another explicitly authorised responsible person.
+
 Image upload may be deferred if it materially expands storage and deployment scope; an image path or URL field can be retained.
 
 ### 10.1A Catalog publication and approval
 
 A product may be published for online sale only when these minimum data are complete:
 
+- Spanish and Catalan product name;
+- required Spanish and Catalan description;
 - ingredients;
 - regulated allergens and known traces;
 - price;
 - availability;
 - applicable dietary labels.
 
-Jaime or another explicitly authorised responsible person provides final approval for new or materially changed products.
+Jaime or another explicitly authorised responsible person provides final approval for new or materially changed products, including product names and descriptions in both launch languages.
 
 Change rules:
 
@@ -1068,6 +1110,42 @@ Change rules:
 - material changes to ingredients, allergens, availability, and price retain who-and-when traceability.
 
 A product with incomplete or unverifiable allergen information must not be sold online at public launch.
+
+### 10.1B Multilingual content and menu presentation
+
+Initial public languages:
+
+- Spanish;
+- Catalan.
+
+Language behaviour:
+
+- use the browser language on first visit when supported;
+- expose a visible language selector;
+- fall back to Spanish;
+- do not publish automatic translations without human review.
+
+Content requirements:
+
+- pizzas need a short composition description;
+- clearly named packaged drinks and desserts may omit a separate description;
+- photographs are recommended but optional;
+- missing photographs do not reserve an empty visual area;
+- names and descriptions require approval from Jaime or an authorised responsible person.
+
+Initial categories:
+
+- pizzas;
+- drinks;
+- desserts.
+
+Within each category:
+
+- active featured products appear first;
+- remaining products follow Jaime's manual order;
+- sold-out products stay visible and cannot be added;
+- temporary products respect configured start and end dates;
+- a product may be hidden for one specific service without permanent deactivation.
 
 ### 10.2 Modifier model
 
@@ -1367,6 +1445,16 @@ Exact days, time bands, observer ownership, and acceptable recording burden requ
 
 ### 12.3 Four-week pilot scorecard
 
+Jaime receives a weekly summary containing:
+
+- orders by channel;
+- peak periods;
+- incidents;
+- delays;
+- average order value separately for web, telephone, and in-person orders;
+- best-selling products;
+- frequent product combinations.
+
 Evaluate the pilot after four complete weeks, paying special attention to Friday, Saturday, and Sunday.
 
 Required success dimensions:
@@ -1382,10 +1470,22 @@ Required success dimensions:
 
 3. **Operational value**
    - Jaime considers the system clearly more useful than handling all orders by telephone;
-   - opening and closing workload is measured rather than assumed;
+   - opening time, closing time, and correction count are measured;
+   - Jaime's qualitative assessment is recorded;
    - incidents and manual interventions remain reviewable.
 
-4. **Controlled progression**
+4. **On-time performance**
+   - delayed-order count;
+   - percentage prepared within the promised pickup window;
+   - average delay.
+
+5. **Commercial observation**
+   - channel-specific average order value;
+   - best-selling products;
+   - frequent combinations;
+   - upselling exposure and response where rules are validated.
+
+6. **Controlled progression**
    - the next capability is selected only after reviewing data, incidents, workload, and staff experience.
 
 Thresholds for sufficient adoption and call reduction remain pending the real baseline and Jaime's validation.
@@ -1458,6 +1558,26 @@ Additional candidate MVP metrics:
 - pilot pause events and causes;
 - accepted orders not received on time by the kitchen;
 - personal-data requests by type and resolution status, without exposing request content in routine analytics.
+
+Product-margin reporting is explicitly deferred until Dopis has validated product-cost data.
+
+### 12.7 MVP upselling discovery
+
+The current frontend contains upselling elements, but visual presence is not business validation.
+
+Before treating upselling as an accepted MVP capability, validate:
+
+- eligible recommended products;
+- recommendation placement in the order flow;
+- manual versus automatic rule ownership;
+- whether recommendations use normal price only or may include discounts;
+- maximum number of recommendations;
+- stock and availability enforcement;
+- allergen and dietary compatibility;
+- capacity impact where applicable;
+- measurement of added value without reducing checkout conversion.
+
+No automatic recommendation engine or discount logic is accepted yet.
 
 Future business capabilities:
 
@@ -1606,6 +1726,12 @@ Online orders open only after staff complete the readiness checklist and explici
 | Pilot expands too quickly | Peak-service failures are harder to isolate | Start with a one-hour lower-pressure session and informed regular customers |
 | Opening and closing workload is assumed rather than measured | Staff burden may make the system unsustainable | Measure during the four-week pilot before fixing limits |
 | A single manageable delay triggers unnecessary shutdown | Pilot evidence is interrupted by normal variation | Distinguish isolated manageable delay from critical repeated failure |
+| One launch language is incomplete or unreviewed | Customers receive inconsistent or misleading content | Block publication until Spanish and Catalan text is complete and approved |
+| Automatic translation is published without review | Incorrect product or allergen communication | Require human validation before publication |
+| Temporary or service-hidden product remains orderable | Customer orders an unavailable commercial offer | Enforce date and service visibility at add-to-cart and confirmation |
+| Featured products bypass stock or safety constraints | Commercial presentation overrides operational rules | Apply stock, availability, allergen, and publication gates before ranking |
+| Upselling is assumed from the current UI | Unvalidated recommendations add friction or operational risk | Validate rules, placement, constraints, and metrics before acceptance |
+| Product-margin reporting uses unvalidated costs | Misleading profitability decisions | Defer margin calculation until cost data are reliable |
 | Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
 | Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
 | Shared ingredient depletion disables too many products | Unnecessary lost sales | Model configuration-level dependency rather than blanket product shutdown |
@@ -1755,6 +1881,18 @@ Still open:
 - low-stock thresholds and warning behaviour by product;
 - how manual, telephone, and in-person orders are entered during peak service.
 
+### Catalog content and presentation
+
+- who besides Jaime may administer ordinary products and content;
+- final Spanish and Catalan names and descriptions;
+- initial category and product order;
+- launch featured products;
+- first temporary products and active dates;
+- available launch photography;
+- whether ticket-printer reliability is required after rehearsal;
+- formal compensation policy;
+- cost data required for future margin reporting.
+
 ### Manual channels, payment, and handover
 
 - who normally enters telephone and in-person orders;
@@ -1805,7 +1943,10 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
 - `JV-PRIVACY`: operational notice, retention, anonymisation, data requests, staff visibility, and lawful record preservation;
 - `JV-ACCESS`: administrative permissions, shift responsibility, session closure, physical tablet protection, and staff-account deactivation;
-- `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
+- `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, weekly reporting, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
+- `JV-CONTENT`: authorised editors, Spanish and Catalan copy, category order, featured and temporary products, and launch photography;
+- `JV-UPSELL`: eligible products, placement, ownership, pricing, recommendation count, operational constraints, and success measurement;
+- `JV-DISCOVERY-CLOSE`: remaining material Jaime validations and explicit first-MVP exclusions;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -1837,9 +1978,17 @@ Still open:
 - exact rollback criteria from automatic acceptance;
 - conditions for expanding the pilot to the full service schedule;
 - acceptable opening and closing workload;
-- which capabilities remain explicitly outside the operational MVP;
-- which products have the best margin;
-- which combinations should become later packs.
+- exact set of material Jaime validations required before initial discovery closure;
+- exact boundary of capabilities remaining outside the operational MVP;
+- which products may be recommended through upselling;
+- where recommendations appear in the order flow;
+- whether upselling is manually configured or automatically calculated;
+- whether recommendations may include discounts;
+- maximum recommendation count;
+- how recommendations preserve stock, availability, allergen, dietary, and capacity rules;
+- how upselling value and checkout-conversion impact are measured;
+- which combinations should become later packs;
+- future product-margin requirements after cost validation.
 
 ### Technical reference project
 
@@ -1885,8 +2034,10 @@ Remaining:
 - validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
 - validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
 - define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation with Jaime and legal review;
-- validate the two-week baseline, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
-- validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
+- validate the two-week baseline, weekly report, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
+- validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, and upselling rules;
+- confirm the material gates required to close initial discovery and the explicit first-MVP exclusions;
+- validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
@@ -1922,6 +2073,9 @@ After explicit implementation authority:
 - initial manual-review operation;
 - validated promotion and rollback criteria for automatic acceptance;
 - four-week pilot measurement and review;
+- weekly pilot reporting;
+- bilingual content readiness;
+- validated menu presentation and bounded upselling configuration;
 - production hosting;
 - domain and TLS;
 - backups and restoration tests;
@@ -2037,7 +2191,45 @@ These sources inform the discovery model; Dopis business rules still require val
 
 ---
 
+## 18A. Initial discovery closure criteria
+
+Initial discovery may close when:
+
+- the complete customer and staff operating flow is defined;
+- stock, capacity, payment, handover, privacy, catalog, and pilot boundaries are coherent;
+- remaining material decisions depend mainly on external validation with Jaime;
+- each remaining validation item is explicitly recorded;
+- unresolved implementation details do not imply implementation authority.
+
+The following are not required to close first-MVP discovery:
+
+- online payment;
+- loyalty;
+- advanced marketing;
+- advanced analytics;
+- validated product-margin reporting;
+- automatic recommendation engines.
+
+Upselling remains inside discovery only to define its bounded MVP rules and validation needs.
+
+---
+
 ## 19. Change log
+
+### 0.14 — 2026-07-25
+
+- Reconciled `BD-DELTA-010` against canonical version 0.13.
+- Confirmed that current frontend upselling elements are not themselves validated business requirements.
+- Expanded Jaime's catalog administration while preserving restricted authority for safety-sensitive data.
+- Added weekly pilot reporting, on-time performance metrics, operational workload measures, and explicit deferral of margin reporting.
+- Kept the ticket printer outside initial scope and bounded the first SMS use cases.
+- Allowed incident-level recording of agreed resolutions without assuming a compensation program.
+- Added Spanish and Catalan launch content, browser-language selection, visible switching, Spanish fallback, and bilingual publication gates.
+- Added category structure, manual ordering, featured products, temporary dates, service-specific hiding, sold-out visibility, and optional photography.
+- Added bounded upselling discovery, constraints, risks, open questions, and the `JV-UPSELL` validation gate.
+- Added explicit initial-discovery closure criteria and first-MVP exclusions.
+- Added `JV-CONTENT` and `JV-DISCOVERY-CLOSE`.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.13 — 2026-07-25
 
