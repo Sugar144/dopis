@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.12
+**Version:** 0.13
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -119,6 +119,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Dopis currently accepts cash and card payments at the premises.
 - Dopis asks whether the customer wants a receipt rather than issuing one automatically to every customer.
 - Cash discrepancies frequently result from card payments being recorded incorrectly as cash.
+- Dopis does not currently have a reliable baseline for comparing telephone, in-person, and web orders.
 
 ### 3.2 Provisional
 
@@ -226,6 +227,20 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Where appropriate, personal identifiers are deleted or anonymised while legitimately retainable business records are preserved.
 - SMS messages contain Dopis identification, a general status, and the private tracking link rather than the complete order detail.
 - The responsible operator signs out at shift end, and responsibility handover records who assumes the operational role.
+- The first-month priority is to reduce order-related telephone calls during peak periods.
+- Adoption is measured through weekly web-order volume and the share of orders shifting from telephone to web.
+- A two-complete-week baseline is recorded before the pilot, covering order counts by channel, time band, and calls used to create or modify orders.
+- The quantitative call-reduction target is set only after the real baseline is known.
+- The pilot is evaluated after four complete weeks, with particular attention to Friday, Saturday, and Sunday.
+- The primary reliability criterion is that no accepted order is lost or reaches the kitchen too late to fulfil reasonably.
+- Jaime's judgement that the system is clearly more useful than handling all orders by telephone is a required success condition.
+- Opening and closing workload is measured during the pilot before setting a permanent acceptable limit.
+- The pilot starts on a lower-pressure Wednesday or Thursday with an approximately one-hour controlled session and a small group of informed regular customers.
+- All web orders begin in `MANUAL_REVIEW`; automatic acceptance is enabled only after hours, capacity, alerts, stock, reception, and order handling have been demonstrated reliable.
+- Before real pilot orders, staff run a complete operational rehearsal covering multiple channels, alerts, delays, sold-out products, connectivity loss, and shift close.
+- The pilot pauses for critical failures such as missing or materially late accepted orders, repeatedly unattended alerts, or incorrect allergen information.
+- An isolated manageable delay does not by itself require pausing the pilot.
+- At pilot completion, data, incidents, staff workload, and operation are reviewed before selecting the next capability.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -1312,14 +1327,113 @@ They do not include the complete order detail.
 This section is a design baseline, not legal advice.
 ---
 
-## 12. Analytics and business value
+## 12. Analytics, baseline, and MVP validation
 
 The first backend should capture reliable operational events without requiring customer accounts.
 
-Candidate MVP metrics:
+### 12.1 Primary MVP outcome
 
-- orders per day;
-- orders by hour;
+The first-month priority is to reduce order-related telephone calls during peak service.
+
+Primary adoption measures:
+
+- web orders per week;
+- absolute order volume by channel;
+- percentage of orders by channel;
+- estimated share of telephone orders shifted to web;
+- order-creation and order-modification calls by time band.
+
+A numeric call-reduction target must not be invented before a reliable baseline exists.
+
+### 12.2 Pre-pilot baseline
+
+Dopis currently lacks a reliable channel baseline.
+
+Before pilot activation, record two complete weeks of:
+
+- order count by `WEB`, `PHONE`, and `IN_PERSON`;
+- time band;
+- calls used to create an order;
+- calls used to modify an order.
+
+The baseline does not require full item-level detail for every historical order.
+
+Compare both:
+
+- absolute volume by channel;
+- percentage distribution by channel.
+
+Exact days, time bands, observer ownership, and acceptable recording burden require Jaime validation.
+
+### 12.3 Four-week pilot scorecard
+
+Evaluate the pilot after four complete weeks, paying special attention to Friday, Saturday, and Sunday.
+
+Required success dimensions:
+
+1. **Reliability**
+   - no accepted order is lost;
+   - no accepted order reaches the kitchen too late to be fulfilled reasonably;
+   - alerts and order reception remain operational.
+
+2. **Adoption**
+   - weekly web-order volume;
+   - movement from telephone ordering toward web ordering.
+
+3. **Operational value**
+   - Jaime considers the system clearly more useful than handling all orders by telephone;
+   - opening and closing workload is measured rather than assumed;
+   - incidents and manual interventions remain reviewable.
+
+4. **Controlled progression**
+   - the next capability is selected only after reviewing data, incidents, workload, and staff experience.
+
+Thresholds for sufficient adoption and call reduction remain pending the real baseline and Jaime's validation.
+
+### 12.4 Controlled pilot rollout
+
+Initial rollout direction:
+
+- start on a Wednesday or Thursday under lower operational pressure;
+- first live segment lasts approximately one hour;
+- begin with a small set of informed regular customers;
+- keep all web orders in `MANUAL_REVIEW`;
+- do not enable `AUTO_ACCEPT` until staff have validated:
+  - operating hours;
+  - capacity;
+  - alerts and acknowledgement;
+  - stock and availability;
+  - order reception;
+  - order handling.
+
+Before accepting real pilot orders, run a complete operational rehearsal including:
+
+- web, telephone, and in-person orders;
+- alerts and acknowledgement;
+- delays and revised estimates;
+- sold-out products and stock conflicts;
+- connection loss and recovery;
+- payment and handover;
+- shift close.
+
+### 12.5 Pilot pause and rollback
+
+Pause the pilot when a critical failure occurs, including:
+
+- an accepted order is missing;
+- an accepted order appears too late for reasonable fulfilment;
+- alerts repeatedly remain unattended;
+- allergen or dietary information is incorrect.
+
+A single manageable delay does not automatically require a pause.
+
+Transition from `MANUAL_REVIEW` to `AUTO_ACCEPT`, rollback from automatic acceptance, and expansion to the full service schedule require explicit validated criteria.
+
+### 12.6 Candidate operational metrics
+
+Additional candidate MVP metrics:
+
+- orders per day and hour;
 - average order value;
 - products sold;
 - category mix;
@@ -1327,7 +1441,6 @@ Candidate MVP metrics:
 - order acceptance time;
 - preparation time;
 - cancellation and rejection counts;
-- repeat orders inferred from a normalised phone number only if legally and operationally justified;
 - product unavailability frequency;
 - upsell conversion for drinks, desserts, or packs;
 - order volume and value by source channel;
@@ -1337,11 +1450,13 @@ Candidate MVP metrics:
 - payment failures and corrections;
 - non-payment incidents;
 - stock differences attributable to unregistered telephone or in-person sales;
-- payment-method corrections;
 - mistaken paid-state reversals;
 - handover corrections;
 - expected-versus-actual cash difference;
 - unresolved open orders at shift close;
+- opening and closing workload;
+- pilot pause events and causes;
+- accepted orders not received on time by the kitchen;
 - personal-data requests by type and resolution status, without exposing request content in routine analytics.
 
 Future business capabilities:
@@ -1357,7 +1472,6 @@ Future business capabilities:
 - cohort and retention analysis.
 
 Metrics should be driven by specific business questions, not collected without purpose.
-
 ---
 
 ## 13. Development and deployment environments
@@ -1486,6 +1600,12 @@ Online orders open only after staff complete the readiness checklist and explici
 | Incident summaries expose excessive history | Staff see more personal context than needed | Default to minimal relevant summary and controlled detail access |
 | Data requests are handled informally during service | Incorrect disclosure, deletion, or missed request | Route to Jaime through a documented process |
 | Staff sessions remain active after shifts or employment | Unauthorised later access | Shift-end sign-out, responsibility handover, and account deactivation |
+| Pilot starts without a reliable baseline | Call-reduction claims cannot be evaluated | Record two complete weeks before activation and set targets afterward |
+| Accepted order is missing or reaches kitchen too late | Revenue loss and broken customer trust | Treat as critical reliability failure and pause the pilot |
+| Automatic acceptance is enabled before operations are proven | Orders may bypass unresolved capacity, stock, or alert failures | Begin in manual review and require explicit promotion criteria |
+| Pilot expands too quickly | Peak-service failures are harder to isolate | Start with a one-hour lower-pressure session and informed regular customers |
+| Opening and closing workload is assumed rather than measured | Staff burden may make the system unsustainable | Measure during the four-week pilot before fixing limits |
+| A single manageable delay triggers unnecessary shutdown | Pilot evidence is interrupted by normal variation | Distinguish isolated manageable delay from critical repeated failure |
 | Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
 | Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
 | Shared ingredient depletion disables too many products | Unnecessary lost sales | Model configuration-level dependency rather than blanket product shutdown |
@@ -1685,17 +1805,41 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
 - `JV-PRIVACY`: operational notice, retention, anonymisation, data requests, staff visibility, and lawful record preservation;
 - `JV-ACCESS`: administrative permissions, shift responsibility, session closure, physical tablet protection, and staff-account deactivation;
+- `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
 
-### Business outcomes
+### Business outcomes and pilot
 
-- What baseline exists for calls, orders, average ticket, and peak periods?
-- Which result would make the MVP successful after 30 days?
-- Which products have the best margin?
-- Which combinations should become packs?
-- What customer behaviour should the first dashboard help Jaime change?
+Resolved direction:
+
+- the first-month priority is reducing order-related calls during peak periods;
+- a two-week baseline precedes pilot activation;
+- the pilot runs for four complete weeks;
+- weekly web orders and channel shift measure adoption;
+- no accepted order may be lost or reach the kitchen materially too late;
+- Jaime's judgement of operational usefulness is required;
+- opening and closing workload is measured during the pilot;
+- initial web orders use manual review;
+- automatic acceptance requires validated operational criteria;
+- critical reliability or allergen failures pause the pilot.
+
+Still open:
+
+- exact baseline days and time bands;
+- who records and reviews daily baseline and pilot evidence;
+- which regular customers participate in the first live segment;
+- exact Wednesday or Thursday launch date;
+- sufficient weekly web-order adoption threshold;
+- valuable call-reduction threshold after baseline;
+- number and variety of manually reviewed orders required before `AUTO_ACCEPT`;
+- exact rollback criteria from automatic acceptance;
+- conditions for expanding the pilot to the full service schedule;
+- acceptable opening and closing workload;
+- which capabilities remain explicitly outside the operational MVP;
+- which products have the best margin;
+- which combinations should become later packs.
 
 ### Technical reference project
 
@@ -1741,6 +1885,7 @@ Remaining:
 - validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
 - validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
 - define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation with Jaime and legal review;
+- validate the two-week baseline, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
@@ -1771,6 +1916,12 @@ After explicit implementation authority:
 
 ### Phase 2 — launch readiness
 
+- two-week channel and call baseline;
+- complete operational rehearsal;
+- one-hour lower-pressure controlled launch;
+- initial manual-review operation;
+- validated promotion and rollback criteria for automatic acceptance;
+- four-week pilot measurement and review;
 - production hosting;
 - domain and TLS;
 - backups and restoration tests;
@@ -1887,6 +2038,20 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.13 — 2026-07-25
+
+- Reconciled `BD-DELTA-009` against canonical version 0.12.
+- Confirmed that Dopis currently lacks a reliable channel baseline.
+- Defined reduction of peak-period order calls as the first-month priority.
+- Added a two-complete-week pre-pilot baseline and deferred numeric call-reduction targets until real evidence exists.
+- Added a four-complete-week pilot scorecard covering reliability, adoption, operational usefulness, and staff workload.
+- Defined missing or materially late accepted orders as critical reliability failures.
+- Added a controlled Wednesday-or-Thursday launch, approximately one-hour first segment, and informed regular-customer group.
+- Required initial manual review and explicit validation before enabling automatic acceptance.
+- Added a complete pre-live operational rehearsal and critical pilot pause criteria.
+- Added pilot metrics, risks, open decisions, rollout sequence, and the `JV-PILOT` validation gate.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.12 — 2026-07-25
 
