@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.8
+**Version:** 0.9
 **Date:** 2026-07-24
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -788,6 +788,28 @@ Historical records must be preserved through order-item snapshots and soft delet
 
 Image upload may be deferred if it materially expands storage and deployment scope; an image path or URL field can be retained.
 
+### 10.1A Catalog publication and approval
+
+A product may be published for online sale only when these minimum data are complete:
+
+- ingredients;
+- regulated allergens and known traces;
+- price;
+- availability;
+- applicable dietary labels.
+
+Jaime or another explicitly authorised responsible person provides final approval for new or materially changed products.
+
+Change rules:
+
+- a price-only change may be published without repeating the full allergen review only when recipe, quantity, product, and supplier remain unchanged;
+- a recipe, ingredient, quantity, or supplier change requires review of ingredients, allergens, possible traces, and dietary labels;
+- the affected product or option remains unavailable online until that review is complete;
+- if staff detect incorrect safety or dietary information, they immediately disable the affected product or option and notify the responsible person;
+- material changes to ingredients, allergens, availability, and price retain who-and-when traceability.
+
+A product with incomplete or unverifiable allergen information must not be sold online at public launch.
+
 ### 10.2 Modifier model
 
 Products must support explicitly configured modifier groups and options rather than an unrestricted free-text ingredient editor.
@@ -823,30 +845,52 @@ Additional working rules:
 - each extra may have an independent maximum quantity;
 - a short kitchen note is allowed only for constrained, previously accepted exceptions;
 - unavailable options are removed individually when a valid product configuration remains;
-- vegan mozzarella and other higher-cost substitutions may require their own price delta, pending Jaime's validation.
+- vegan mozzarella and other higher-cost substitutions may require their own price delta, pending Jaime's validation;
+- free-text notes are limited to non-ingredient instructions and exceptions explicitly authorised by Jaime;
+- a note must not override configured modifier eligibility, price, availability, or allergen rules.
 
 ### 10.3 Allergen and dietary information
 
-The catalog must be able to store ingredients, regulated allergen information, dietary labels, and a cross-contact notice. A generic waiver must not be treated as a substitute for accurate product information and validated kitchen procedures.
+The catalog must store ingredients, regulated allergens, known traces, dietary labels, and cross-contact notices. A generic waiver is not a substitute for accurate product information and validated kitchen procedures.
 
-The exact customer-facing wording for gluten-free dough and cross-contact risk must be reviewed before production.
+Information sources are product labels and supplier documentation reviewed with Jaime. Supplier, recipe, ingredient, or quantity changes trigger a new review.
 
-Current verified operating facts are that the dough arrives sealed on an aluminium base but shares the oven, workspace, and utensils with products containing gluten. The customer interface must therefore:
+Customer-facing requirements:
 
-- disclose cross-contact risk clearly;
+- show allergens on every product;
+- recalculate and display allergens from the final selected configuration;
+- warn at selection time when a substitution introduces an allergen;
+- repeat the final allergen information in the order summary before confirmation;
+- update vegan or vegetarian classification when a modifier changes the final product;
+- provide initial filters for:
+  - `Vegan`;
+  - `Vegetarian`;
+  - `Gluten-free dough option`;
+- show clearly when an unavailable option changes the dietary configuration that can still be ordered.
+
+Current verified operating facts are that gluten-free dough arrives sealed on an aluminium base but shares the oven, workspace, and utensils with products containing gluten.
+
+The option must therefore be presented as `Gluten-free dough option`, not as a guarantee that the complete pizza is gluten-free.
+
+The interface must:
+
+- show a general cross-contact warning in the menu;
+- show a specific warning when the customer selects the option;
+- require explicit confirmation that the customer has read and understood the warning;
 - avoid claiming suitability for coeliac customers or severe allergies before validation;
-- show when a substitution changes allergens or vegan/vegetarian characteristics;
-- disable the option when staff cannot follow the validated operating procedure.
-
-Whether the customer must explicitly acknowledge the warning before adding gluten-free dough remains open.
+- advise customers with severe allergies to contact the premises before ordering;
+- state that online ordering cannot guarantee absence of cross-contact;
+- allow staff to disable the gluten-free dough option independently;
+- disable it whenever the validated operating procedure cannot be followed.
 
 Public launch is blocked until Jaime validates:
 
-- the supplier information;
-- the actual preparation procedure;
-- the complete allergen matrix;
-- the exact customer-facing wording.
-
+- supplier documentation;
+- actual kitchen procedure;
+- complete ingredient, allergen, and trace information;
+- exact customer-facing wording;
+- which severe-allergy requests the premises can responsibly accept;
+- who besides Jaime may approve safety and dietary information.
 ---
 
 ## 10A. Pickup scheduling and slot-selection UX
@@ -1099,6 +1143,9 @@ Online orders open only after staff complete the readiness checklist and explici
 | Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
 | Gluten-free messaging overstates safety | Health risk and misleading customer communication | Validated allergen matrix, cross-contact warning, no coeliac or severe-allergy suitability claim before approval |
+| Product or supplier changes bypass allergen review | Outdated safety information remains online | Disable affected item until ingredients, traces, allergens, and labels are revalidated |
+| Free-text notes request unsupported ingredient changes | Kitchen ambiguity and incorrect allergen result | Restrict notes and enforce configured modifiers as authoritative |
+| Unauthorised catalog changes alter safety information | Incorrect dietary or allergen claims | Authorised approval and auditable change history |
 | Free-text notes bypass configured modifiers | Ambiguous or unsafe kitchen requests | Short constrained notes only; configured modifiers remain authoritative |
 | Delay-response workflow creates an unattended queue | Customer request remains unresolved | Ten-minute response window, manual-review routing, visible `Requires attention` queue |
 | Compensation is implemented before business approval | Scope expansion and inconsistent commercial treatment | Keep compensation conditional until Jaime validates inclusion, limits, and policy |
@@ -1208,7 +1255,11 @@ Still open:
 - exact gluten cross-contact wording and whether explicit acknowledgement is required;
 - the complete allergen matrix for products and modifiers;
 - how substitutions change allergen and vegan/vegetarian labelling;
-- when staff must disable gluten-free dough because the validated procedure cannot be followed.
+- when staff must disable gluten-free dough because the validated procedure cannot be followed;
+- who besides Jaime may approve dietary and allergen information;
+- the exact provider-document review procedure;
+- which non-ingredient instructions and authorised exceptions may use free-text notes;
+- whether every product without documentary allergen verification must remain offline at launch.
 
 ### Customers and privacy
 
@@ -1233,7 +1284,8 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-COMPENSATION`: whether compensation belongs in the MVP and, if so, its permitted types and limits;
 - `JV-MODIFIERS`: allowed removals, substitutions, extras, limits, and pricing;
 - `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and online offer policy;
-- `JV-ALLERGENS`: complete product and modifier allergen information;
+- `JV-ALLERGENS`: complete product and modifier ingredient, allergen, and trace information;
+- `JV-CATALOG-APPROVAL`: authorised approvers, supplier-change review, and publication gates;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -1288,7 +1340,7 @@ Remaining:
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
-- close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, and the complete allergen matrix with Jaime;
+- close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
 - define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
@@ -1433,6 +1485,20 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.9 — 2026-07-24
+
+- Reconciled `BD-DELTA-005` against canonical version 0.8.
+- Added explicit customer acknowledgement of the gluten cross-contact warning.
+- Defined general and option-specific warning placement and the `Gluten-free dough option` label.
+- Added dynamic allergen and dietary-label calculation from the final product configuration.
+- Added product-level allergen display, final checkout review, and initial vegan, vegetarian, and gluten-free-dough filters.
+- Added supplier-document and change-triggered review requirements for ingredients, allergens, traces, and dietary labels.
+- Added a publication gate preventing online sale of products with incomplete or unverifiable allergen information.
+- Added authorised catalog approval and who-and-when traceability for material catalog changes.
+- Restricted free-text kitchen notes so they cannot bypass configured modifiers, prices, availability, or allergen rules.
+- Added `JV-CATALOG-APPROVAL` to the pending external validation gates.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.8 — 2026-07-24
 
