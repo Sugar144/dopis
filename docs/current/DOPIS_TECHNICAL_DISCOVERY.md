@@ -1,8 +1,8 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.9
-**Date:** 2026-07-24
+**Version:** 0.10
+**Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
 
@@ -181,6 +181,17 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - If one option becomes unavailable, disable only that option when the product can still be configured validly.
 - Dietary and allergen consequences of substitutions or unavailability must be shown clearly.
 - Until wording and procedures are validated with Jaime, the site must not claim that gluten-free dough is suitable for coeliac customers or severe allergies.
+- Any authorised staff member may mark a product, critical ingredient, or option unavailable; only Jaime or the responsible shift lead may reactivate it.
+- Drinks and desserts use an approximate opening count as a strict online-sales ceiling.
+- Countable stock adjustments and replenishments record the operator and a simple reason.
+- A predicted reactivation time is informational only; availability returns only after responsible staff confirm it.
+- Shared critical ingredients may disable only the products or configurations that require them.
+- The system does not substitute an unavailable ingredient automatically; the customer must choose an allowed alternative.
+- Selected pizzas may have daily limits or pickup-window-specific availability.
+- Critical options such as vegan mozzarella or gluten-free dough may use approximate remaining-use counts without gram-level recipe inventory.
+- A valid reservation has priority while physical stock exists. A discovered physical shortage routes the affected order to `Requires attention` rather than cancelling it automatically.
+- Products that reach zero remain visible as sold out, optionally with an estimated return time.
+- A closing stock count is the initial working direction, subject to simplification when normal stock records prove reliable.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -533,6 +544,38 @@ Keep an append-only operational history:
 - `reason`
 - `created_at`
 
+### 6.12 Stock adjustment and availability event
+
+The MVP needs an auditable operational record for:
+
+- opening count;
+- replenishment;
+- sale not otherwise registered;
+- breakage or waste;
+- internal consumption;
+- incorrect count correction;
+- sold-out action;
+- reactivation;
+- physical-shortage exception.
+
+Exact persistence remains a schema decision. Each event must identify the affected item, quantity or availability change, operator, reason, and timestamp.
+
+### 6.13 Lightweight critical-ingredient allowance
+
+Shared limited ingredients and options may use an approximate number of available uses rather than a recipe-level quantity.
+
+This capability must support:
+
+- one allowance affecting multiple product configurations;
+- provisional reservation during checkout or manual review;
+- definitive consumption on confirmation;
+- release on expiry;
+- manual correction;
+- independent disablement;
+- optional availability by pickup window.
+
+It is not gram-level ingredient inventory and must not be presented as exact recipe depletion.
+
 ---
 
 ## 7. Draft order lifecycle
@@ -695,7 +738,8 @@ Additional working requirements from business discovery:
 - recovery requires staff review and explicit `Resume`;
 - a mobile backup may view orders and change operational states, but need not expose full administration;
 - staff complete a readiness checklist and explicitly select `Open orders`;
-- the pre-opening checklist covers kitchen readiness, shift capacity, and sold-out products;
+- the pre-opening checklist covers kitchen readiness, shift capacity, countable drinks and desserts, sold-out products, and a short list of critical ingredients or options;
+- any authorised operator may mark an item sold out, while reactivation requires Jaime or the responsible shift lead;
 - delivered orders leave the primary view but remain available in shift history;
 - customer name and pickup time have greater visual prominence than the order identifier;
 - no essential action or information may depend on hover.
@@ -708,24 +752,74 @@ The digital panel remains the source of truth. A ticket printer is a conditional
 
 “Inventory” and “kitchen capacity” are different systems and must not be represented by the same counter.
 
-### 9.1 Product availability
+### 9.1 Product and option availability
 
-Staff can mark a product or modifier option as available or sold out.
+Any authorised staff member may mark a product, critical ingredient, or option sold out.
+
+Reactivation rules:
+
+- drinks and desserts may be reactivated after a replenishment is recorded;
+- pizzas, ingredients, and modifier options require explicit confirmation from Jaime or the responsible shift lead;
+- an expected reactivation time is informative and never re-enables online sale automatically.
+
+An unavailable shared ingredient disables only the products and configurations that actually require it. No automatic substitution is performed.
+
+A sold-out product remains visible to the customer, clearly marked unavailable. When known, the interface may show an estimated return time.
 
 ### 9.2 Sellable-unit stock
 
-The system stores quantities for directly countable products, such as canned drinks, bottles, individual desserts, or a genuinely limited prepared item. Stock is decremented when an order becomes confirmed, not merely when a customer opens checkout.
+Track countable stock for drinks, desserts, and other directly countable products.
 
-For pizzas, a per-product daily quantity should be optional rather than mandatory. Requiring Jaime to estimate every pizza variety each day would add maintenance without accurately representing shared dough, cheese, oven, and labour constraints.
+Opening operation:
 
-Working reservation semantics:
+- staff enter an approximate count at the start of the shift;
+- the recorded quantity is a strict online-sales ceiling;
+- responsibility for counting and the product set requiring counts remain pending Jaime validation.
 
-- checkout holds countable stock provisionally for five minutes;
+Reservation semantics:
+
+- checkout provisionally reserves countable stock for five minutes;
 - automatic confirmation commits stock;
-- manual review holds stock for an initial ten minutes;
-- expiry or abandonment releases the hold;
-- cancellation before preparation restores reserved or committed countable stock;
+- manual review reserves stock for the applicable review period;
+- expiry or abandonment releases the reservation;
+- a daily product limit follows the same reserve, commit, and release semantics;
+- cancellation before preparation restores eligible stock;
 - after `Start preparation`, consumed stock is not automatically restored.
+
+Adjustment and replenishment:
+
+- any authorised operator may record replenishment or correction;
+- each change records operator and one simple reason;
+- initial reasons are:
+  - unregistered sale;
+  - breakage or waste;
+  - internal consumption;
+  - incorrect count;
+  - replenishment.
+
+A valid reservation keeps priority when physical stock exists. If staff discover that the reserved unit does not physically exist, the order moves to `Requires attention`; staff offer an allowed alternative or cancel manually.
+
+If stock reaches zero before reservation, the customer must remove or replace the item before continuing.
+
+### 9.2A Limited products and shared critical ingredients
+
+Selected pizzas may have daily limits when they depend on limited preparations or ingredients.
+
+Shared critical ingredients can control several product configurations. The system disables only configurations that require the exhausted ingredient.
+
+For items such as vegan mozzarella or gluten-free dough, the MVP may track an approximate number of remaining uses without requiring weight-based inventory.
+
+Limited products or options may also be available only for selected pickup windows.
+
+Before opening online orders, staff review a short configured list of critical ingredients and options.
+
+### 9.2B Stock reconciliation
+
+The initial working procedure includes a closing count.
+
+Repeated differences between expected and physical stock must be highlighted for responsible review.
+
+The closing count should later be reduced or removed where ordinary records of sales, reservations, replenishments, and corrections prove sufficiently reliable.
 
 ### 9.3 Production capacity
 
@@ -752,17 +846,32 @@ For the initial MVP, any order whose calculated production load cannot be safely
 
 ### 9.4 Ingredient and recipe inventory
 
-A later system may define recipes or bills of materials so confirmed orders decrement ingredients and automatically disable products or modifier options when a required ingredient is unavailable.
+A later system may define recipes or bills of materials so confirmed orders decrement precise ingredient quantities.
+
+This remains distinct from the MVP's lightweight approximate-use allowances for a small set of critical shared ingredients or options.
 
 ### MVP decision
 
 Implement:
 
-- availability on/off;
-- unit stock for drinks, desserts, and optionally limited products;
-- weighted production points by pickup window.
+- availability on/off with restricted reactivation;
+- strict sellable-unit stock for countable products;
+- auditable replenishment and adjustment reasons;
+- transactional reservations;
+- optional daily limits;
+- lightweight approximate-use counts for selected critical ingredients or options;
+- window-specific availability where needed;
+- weighted production points by pickup window;
+- opening review and provisional closing reconciliation.
 
-Defer ingredient-level automatic depletion until the real stock-taking, delivery, waste, and correction workflow has been validated with Jaime.
+Defer:
+
+- gram-level ingredient inventory;
+- full recipe or bill-of-material depletion;
+- automatic substitutions;
+- automatic reactivation from estimated replenishment times.
+
+The operating burden and reliability of opening and closing counts require validation with Jaime.
 
 ---
 
@@ -781,10 +890,15 @@ Provide protected catalog CRUD for:
 - active/inactive state;
 - available/sold-out state;
 - unit stock where applicable;
+- daily limits and approximate critical-option uses where applicable;
+- pickup-window-specific availability;
+- stock adjustments and replenishments;
 - display order;
 - product-to-modifier assignments.
 
 Historical records must be preserved through order-item snapshots and soft deletion or deactivation. Removing a product from the active menu must not corrupt old orders.
+
+Availability permissions are intentionally asymmetric: authorised staff may disable an item quickly, while reactivation requires Jaime or the responsible shift lead. Stock and availability changes retain operator, timestamp, and reason.
 
 Image upload may be deferred if it materially expands storage and deployment scope; an image path or URL field can be retained.
 
@@ -1142,6 +1256,11 @@ Online orders open only after staff complete the readiness checklist and explici
 | Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
 | Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
+| Physical stock differs from a valid reservation | Accepted order cannot be fulfilled as configured | Route to `Requires attention`; offer allowed alternative or cancel manually |
+| Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
+| Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
+| Shared ingredient depletion disables too many products | Unnecessary lost sales | Model configuration-level dependency rather than blanket product shutdown |
+| Estimated replenishment reopens an item prematurely | Customer orders unavailable stock | Keep return time informational; require manual confirmation |
 | Gluten-free messaging overstates safety | Health risk and misleading customer communication | Validated allergen matrix, cross-contact warning, no coeliac or severe-allergy suitability claim before approval |
 | Product or supplier changes bypass allergen review | Outdated safety information remains online | Disable affected item until ingredients, traces, allergens, and labels are revalidated |
 | Free-text notes request unsupported ingredient changes | Kitchen ambiguity and incorrect allergen result | Restrict notes and enforce configured modifiers as authoritative |
@@ -1234,7 +1353,15 @@ Resolved direction:
 - gluten-free dough option across pizzas;
 - product availability plus unit stock for countable products;
 - broad protected catalog CRUD for Jaime;
-- ingredient-level inventory deferred.
+- any authorised staff member may disable stock or availability;
+- only Jaime or the responsible shift lead may reactivate pizzas, critical ingredients, or options;
+- countable opening stock acts as a strict sales ceiling;
+- stock changes are auditable and reason-coded;
+- daily limits and approximate-use counts may apply to selected limited items;
+- shared ingredients disable only dependent configurations;
+- no automatic substitution or estimated-time reactivation;
+- provisional closing reconciliation;
+- precise recipe-level inventory deferred.
 
 Still open:
 
@@ -1259,7 +1386,21 @@ Still open:
 - who besides Jaime may approve dietary and allergen information;
 - the exact provider-document review procedure;
 - which non-ingredient instructions and authorised exceptions may use free-text notes;
-- whether every product without documentary allergen verification must remain offline at launch.
+- whether every product without documentary allergen verification must remain offline at launch;
+- who normally performs opening and closing counts;
+- which drinks, desserts, and limited products require mandatory counts;
+- whether closing reconciliation is daily or product-specific;
+- which pizzas require daily limits;
+- which ingredients and options belong to the critical opening checklist;
+- how approximate available uses are estimated for vegan mozzarella, gluten-free dough, and similar items;
+- which products may be replenished during service;
+- which stock-adjustment reasons match real staff practice;
+- which products or options may vary by pickup window;
+- how expected reactivation is communicated to customers;
+- how telephone and walk-in sales affect online stock and capacity;
+- whether remaining stock carries between service days or is recounted;
+- low-stock warning policy;
+- how reliability is measured before removing redundant counts.
 
 ### Customers and privacy
 
@@ -1286,6 +1427,7 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and online offer policy;
 - `JV-ALLERGENS`: complete product and modifier ingredient, allergen, and trace information;
 - `JV-CATALOG-APPROVAL`: authorised approvers, supplier-change review, and publication gates;
+- `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, replenishment, adjustment reasons, and physical-sales reconciliation;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -1339,6 +1481,7 @@ Remaining:
 - normalise and validate the real menu;
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
+- validate stock-counting burden, critical-item allowances, daily limits, replenishment, and reconciliation with telephone or walk-in sales;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
@@ -1485,6 +1628,19 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.10 — 2026-07-25
+
+- Reconciled `BD-DELTA-006` against canonical version 0.9.
+- Added asymmetric availability permissions: authorised staff may disable items, while responsible staff control reactivation.
+- Added strict opening counts, transactional reservations, replenishments, reason-coded corrections, and provisional closing reconciliation for countable stock.
+- Added manual `Requires attention` handling when a valid reservation conflicts with physical stock.
+- Added optional daily limits and pickup-window-specific availability for limited products.
+- Added lightweight approximate-use allowances for selected shared critical ingredients or options without introducing gram-level recipe inventory.
+- Added configuration-level shared-ingredient availability and prohibited automatic substitutions.
+- Kept estimated reactivation times informational and required manual confirmation before online sale resumes.
+- Added stock and availability audit candidates, risks, open questions, and the `JV-STOCK` validation gate.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.9 — 2026-07-24
 
