@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.10
+**Version:** 0.11
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -116,6 +116,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Gluten-free dough arrives sealed on an aluminium base.
 - Gluten-free pizzas share the oven, workspace, and kitchen utensils used for other pizzas.
 - The current kitchen process therefore has a real cross-contact risk that must be communicated accurately.
+- Dopis currently accepts cash and card payments at the premises.
 
 ### 3.2 Provisional
 
@@ -192,6 +193,21 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - A valid reservation has priority while physical stock exists. A discovered physical shortage routes the affected order to `Requires attention` rather than cancelling it automatically.
 - Products that reach zero remain visible as sold out, optionally with an estimated return time.
 - A closing stock count is the initial working direction, subject to simplification when normal stock records prove reliable.
+- Web, telephone, and in-person orders use the same operational system and share stock, production capacity, pickup windows, and kitchen queues.
+- Telephone orders use a fast staff-entry flow with products, quantities, modifiers, pickup time, customer name, and telephone number.
+- In-person orders also use name and telephone number as the current working direction so operational incidents can be communicated by SMS.
+- Telephone and in-person orders receive the next feasible pickup opportunity and do not automatically displace confirmed web orders.
+- A responsible operator may knowingly override calculated capacity for an exceptional manual order, with explicit risk confirmation and auditability.
+- Every order records its origin channel: web, telephone, or in person.
+- The first MVP keeps payment at the premises for web and telephone orders; online payment remains deferred.
+- Customers do not select cash or card during ordering. Staff record the method actually used when collecting payment.
+- Payment and handover are separate events. An order is marked paid before staff confirm delivery.
+- A failed card payment may be retried or changed to cash.
+- If no accepted payment method succeeds, the order is not handed over and an operational incident is recorded.
+- Another person may collect using the customer name and order number.
+- Product configuration determines whether remaining stock carries between service days or requires a new opening count.
+- Closing reconciliation records retained, discarded, or corrected quantities for applicable perishable products.
+- Each countable product may define its own low-stock threshold.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -410,6 +426,7 @@ Suggested fields:
 - `id`
 - `public_code`
 - `status`
+- `order_channel`
 - `customer_name`
 - `customer_phone`
 - `pickup_mode`
@@ -418,6 +435,8 @@ Suggested fields:
 - `estimated_ready_at`
 - `payment_method`
 - `payment_status`
+- `paid_at`
+- `paid_by`
 - `subtotal`
 - `total`
 - `customer_note`
@@ -427,6 +446,9 @@ Suggested fields:
 - `rejected_at`
 - `ready_at`
 - `completed_at`
+- `handed_over_at`
+- `handed_over_by`
+- `collected_by_name`
 - `cancelled_at`
 - `cancellation_reason`
 
@@ -457,21 +479,38 @@ Initial fields:
 
 Only one staff role is initially required, but authorisation checks must exist on the backend.
 
-### 6.6 Payment preparation
+### 6.6 Payment and handover preparation
 
-Even while only payment at pickup is active, orders should retain:
+Initial active payment direction:
 
-- `payment_method`
-- `payment_status`
-- optional future `payment_provider`
-- optional future `provider_reference`
+- payment occurs at the premises;
+- accepted methods are cash and card;
+- the customer does not preselect the method during web or telephone ordering;
+- staff record the method actually used;
+- the order must be paid before handover;
+- card failure may be retried or changed to cash;
+- inability to complete payment prevents handover and creates an operational incident.
 
-Suggested initial values:
+Orders retain:
 
-- method: `PAY_AT_STORE`
-- status: `PENDING`
+- `payment_method`;
+- `payment_status`;
+- `paid_at`;
+- operator or session attribution;
+- optional future `payment_provider`;
+- optional future `provider_reference`.
 
-This avoids coupling order creation to a specific future provider.
+Suggested initial status values:
+
+- method before collection: `UNSPECIFIED`;
+- method after collection: `CASH` or `CARD`;
+- status before collection: `PENDING`;
+- status after successful collection: `PAID`;
+- failed or corrected payment states require explicit design.
+
+Payment and delivery are separate auditable events.
+
+Future online payment remains outside the first MVP. The domain must later support optional online payment alongside pay-at-store without replacing the operational order lifecycle.
 
 ### 6.7 Modifier group and option
 
@@ -632,12 +671,43 @@ Recommended customer-facing distinction:
 - **in preparation:** kitchen work has started;
 - **ready:** the customer may collect it.
 
-### 7.5 Preparation, handover, and non-collection
+### 7.4A Manual order entry and channel parity
+
+Web, telephone, and in-person orders enter the same order domain.
+
+Shared rules:
+
+- one stock ledger;
+- one capacity model;
+- one pickup-window model;
+- one kitchen queue;
+- one status lifecycle;
+- one payment and handover trail.
+
+Telephone order entry must be optimised for staff speed while still requiring explicit product, modifier, pickup, name, and telephone data.
+
+In-person order entry follows the same domain flow. Requiring a telephone number for every in-person order remains a working decision pending Jaime's validation of operational burden and privacy necessity.
+
+Manual orders receive the next feasible pickup opportunity. They do not silently displace already confirmed orders.
+
+A responsible operator may override calculated capacity only through an explicit exceptional action that records the actor and acknowledged operational risk.
+
+Each order preserves its source channel:
+
+- `WEB`;
+- `PHONE`;
+- `IN_PERSON`.
+
+### 7.5 Preparation, payment, handover, and non-collection
 
 - A confirmed future order remains scheduled until it approaches its recommended preparation time.
 - Staff may begin preparation earlier; the action is permitted and recorded.
 - Preparation formally begins when staff select `Start preparation`.
-- `COMPLETED` is assigned only when staff confirm handover to the customer.
+- Payment and physical handover are separate events.
+- Staff confirm successful payment before handover.
+- `COMPLETED` is assigned only when authorised staff confirm handover to the customer.
+- A different collector may identify the order using customer name and order number.
+- If no accepted payment method succeeds, the order is not handed over and an operational incident is recorded.
 - The working `NO_SHOW` process is:
   1. wait until the end of the confirmed pickup window;
   2. apply the configurable grace period, initially 30 minutes;
@@ -821,6 +891,18 @@ Repeated differences between expected and physical stock must be highlighted for
 
 The closing count should later be reduced or removed where ordinary records of sales, reservations, replenishments, and corrections prove sufficiently reliable.
 
+Web, telephone, and in-person orders must all reserve and consume from the same stock records.
+
+Each product may define one of these service-day policies:
+
+- carry remaining stock into the next service day;
+- require a fresh opening count;
+- require closing treatment for retained, discarded, or corrected quantities.
+
+Applicable perishable products require an explicit closing outcome.
+
+Each countable product may also define a low-stock threshold. The exact warning behaviour remains open.
+
 ### 9.3 Production capacity
 
 Kitchen capacity controls how much work may be committed to a pickup window. The first operational version must already distinguish simple and complex pizzas through weighted production points.
@@ -836,7 +918,10 @@ Initial model:
 - the order load is the integer sum of product and modifier points;
 - blocked windows accept no new orders;
 - staff may add temporary delays or reduce capacity;
-- the earliest-available estimate advances when nearer windows are full.
+- the earliest-available estimate advances when nearer windows are full;
+- web, telephone, and in-person orders consume the same capacity;
+- manual orders normally receive the next feasible window;
+- a responsible operator may explicitly override the capacity warning for an exceptional order without altering prior confirmed commitments.
 
 Use small integer points rather than fractional time estimates. Example values must be calibrated with Jaime and kitchen observation rather than treated as universal facts. Product and modifier point values are technical configuration in the initial MVP; Jaime adjusts the operational capacity of windows rather than editing individual workload weights. The model may later evolve into station-specific capacity or historical prediction.
 
@@ -1125,7 +1210,14 @@ Candidate MVP metrics:
 - cancellation and rejection counts;
 - repeat orders inferred from a normalised phone number only if legally and operationally justified;
 - product unavailability frequency;
-- upsell conversion for drinks, desserts, or packs.
+- upsell conversion for drinks, desserts, or packs;
+- order volume and value by source channel;
+- telephone-order volume before and after web launch;
+- manual capacity overrides;
+- payment method actually collected;
+- payment failures and corrections;
+- non-payment incidents;
+- stock differences attributable to unregistered telephone or in-person sales.
 
 Future business capabilities:
 
@@ -1257,6 +1349,11 @@ Online orders open only after staff complete the readiness checklist and explici
 | Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
 | Physical stock differs from a valid reservation | Accepted order cannot be fulfilled as configured | Route to `Requires attention`; offer allowed alternative or cancel manually |
+| Telephone or in-person orders bypass shared stock and capacity | Overbooking and stock discrepancies | Require every order channel to use the same operational system |
+| Manual capacity override becomes routine | Pickup promises become unreliable | Restrict override to responsible staff, require explicit acknowledgement, and measure usage |
+| In-person telephone collection is excessive | Slower service and unnecessary personal-data collection | Validate necessity with Jaime and minimise data where operationally possible |
+| Payment and handover are collapsed into one action | Unpaid orders may be released or audit becomes unclear | Keep paid and handed-over events separate |
+| Payment method or delivery is corrected without traceability | Cash and order history become unreliable | Restrict correction authority and retain audit events |
 | Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
 | Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
 | Shared ingredient depletion disables too many products | Unnecessary lost sales | Model configuration-level dependency rather than blanket product shutdown |
@@ -1400,7 +1497,27 @@ Still open:
 - how telephone and walk-in sales affect online stock and capacity;
 - whether remaining stock carries between service days or is recounted;
 - low-stock warning policy;
-- how reliability is measured before removing redundant counts.
+- how reliability is measured before removing redundant counts;
+- which products carry stock between service days and which require recounting;
+- how retained, discarded, and corrected perishable quantities are recorded;
+- low-stock thresholds and warning behaviour by product;
+- how manual, telephone, and in-person orders are entered during peak service.
+
+### Manual channels, payment, and handover
+
+- who normally enters telephone and in-person orders;
+- whether every in-person order genuinely requires a telephone number;
+- when a responsible operator may override calculated capacity;
+- whether a receipt or payment proof is required;
+- who may correct a recorded payment method;
+- who may reverse or correct payment and handover events;
+- how cash differences are reconciled at shift close;
+- whether any exceptional unpaid handover is allowed and who authorises it;
+- how an erroneous handover is corrected;
+- which channel metrics Jaime needs to evaluate whether the web reduces calls;
+- current cash-register, receipt, and end-of-shift procedures;
+- future refund rules before and after preparation when online payments are introduced;
+- future criteria for requiring prepayment after repeated incidents.
 
 ### Customers and privacy
 
@@ -1427,7 +1544,9 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and online offer policy;
 - `JV-ALLERGENS`: complete product and modifier ingredient, allergen, and trace information;
 - `JV-CATALOG-APPROVAL`: authorised approvers, supplier-change review, and publication gates;
-- `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, replenishment, adjustment reasons, and physical-sales reconciliation;
+- `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, carry-over, perishables, replenishment, adjustment reasons, and physical-sales reconciliation;
+- `JV-MANUAL-ORDERS`: telephone and in-person entry, required customer data, manual capacity overrides, and channel workflow;
+- `JV-PAYMENT`: cash/card operation, receipts, corrections, non-payment, handover, and cash-close procedure;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -1481,7 +1600,8 @@ Remaining:
 - normalise and validate the real menu;
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
-- validate stock-counting burden, critical-item allowances, daily limits, replenishment, and reconciliation with telephone or walk-in sales;
+- validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
+- validate manual order-entry roles, in-person telephone collection, payment correction, handover, receipts, and cash-close procedures;
 - validate tablet placement, alert audibility, mobile backup, and printer-promotion criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - decide staff authentication UX;
@@ -1628,6 +1748,21 @@ These sources inform the discovery model; Dopis business rules still require val
 ---
 
 ## 19. Change log
+
+### 0.11 — 2026-07-25
+
+- Reconciled `BD-DELTA-007` against canonical version 0.10.
+- Confirmed that Dopis currently accepts cash and card payments at the premises.
+- Added web, telephone, and in-person orders to one shared stock, capacity, pickup-window, queue, and status model.
+- Added fast manual order entry and explicit source-channel tracking.
+- Added responsible-staff capacity override with explicit risk acknowledgement and auditability.
+- Added product-level stock carry-over, opening recount, perishable closing treatment, and low-stock threshold capabilities.
+- Kept online payment outside the first MVP while preserving future coexistence with pay-at-store.
+- Separated actual payment collection from physical handover and added non-payment incident handling.
+- Added collector identification by customer name and order number.
+- Added channel, payment, stock-reconciliation, and manual-override metrics and risks.
+- Added `JV-MANUAL-ORDERS` and `JV-PAYMENT` validation gates.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.10 — 2026-07-25
 
