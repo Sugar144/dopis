@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.14
+**Version:** 0.15
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -268,6 +268,24 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Featured products appear first within a category; remaining products retain Jaime's manual order.
 - Initial discovery may close when the complete operating flow is defined and remaining material questions depend mainly on Jaime validation.
 - Online payment, loyalty, advanced marketing, and advanced analytics are not required to close first-MVP discovery.
+- Upselling is included in the first MVP.
+- Initial recommendations may include drinks, desserts, and extras compatible with the selected pizza.
+- Recommended products retain their normal price; no discounts, dynamic prices, automatic promotions, or automatic cart insertion are included.
+- Jaime manually defines recommendation relationships and priority order.
+- Jaime or an authorised responsible person may create or change upselling relationships.
+- No recommendation is generated when a pizza has no configured relationships.
+- Upselling can be disabled globally or for individual source products without removing catalog products.
+- Recommendations may appear after adding a pizza and once during cart review.
+- At most three relevant recommendations are shown, and the customer may ignore them without friction or explicit rejection.
+- Products already in the cart, previously ignored recommendations, unavailable products, duplicates, and expired temporary products are not shown again.
+- Multi-pizza carts merge compatible relationships, remove duplicates, and retain one overall maximum of three recommendations.
+- Recommended quantities never increase automatically.
+- Adding a recommendation applies the same stock, availability, capacity, publication, allergen, and dietary validation as ordinary catalog addition.
+- Only published products with complete allergen information may participate in active upselling relationships.
+- Recommendations must remain compatible with the customer's final dietary configuration.
+- If a later pizza modification makes an already-added recommendation incompatible, the customer is warned and chooses whether to keep or remove it; the system does not remove it silently.
+- Pilot measurement records aggregated recommendation impressions and additions, separated by post-pizza and cart-review placement, without creating individual customer profiles.
+- Upselling remains enabled after the pilot only if it adds products without material complaints, errors, or an appreciable reduction in checkout completion.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -699,6 +717,48 @@ This capability must support:
 
 It is not gram-level ingredient inventory and must not be presented as exact recipe depletion.
 
+### 6.14 Upselling relationship
+
+Upselling is configuration-driven rather than automatically inferred.
+
+Candidate fields:
+
+- `id`
+- `source_product_id`
+- `recommended_product_id`
+- `priority`
+- `is_active`
+- `created_by`
+- `updated_by`
+- `created_at`
+- `updated_at`
+
+Rules:
+
+- the source product is normally a pizza;
+- the recommendation may be a drink, dessert, or compatible extra;
+- source and recommended products must be distinct;
+- one relationship must not be duplicated;
+- activation requires the recommended product to be published with complete allergen information;
+- global and source-product upselling switches are evaluated independently from product publication;
+- temporary-product validity, current availability, dietary compatibility, and cart contents are evaluated at presentation time.
+
+### 6.15 Upselling measurement event
+
+The pilot needs aggregated events for:
+
+- recommendation shown;
+- recommendation added.
+
+Each event may retain:
+
+- recommendation relationship;
+- placement: `POST_PIZZA` or `CART_REVIEW`;
+- order or anonymous checkout session reference where operationally necessary;
+- timestamp.
+
+Routine reporting must aggregate these events and must not construct individual customer recommendation profiles.
+
 ---
 
 ## 7. Draft order lifecycle
@@ -724,6 +784,30 @@ In `AUTO_ACCEPT` mode, an order is confirmed only after the backend atomically r
 - the order is within operating and cutoff rules.
 
 If revalidation fails, the order should not be silently accepted and rejected later. The customer should receive the nearest feasible alternatives before final confirmation whenever possible.
+
+### 7.1A Upselling interaction
+
+Upselling is optional and must never block checkout.
+
+Presentation opportunities:
+
+1. immediately after a pizza is added;
+2. once during cart review.
+
+Selection rules:
+
+- combine relationships from every pizza currently in the cart;
+- remove duplicate recommendations;
+- exclude products already in the cart;
+- exclude recommendations already ignored in the current checkout;
+- exclude inactive, unpublished, sold-out, unavailable, temporally expired, or incompatible products;
+- apply configured priority;
+- show at most three recommendations overall;
+- never increase a recommended quantity automatically.
+
+Adding a recommendation uses the ordinary add-to-cart path and revalidates publication, stock, availability, capacity, allergen data, and dietary compatibility.
+
+If a later pizza modification makes an already-added recommendation incompatible, the customer receives a visible warning and decides whether to retain or remove the item. No cart item is silently removed.
 
 ### 7.2 Manual-review mode
 
@@ -1077,7 +1161,9 @@ Provide protected catalog CRUD for:
 - pickup-window-specific availability;
 - stock adjustments and replenishments;
 - display order;
-- product-to-modifier assignments.
+- product-to-modifier assignments;
+- upselling relationship creation, editing, prioritisation, and activation;
+- global and source-product upselling enablement.
 
 Historical records must be preserved through order-item snapshots and soft deletion or deactivation. Removing a product from the active menu must not corrupt old orders.
 
@@ -1561,24 +1647,102 @@ Additional candidate MVP metrics:
 
 Product-margin reporting is explicitly deferred until Dopis has validated product-cost data.
 
-### 12.7 MVP upselling discovery
+### 12.7 MVP upselling
 
-The current frontend contains upselling elements, but visual presence is not business validation.
+Upselling is included in the first operational MVP.
 
-Before treating upselling as an accepted MVP capability, validate:
+#### Commercial configuration
 
-- eligible recommended products;
-- recommendation placement in the order flow;
-- manual versus automatic rule ownership;
-- whether recommendations use normal price only or may include discounts;
-- maximum number of recommendations;
-- stock and availability enforcement;
-- allergen and dietary compatibility;
-- capacity impact where applicable;
-- measurement of added value without reducing checkout conversion.
+Jaime manually defines:
 
-No automatic recommendation engine or discount logic is accepted yet.
+- recommended products for each pizza;
+- priority order.
 
+Jaime or an explicitly authorised responsible person may maintain the relationships.
+
+Initial eligible recommendation types:
+
+- drinks;
+- desserts;
+- compatible pizza extras.
+
+The MVP does not include:
+
+- discounts;
+- dynamic pricing;
+- automatic promotions;
+- recommendation inference from sales;
+- random recommendations;
+- automatic addition to the cart;
+- automatic quantity increases.
+
+A pizza without configured active relationships produces no recommendation.
+
+Upselling may be disabled:
+
+- globally;
+- for an individual source product;
+- without removing recommended products from the menu.
+
+#### Customer presentation
+
+Recommendations may appear:
+
+- after a pizza is added;
+- once during cart review.
+
+At most three relevant recommendations appear across the whole cart.
+
+The customer may add one through a simple action or ignore it without explicit rejection. Upselling must not block, delay, or make checkout materially harder.
+
+For carts with multiple pizzas:
+
+- merge configured relationships;
+- remove duplicates;
+- apply configured priority;
+- retain one overall maximum of three;
+- do not infer larger quantities.
+
+A recommendation already in the cart or ignored in the current checkout is not repeated.
+
+#### Operational and safety constraints
+
+A recommendation is eligible only when:
+
+- the recommended product is published;
+- allergen information is complete;
+- the product is active and currently available;
+- stock remains sufficient;
+- temporal validity remains active;
+- the result is compatible with the customer's selected dietary configuration;
+- adding it passes normal capacity validation where applicable.
+
+The recommendation displays the same allergen and dietary information as its normal menu presentation.
+
+If a later pizza modification makes an already-added recommendation incompatible, warn the customer and let them decide whether to retain or remove it. Never remove the product silently.
+
+#### Pilot measurement
+
+Measure in aggregate:
+
+- recommendation impressions;
+- recommendation additions;
+- addition rate;
+- placement: post-pizza or cart review;
+- checkout completion with and without recommendation exposure;
+- relevant complaints or operational errors.
+
+Do not associate recommendation analytics with persistent individual customer profiles.
+
+No minimum conversion target is fixed before pilot evidence exists.
+
+Retain upselling after the pilot only when:
+
+- it increases additions to the cart;
+- it does not create relevant complaints or operational errors;
+- it does not produce an appreciable fall in checkout completion.
+
+Exact recommendation relationships, authorised editors, dietary-compatibility rules, and success or shutdown thresholds require Jaime validation.
 Future business capabilities:
 
 - customer registration;
@@ -1730,7 +1894,12 @@ Online orders open only after staff complete the readiness checklist and explici
 | Automatic translation is published without review | Incorrect product or allergen communication | Require human validation before publication |
 | Temporary or service-hidden product remains orderable | Customer orders an unavailable commercial offer | Enforce date and service visibility at add-to-cart and confirmation |
 | Featured products bypass stock or safety constraints | Commercial presentation overrides operational rules | Apply stock, availability, allergen, and publication gates before ranking |
-| Upselling is assumed from the current UI | Unvalidated recommendations add friction or operational risk | Validate rules, placement, constraints, and metrics before acceptance |
+| Upselling recommendation is unavailable or unpublished | Customer cannot add the advertised item | Filter at display and revalidate through the ordinary add-to-cart path |
+| Upselling conflicts with the selected dietary configuration | Unsafe or misleading recommendation | Require compatibility filtering and show normal allergen information |
+| Recommendation is repeatedly shown after being ignored | Checkout becomes intrusive | Suppress ignored recommendations for the current checkout |
+| Multi-pizza cart produces duplicates or excessive prompts | Customer friction and clutter | Deduplicate, prioritise, and cap at three overall |
+| Later pizza changes make an added recommendation incompatible | Cart becomes inconsistent | Warn the customer and require an explicit keep-or-remove decision |
+| Upselling reduces checkout completion | Commercial optimisation harms the primary MVP goal | Compare aggregate exposure, additions, completion, complaints, and errors during the pilot |
 | Product-margin reporting uses unvalidated costs | Misleading profitability decisions | Defer margin calculation until cost data are reliable |
 | Unauthorised reactivation exposes unavailable items | Repeated fulfilment failure | Allow broad disablement but restrict reactivation to responsible staff |
 | Stock counting creates excessive operational burden | Staff bypass or falsify the process | Limit counts to relevant items and reevaluate closing counts from observed reliability |
@@ -1945,7 +2114,7 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-ACCESS`: administrative permissions, shift responsibility, session closure, physical tablet protection, and staff-account deactivation;
 - `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, weekly reporting, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
 - `JV-CONTENT`: authorised editors, Spanish and Catalan copy, category order, featured and temporary products, and launch photography;
-- `JV-UPSELL`: eligible products, placement, ownership, pricing, recommendation count, operational constraints, and success measurement;
+- `JV-UPSELL`: concrete relationships, priority, authorised editors, dietary compatibility, excluded products, checkout-impact threshold, and post-pilot success threshold;
 - `JV-DISCOVERY-CLOSE`: remaining material Jaime validations and explicit first-MVP exclusions;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
@@ -1980,13 +2149,13 @@ Still open:
 - acceptable opening and closing workload;
 - exact set of material Jaime validations required before initial discovery closure;
 - exact boundary of capabilities remaining outside the operational MVP;
-- which products may be recommended through upselling;
-- where recommendations appear in the order flow;
-- whether upselling is manually configured or automatically calculated;
-- whether recommendations may include discounts;
-- maximum recommendation count;
-- how recommendations preserve stock, availability, allergen, dietary, and capacity rules;
-- how upselling value and checkout-conversion impact are measured;
+- concrete pizza-to-drink, dessert, and extra recommendation relationships for the pilot;
+- priority order for each recommendation group;
+- exact authorised people who may edit commercial relationships;
+- dietary-compatibility rules for every relevant configuration;
+- products for which upselling remains disabled;
+- threshold defining an appreciable reduction in checkout completion;
+- minimum result Jaime requires to retain upselling after the pilot;
 - which combinations should become later packs;
 - future product-margin requirements after cost validation.
 
@@ -2035,7 +2204,7 @@ Remaining:
 - validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
 - define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation with Jaime and legal review;
 - validate the two-week baseline, weekly report, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
-- validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, and upselling rules;
+- validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, concrete upselling relationships, compatibility, permissions, and pilot thresholds;
 - confirm the material gates required to close initial discovery and the explicit first-MVP exclusions;
 - validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
@@ -2210,11 +2379,26 @@ The following are not required to close first-MVP discovery:
 - validated product-margin reporting;
 - automatic recommendation engines.
 
-Upselling remains inside discovery only to define its bounded MVP rules and validation needs.
+Upselling is included in the first MVP through manually configured relationships; automatic recommendation engines remain outside scope.
 
 ---
 
 ## 19. Change log
+
+### 0.15 — 2026-07-25
+
+- Reconciled `BD-DELTA-011` against canonical version 0.14.
+- Promoted bounded upselling into the first operational MVP.
+- Limited recommendations to normal-price drinks, desserts, and compatible extras.
+- Defined manual relationship and priority configuration without random, inferred, discounted, or automatically added products.
+- Added global and source-product enablement controls.
+- Added post-pizza and cart-review presentation with one overall maximum of three recommendations.
+- Added multi-pizza merge, deduplication, ignored-item suppression, and no automatic quantity increase.
+- Required publication, allergen, dietary, stock, availability, temporal-validity, and capacity checks.
+- Added explicit customer handling when later modifications make an added recommendation incompatible.
+- Added aggregate, placement-aware pilot measurement without individual customer profiling.
+- Refined `JV-UPSELL` to the remaining Jaime validations and preserved automatic recommendation engines outside scope.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.14 — 2026-07-25
 
