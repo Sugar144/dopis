@@ -1,0 +1,83 @@
+status: superseded
+purpose: historical_context
+superseded_by:
+  - docs/current/DOPIS_TECHNICAL_DISCOVERY.md
+
+handoff:
+  project_name: "Web Dopis"
+  date: "2026-06-04"
+  project_type: "new"
+  stakeholder_profile: "non_technical"
+  one_liner: "Web de pedidos online con recogida en local para una pizzería de barrio, optimizada para móvil."
+  problem: >
+    El dueño gestiona todos los pedidos por teléfono o en persona. En horas punta
+    (viernes y sábado por la noche, o cuando está solo en cocina) no puede atender
+    el teléfono y cocinar a la vez. Hay clientes que no llaman porque prefieren pedir online.
+  primary_user: "Vecinos del barrio y alrededores que piden desde el móvil"
+  jobs_to_be_done:
+    - "Hacer mi pedido rápido desde el móvil sin tener que llamar"
+    - "Saber exactamente qué hay disponible y cuánto cuesta"
+    - "Pagar como quiero (online o en local) y recoger sin esperas"
+  in_scope_mvp:
+    - "Carta digital con pizzas, postres, café (solo mañanas) y bebidas"
+    - "Selector de cantidad por producto y flujo de upsell de extras"
+    - "Pago online (tarjeta, Apple Pay) y opción de pagar en local"
+    - "Confirmación de pedido al cliente"
+    - "Panel de gestión de pedidos en tiempo real para el dueño"
+    - "Registro de clientes y herramienta básica de ofertas/fidelización"
+    - "Enlace a Instagram"
+    - "Web en castellano, catalán e inglés"
+  out_of_scope:
+    - "Reparto a domicilio"
+    - "Reserva de mesas"
+    - "Blog o contenido editorial"
+    - "App nativa"
+  business_constraints:
+    deadlines: "Cuanto antes, sin fecha dura"
+    budget: "No confirmado"
+    languages:
+      - "es"
+      - "ca"
+      - "en"
+    legal_privacy: "Recogida de datos de clientes → cumplimiento RGPD obligatorio"
+    decision_makers: "Jaime (dueño, único decisor)"
+    expected_volume: "Negocio de barrio; picos viernes y sábado noche"
+  existing_system: null
+  success_metrics:
+    - "Reducción de llamadas en horas punta (viernes/sábado noche)"
+    - "Incremento de pedidos totales respecto a la media actual"
+    - "Número de clientes nuevos registrados"
+    - "Frecuencia de repetición de clientes registrados"
+    - "Cero incidencias de pago no recibido por el dueño"
+  business_risks:
+    - risk: "El dueño no sabe manejar el panel de gestión"
+      impact: "Pedidos perdidos o no vistos a tiempo"
+      mitigation: "Panel muy simple + formación al entregar + soporte accesible"
+    - risk: "Caída de la web en hora punta"
+      impact: "Pedidos perdidos y mala imagen"
+      mitigation: "Fiabilidad como requisito crítico; alertas ante caída"
+    - risk: "Desincronización entre pago online y pedido recibido"
+      impact: "Reclamaciones de clientes que pagaron pero el dueño no lo ve"
+      mitigation: "Integración de pago con confirmación en tiempo real; log de transacciones"
+  assumptions:
+    - "Solo recogida en local; sin reparto ahora ni a corto plazo"
+    - "El dueño gestiona la web solo, sin equipo técnico propio"
+    - "El café solo se ofrece en horario de mañana (lógica de horario a implementar)"
+    - "Google Pay incluido junto a Apple Pay (pendiente confirmar con Jaime)"
+  open_questions:
+    - "¿Cuál es el horario de apertura y los días que abre Dopis?"
+    - "¿Hay un horario específico para el café de mañana?"
+    - "¿Jaime quiere gestionar la carta él mismo o lo delega al programador?"
+    - "¿Cómo quiere recibir el aviso de pedido nuevo (móvil, tablet, sonido en local…)?"
+    - "¿Presupuesto disponible?"
+    - "¿Dominio propio ya comprado o hay que gestionarlo?"
+  technical_parking_lot:
+    - "Elección de pasarela de pago (Stripe, Redsys, etc.) — decidir en entrevista técnica"
+    - "Google Pay: confirmar inclusión junto a Apple Pay"
+    - "Mecanismo de notificación de pedido nuevo para el dueño (push, email, sonido…)"
+    - "CMS o panel para que el dueño edite la carta él mismo vs. gestión manual por el programador"
+    - "Lógica de horario para el café de mañana"
+    - "Estrategia de fidelización y envío de ofertas (email marketing, SMS, otra)"
+    - "Cumplimiento RGPD: política de privacidad, consentimiento, gestión y retención de datos"
+    - "Dominio y hosting"
+    - "Fiabilidad y SLA en horas punta (arquitectura, redundancia, monitorización)"
