@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.16
+**Version:** 0.17
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -122,6 +122,9 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Dopis does not currently have a reliable baseline for comparing telephone, in-person, and web orders.
 - The current frontend already contains upselling elements.
 - Upselling is part of MVP discovery and must not be treated as validated only because it is visually present in the current frontend.
+- Routine MVP operation is primarily performed by Jaime and one other worker who takes responsibility when Jaime is absent.
+- The delegated worker can perform almost all operational and administrative tasks performed by Jaime.
+- The first MVP does not need an extensive employee, permission, and escalation hierarchy.
 
 ### 3.2 Provisional
 
@@ -310,6 +313,24 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - When an accepted item is unavailable, staff may offer a valid alternative and record the customer's choice.
 - If the alternative costs more, the responsible shift lead may collect the difference or absorb it as the incident resolution; the decision is recorded and does not alter the original product's published price.
 - Jaime or an authorised responsible person may reopen an incorrectly resolved incident while preserving its link to the original record.
+- The MVP recognises a principal responsible person, Jaime, and one pre-authorised delegated responsible person.
+- Delegated authority may be stable or limited to specified shifts or dates.
+- Online ordering cannot open unless Jaime or the currently authorised delegate is present and assumes responsibility.
+- Delegated responsibility is never inferred from seniority or mere presence.
+- The delegated responsible person may modify and validate prices, names, descriptions, ingredients, allergens, dietary rules, featured products, temporary products, and upselling relationships.
+- Sensitive product validation requires reliable documentation and responsible review.
+- The delegated responsible person may create and publish complete validated products and may access or export authorised operational and commercial reports.
+- Only Jaime may create, revoke, or change staff access and permissions.
+- Permanent business-policy changes, legal matters, exceptional decisions outside authorised rules, and permanent changes to opening hours or normal capacity remain reserved to Jaime.
+- The delegate may make temporary operational adjustments for the current service.
+- When Jaime is unavailable and a problem exceeds authorised rules, staff pause only the affected capability and choose the lowest-risk option for both customer and Dopis.
+- Isolated safe operation continues when the affected capability can be contained.
+- Pending decisions receive priority at the next service opening and in Jaime's next review report.
+- Substitutions use explicit product relationships or validated fallback rules by category or price; the delegate may not improvise unrestricted alternatives.
+- Jaime defines a fixed maximum per order that the delegate may absorb as a price difference without further consultation.
+- Concrete retention periods for identified orders, telephone numbers, incidents, and audit records must be defined and legally reviewed before public launch.
+- Outstanding numeric values are collected in one bounded Jaime-validation list rather than discovered through further extensive interview rounds.
+- First-MVP business discovery is substantially complete, pending concrete Jaime validation, legal privacy and retention review, and a final cross-domain coherence review.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -573,47 +594,53 @@ Store a commercial snapshot so historical orders do not change when the menu cha
 - `line_total`
 - `selected_options_snapshot`
 
-### 6.5 Staff identity, access profile, and shift responsibility
+### 6.5 Responsible people, operational access, and delegation
 
-Candidate staff-user fields:
+Candidate identity and authorisation fields:
 
 - `id`
 - `username`
 - `password_hash`
-- `access_profile`
+- `responsibility_type`
 - `is_active`
 - `authorised_by`
+- `authorised_from`
+- `authorised_until`
+- `authorised_shift_scope`
 - `last_login_at`
 - `revoked_at`
 - `created_at`
 - `updated_at`
 
-Initial bounded access profiles:
+The first MVP uses a deliberately small responsibility model:
 
-- `OWNER_ADMIN`: Jaime; access management and all authorised administrative operations;
-- `AUTHORISED_MANAGER`: explicitly authorised commercial or sensitive administration within granted permissions;
-- `SHIFT_LEAD`: operational responsibility, incident resolution, payment correction, close confirmation, and permitted exceptions;
-- `OPERATIONAL`: orders, status changes, availability, and stock;
-- `KITCHEN_SHARED`: common operational session without sensitive administration, attributed to the registered shift lead.
+- `PRINCIPAL`: Jaime;
+- `DELEGATED`: one person previously authorised by Jaime, either continuously or for specified shifts or dates;
+- `OPERATIONAL`: bounded order, status, availability, and stock access;
+- `KITCHEN_SHARED`: common operational session attributed to the responsible person currently on duty.
 
-The MVP does not require a complex role-management interface, but backend authorisation must distinguish these capabilities.
+These are capability boundaries, not an extensive organisational hierarchy.
 
-Access-management rules:
+Principal and delegated responsibility:
 
-- only Jaime authorises, revokes, or modifies staff access;
-- personal and administrative credentials are not shared;
-- departing staff lose access before the next service;
-- active access is reviewed before the pilot and whenever personnel change;
-- the shift lead cannot grant or change access;
-- temporary staff receive operational permissions only.
+- either Jaime or an authorised delegate must be present before online ordering opens;
+- the current responsible person is identified at service opening;
+- responsibility changes record the new person and handover time;
+- delegated authority is never assigned automatically;
+- the delegated person may perform normal operational and administrative work, including validated safety-sensitive catalog work;
+- reliable supplier or product documentation is required before validating ingredients, allergens, or dietary rules.
 
-Operational responsibility requires:
+Reserved to Jaime:
 
-- an explicit current shift lead;
-- responsibility handover history;
-- handover timestamp;
-- session close at the end of the shift;
-- accurate distinction between individual and shared kitchen sessions.
+- create, revoke, or change staff access;
+- define permanent business policies;
+- decide legal matters;
+- approve exceptional decisions outside existing rules;
+- make permanent changes to opening hours or normal capacity.
+
+Temporary and shared operational access does not include access management.
+
+Personal and administrative credentials remain individual. The shared kitchen session remains an explicitly attributed operational exception.
 
 ### 6.6 Payment and handover preparation
 
@@ -833,13 +860,18 @@ Rules:
 The operational system records:
 
 - responsible person at service opening;
+- whether responsibility is principal or delegated;
+- delegation validity and applicable shift or date scope;
 - start time;
 - replacement responsible person;
 - handover time;
+- temporary current-service adjustments;
 - closing confirmation;
 - unresolved incidents and decisions pending Jaime.
 
-A common kitchen session is attributed to the responsible shift lead without pretending that every action identifies an individual operator.
+Opening is blocked when neither Jaime nor a currently authorised delegate assumes responsibility.
+
+A common kitchen session is attributed to the current principal or delegated responsible person without pretending that every action identifies an individual operator.
 
 ### 6.18 Pending-Jaime decision
 
@@ -854,6 +886,46 @@ When an incident exceeds shift authority, retain:
 - Jaime review or resolution.
 
 The record may remain open after shift close when immediate operation is safe.
+
+### 6.19 Substitution rule
+
+Authorised substitutions are defined through:
+
+- a specific relationship between unavailable and alternative products; or
+- a validated fallback rule based on category, compatible configuration, and price boundary.
+
+Candidate fields:
+
+- `id`
+- `unavailable_product_id`
+- `alternative_product_id`
+- `category_rule`
+- `maximum_price_difference`
+- `dietary_constraints`
+- `allergen_constraints`
+- `is_active`
+- `approved_by`
+- `created_at`
+- `updated_at`
+
+Specific relationships take priority over general fallback rules.
+
+The delegated responsible person may apply configured rules but may not invent unrestricted alternatives.
+
+### 6.20 Operational threshold register
+
+Outstanding numerical values should be held in one bounded pre-pilot validation list, including:
+
+- large-order threshold;
+- relevant-delay threshold;
+- severe-delay threshold;
+- customer-response windows;
+- reservation or review extensions;
+- maximum absorbed price difference per order;
+- alert and escalation timeouts;
+- other already identified operational limits.
+
+This register validates values for discovered rules; it is not a new broad discovery phase.
 
 ---
 
@@ -1035,17 +1107,18 @@ The MVP must not assume:
 
 If Jaime later validates compensation as an MVP capability, structured authorisation, type, value, responsibility, expiry, and fulfilment rules may be added.
 
-### 7.9 Shift incident authority and escalation
+### 7.9 Responsible-person incident authority and escalation
 
-The responsible shift lead may:
+Jaime or the authorised delegated responsible person may:
 
 - correct permitted payment errors;
-- resolve operational incidents;
-- authorise explicitly permitted exceptions;
+- resolve ordinary operational incidents;
+- authorise exceptions already covered by validated rules;
 - cancel an already prepared order;
 - offer configured valid substitutions;
 - decide whether to collect or absorb an authorised price difference;
-- confirm shift close.
+- confirm shift close;
+- reopen an incorrectly resolved incident.
 
 Prepared-order cancellation records:
 
@@ -1057,20 +1130,25 @@ Prepared-order cancellation records:
 When an accepted product is unavailable:
 
 1. the order moves to `Requires attention`;
-2. staff offer only valid configured alternatives;
-3. the customer's selection is recorded;
-4. any higher price is either collected or absorbed as the recorded incident resolution;
-5. the substitution does not change the original product's published price.
+2. staff apply a specific substitution relationship when available;
+3. otherwise, staff may apply a validated category or price fallback rule;
+4. the customer's selection is recorded;
+5. any higher price is collected or absorbed within Jaime's configured per-order limit;
+6. the substitution does not change the original product's published price.
 
-A decision beyond shift authority:
+The delegated responsible person may not improvise an alternative outside approved rules.
 
-- remains visible as pending Jaime;
-- records the safe temporary measure;
-- does not disappear merely to permit shift close;
-- appears in Jaime's next review summary.
+When an issue exceeds authorised rules and Jaime is unavailable:
 
-Jaime or an authorised responsible person may reopen an incorrectly resolved incident. Reopening preserves the original incident and adds a linked continuation.
+- pause only the affected product, option, channel, or capability where safe isolation is possible;
+- apply the lowest-risk operational measure;
+- preserve the issue as pending Jaime;
+- keep unaffected service running when it remains safe;
+- prioritise the pending decision at the next opening and in Jaime's report.
 
+A shift may close with a pending Jaime decision only when immediate operation is safe and the unresolved item remains visible.
+
+Incident reopening preserves the original incident and adds a linked continuation.
 ---
 
 ## 8. Kitchen tablet requirements
@@ -1112,8 +1190,9 @@ Additional working requirements from business discovery:
 - recovery requires staff review and explicit `Resume`;
 - a mobile backup may view orders, change operational states, and apply urgent availability changes;
 - the mobile backup must not edit prices, commercial content, access permissions, or expose full administration;
-- staff complete a readiness checklist, explicitly identify the responsible shift lead, and select `Open orders`;
-- a common kitchen operational session may be used during the first MVP only after a responsible shift lead is registered;
+- staff complete a readiness checklist, explicitly identify Jaime or the currently authorised delegate, and select `Open orders`;
+- opening is blocked if neither authorised responsible person is present;
+- a common kitchen operational session may be used during the first MVP only after the responsible person is registered;
 - the common kitchen session never exposes sensitive administrative functions;
 - the pre-opening checklist covers kitchen readiness, shift capacity, countable drinks and desserts, sold-out products, and a short list of critical ingredients or options;
 - any authorised operator may mark an item sold out, while reactivation requires Jaime or the responsible shift lead;
@@ -1127,7 +1206,7 @@ Additional working requirements from business discovery:
 
 The digital panel remains the source of truth. A ticket printer is outside the initial MVP scope and is reconsidered only if operational tests show that tablet and mobile alerts are insufficient. If later introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
 
-At shift end, the responsible shift lead reviews open incidents, payments, and pending Jaime decisions before confirming close. Incidents do not close automatically. A responsibility change during service records the new responsible person and handover time.
+At shift end, the current responsible person reviews open incidents, payments, and pending Jaime decisions before confirming close. Incidents do not close automatically. A responsibility change during service records the new responsible person and handover time. Jaime reviews pending decisions before the next service opens.
 
 ---
 
@@ -1234,7 +1313,9 @@ Initial model:
 - the earliest-available estimate advances when nearer windows are full;
 - web, telephone, and in-person orders consume the same capacity;
 - manual orders normally receive the next feasible window;
-- a responsible operator may explicitly override the capacity warning for an exceptional order without altering prior confirmed commitments.
+- Jaime or the authorised delegate may explicitly override the capacity warning for an exceptional current-service order without altering prior confirmed commitments;
+- the delegate may make temporary capacity adjustments for the current service;
+- permanent normal-capacity or operating-hours changes remain reserved to Jaime.
 
 Use small integer points rather than fractional time estimates. Example values must be calibrated with Jaime and kitchen observation rather than treated as universal facts. Product and modifier point values are technical configuration in the initial MVP; Jaime adjusts the operational capacity of windows rather than editing individual workload weights. The model may later evolve into station-specific capacity or historical prediction.
 
@@ -1306,7 +1387,9 @@ Availability permissions are intentionally asymmetric: authorised staff may disa
 
 Operational staff may change availability and stock during service.
 
-Prices, names, descriptions, commercial content, upselling configuration, and other administrative data require Jaime or an explicitly authorised responsible person. Ingredient, allergen, dietary, and other safety-sensitive changes remain within the stricter authorised boundary.
+Jaime and the currently authorised delegate may manage prices, names, descriptions, commercial content, featured and temporary products, upselling relationships, ingredients, allergens, dietary rules, and product publication.
+
+Sensitive information may be validated only from reliable documentation with an explicit responsible review.
 
 Temporary or reinforcement staff receive no sensitive administration access.
 
@@ -1599,7 +1682,7 @@ The procedure, identity-verification method, response ownership, and legal reten
 
 ### 11.5 Retention and anonymisation
 
-Concrete retention periods remain open for:
+Concrete retention periods must be defined and legally reviewed before public launch for:
 
 - identified orders;
 - telephone numbers;
@@ -1608,7 +1691,7 @@ Concrete retention periods remain open for:
 - audit and correction events;
 - SMS delivery records.
 
-The provisional 90-day incident-risk window is not itself a retention policy.
+The provisional 90-day incident-risk window is not itself a retention policy and cannot substitute for approved retention periods.
 
 Metrics should use anonymised or aggregated data where identifiable records are no longer required.
 
@@ -1633,9 +1716,11 @@ They do not include the complete order detail.
 - avoid direct storage of payment-card data;
 - support correction, anonymisation, and deletion workflows;
 - retain auditability for material corrections;
-- restrict access management to Jaime;
+- restrict access creation, revocation, and permission changes to Jaime;
+- represent stable or shift-bounded delegated authority explicitly;
+- block opening without Jaime or an authorised delegate;
 - remove departing-staff access before the next service;
-- restrict weekly reports and data exports;
+- restrict weekly reports and data exports to Jaime and authorised delegated access;
 - preserve previous and new values for sensitive administrative changes;
 - record shift responsibility and shared-session attribution;
 - obtain legal and privacy review before public production.
@@ -2025,7 +2110,15 @@ Online orders open only after staff complete the readiness checklist and explici
 | Tablet alert is inaudible in a noisy kitchen | Order remains unseen | Persistent highlight, explicit acknowledgement, repeated alert, safety pause, real-device testing |
 | Panel loses connectivity | Staff act on stale information or unseen orders arrive | Stale indicator, blocked writes, mobile backup, timed pause, manual resume |
 | Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
-| Shared access is mistaken for individual attribution | Misleading audit history | Record the shared kitchen session and current shift lead accurately |
+| Shared access is mistaken for individual attribution | Misleading audit history | Record the shared kitchen session and current responsible person accurately |
+| Permission hierarchy exceeds the real two-person operation | Unnecessary complexity and configuration errors | Use principal, delegated, and bounded operational access rather than a broad hierarchy |
+| Delegated authority is expired or absent at opening | Service runs without accountable responsibility | Validate delegation scope and block online opening |
+| Temporary service adjustment becomes permanent policy | Delegated action exceeds authorised scope | Store current-service scope and reserve permanent policy changes to Jaime |
+| Sensitive catalog data is validated without evidence | Incorrect allergen or dietary information | Require reliable documentation and responsible review |
+| Delegate improvises an unsupported substitution | Safety, pricing, or customer-dispute risk | Enforce specific relationships or approved category and price rules |
+| Absorbed price differences are unbounded | Inconsistent financial decisions | Configure a fixed per-order maximum approved by Jaime |
+| Retention periods remain undefined at public launch | Personal data is retained indefinitely | Treat approved legally reviewed periods as a launch gate |
+| Discovery continues through repetitive numeric interviews | Delay without new business-rule value | Consolidate unresolved numbers into one bounded validation register |
 | Shared kitchen access exposes administration | Temporary or operational staff change sensitive data | Limit shared sessions to operational functions only |
 | Shift lead can change access permissions | Privilege expansion without owner control | Reserve authorisation, revocation, and permission changes to Jaime |
 | Departing staff retain access | Unauthorised access after employment | Revoke access before the next service and review when personnel change |
@@ -2244,13 +2337,16 @@ Still open:
 
 ### Shift authority and incident escalation
 
-- which operational exceptions the shift lead may approve without contacting Jaime;
-- which decisions always require later Jaime validation;
-- which substitutions may be offered for each unavailable item;
-- when a higher substitution price is collected or absorbed;
+- which operational exceptions the delegate may approve without contacting Jaime;
+- which decisions always require Jaime;
+- the initial specific substitution relationships;
+- validated fallback substitution rules by category or price;
+- the fixed per-order amount the delegate may absorb;
 - which measures count as operationally safe when Jaime is unavailable;
 - how and when Jaime receives the pending-decision summary;
-- which pending Jaime validations block initial discovery closure.
+- which validations block the pilot;
+- which validations block only public launch;
+- which pending validations block formal discovery closure.
 
 ### Customers and privacy
 
@@ -2263,9 +2359,9 @@ Still open:
 - What exact procedure and identity checks will Jaime use for access, correction, or deletion requests?
 - Which accounting or legal records must remain identifiable?
 - Which data can be anonymised while preserving useful metrics?
-- Which named people may act as shift leads?
-- Which named people may edit commercial content or sensitive configuration?
-- Which named people may view or export reports?
+- Who is the delegated responsible person?
+- Is delegated authority stable or limited to defined shifts or dates?
+- Which exceptional actions remain outside delegated authority?
 - What exact onboarding, revocation, and access-review procedure will Jaime use?
 - When must the shared kitchen session be replaced by individual operational identities?
 - How is the tablet physically protected outside service hours?
@@ -2288,14 +2384,17 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, carry-over, perishables, replenishment, adjustment reasons, and physical-sales reconciliation;
 - `JV-MANUAL-ORDERS`: telephone and in-person entry, required customer data, manual capacity overrides, and channel workflow;
 - `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
-- `JV-PRIVACY`: operational notice, retention, anonymisation, data requests, staff visibility, and lawful record preservation;
-- `JV-ACCESS`: named administrators, report and export authority, Jaime-only access management, onboarding, revocation, review, shared kitchen session, mobile-backup limits, and physical tablet protection;
+- `JV-PRIVACY`: operational notice, anonymisation, data requests, staff visibility, and lawful record preservation;
+- `JV-LEGAL-RETENTION`: legally reviewed periods for identified orders, telephones, incidents, payment records, audit history, and SMS records before public launch;
+- `JV-DELEGATION`: named delegate, authorisation duration or shift scope, opening responsibility, administrative authority, reporting and export access, and boundary between temporary adjustment and permanent policy;
+- `JV-ACCESS`: Jaime-only access management, onboarding, revocation, review, shared kitchen session, mobile-backup limits, and physical tablet protection;
 - `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, weekly reporting, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
 - `JV-CONTENT`: authorised editors, Spanish and Catalan copy, category order, featured and temporary products, and launch photography;
 - `JV-UPSELL`: concrete relationships, priority, authorised editors, dietary compatibility, excluded products, checkout-impact threshold, and post-pilot success threshold;
-- `JV-DISCOVERY-CLOSE`: remaining material Jaime validations and explicit first-MVP exclusions;
-- `JV-SHIFT-AUTHORITY`: named shift leads, permitted exceptions, prepared-order cancellation, substitutions, price-difference handling, safe pending measures, escalation, reopening, and Jaime review channel;
-- `JV-STAFF`: operational responsibility and shift-lead authority.
+- `JV-THRESHOLDS`: one bounded list of large-order, delay, response, extension, alert, escalation, and absorbed-price-difference values;
+- `JV-DISCOVERY-CLOSE`: pilot blockers, public-launch blockers, remaining material Jaime validations, and explicit first-MVP exclusions;
+- `JV-SHIFT-AUTHORITY`: permitted exceptions, prepared-order cancellation, approved substitution rules, price-difference handling, safe isolation measures, escalation, reopening, and Jaime review channel;
+- `JV-COHERENCE`: final cross-domain contradiction and consistency review before formal discovery closure.
 
 These references are validation gates, not replacements for the future structured register.
 
@@ -2371,11 +2470,11 @@ Completed:
 - updated and validated GitHub Pages deployment;
 - recorded the current FastAPI recommendation.
 
-### Phase 0B — business and architecture discovery — IN PROGRESS
+### Phase 0B — business discovery substantially complete; architecture discovery in progress
 
 Remaining:
 
-- continue business discovery through delta checkpoints;
+- stop broad business-interview expansion and prepare bounded Jaime validation;
 - normalise and validate the real menu;
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
@@ -2387,8 +2486,11 @@ Remaining:
 - confirm the material gates required to close initial discovery and the explicit first-MVP exclusions;
 - validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
-- validate named access holders, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
-- validate shift-lead exceptions, cancellation and substitution authority, safe pending measures, escalation, incident reopening, and Jaime's review channel;
+- validate the delegated responsible person, authorisation scope, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
+- validate delegated exceptions, explicit and fallback substitution rules, absorbed-price limit, safe isolation measures, escalation, incident reopening, and Jaime's review channel;
+- validate the bounded operational threshold register;
+- complete legal review of privacy procedures and retention periods;
+- perform the final cross-domain coherence review;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
 - define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
@@ -2465,19 +2567,20 @@ The repository audit, documentation custody, frontend migration, and GitHub Page
 Recommended sequence:
 
 1. Install this reconciled version as the canonical document.
-2. Continue business discovery using delta checkpoints rather than independent full-document replacements.
-3. Create and review ADRs for:
+2. Prepare a bounded Jaime validation package covering delegation, thresholds, substitutions, catalog and allergen evidence, pilot gates, and launch gates.
+3. Complete legal privacy and retention review and a final cross-domain coherence review.
+4. Create and review ADRs for:
    - monorepo architecture;
    - provisional FastAPI selection;
    - weighted pickup-capacity windows;
    - secure guest tracking;
    - transactional stock and capacity holds.
-4. Transcribe product-source material into a draft structured catalog.
-5. Validate the catalog, modifiers, prices, allergens, and operating hours with Jaime.
-6. Draft the MVP requirements baseline.
-7. Draft the API contract and database schema.
-8. Draft a bounded backend-scaffold plan.
-9. Grant separate implementation authority only after those artifacts are reviewed.
+5. Transcribe product-source material into a draft structured catalog.
+6. Validate the catalog, modifiers, prices, allergens, and operating hours with Jaime.
+7. Draft the MVP requirements baseline.
+8. Draft the API contract and database schema.
+9. Draft a bounded backend-scaffold plan.
+10. Grant separate implementation authority only after those artifacts are reviewed.
 
 ### 17.1 Cross-chat synchronisation protocol
 
@@ -2543,12 +2646,18 @@ These sources inform the discovery model; Dopis business rules still require val
 
 ## 18A. Initial discovery closure criteria
 
-Initial discovery may close when:
+First-MVP business discovery is substantially complete.
 
-- the complete customer and staff operating flow is defined;
-- stock, capacity, payment, handover, privacy, catalog, and pilot boundaries are coherent;
-- remaining material decisions depend mainly on external validation with Jaime;
-- each remaining validation item is explicitly recorded;
+It may close formally when:
+
+- the complete customer and staff operating flow remains coherent after cross-domain review;
+- Jaime validates the named delegate and delegation scope;
+- the bounded numerical threshold list is approved;
+- substitution rules and the absorbed-price limit are approved;
+- initial catalog content and allergen evidence are validated;
+- pilot blockers and public-launch blockers are explicitly separated;
+- privacy procedure and retention periods receive required legal review;
+- every remaining material item has a clear owner and validation gate;
 - unresolved implementation details do not imply implementation authority.
 
 The following are not required to close first-MVP discovery:
@@ -2562,9 +2671,27 @@ The following are not required to close first-MVP discovery:
 
 Upselling is included in the first MVP through manually configured relationships; automatic recommendation engines remain outside scope.
 
+Further broad interview rounds are not required merely to choose already identified numerical values. Those values belong in the bounded validation package.
+
 ---
 
 ## 19. Change log
+
+### 0.17 — 2026-07-25
+
+- Reconciled `BD-DELTA-013` against canonical version 0.16.
+- Confirmed that normal MVP operation is primarily Jaime plus one worker who assumes delegated responsibility.
+- Revoked the extensive first-MVP permission hierarchy and simplified it to principal, delegated, bounded operational, and shared-kitchen access.
+- Added stable or shift/date-bounded delegation and blocked online opening without Jaime or an authorised delegate.
+- Granted the delegate near-equivalent normal operational, catalog, allergen, dietary, reporting, export, publishing, incident, and current-service authority.
+- Preserved Jaime-only access management, permanent policy, legal, exceptional, opening-hours, and normal-capacity decisions.
+- Added safe isolation of affected capabilities when Jaime is unavailable.
+- Added explicit and category/price fallback substitution rules plus a fixed absorbed-price limit.
+- Made legally reviewed retention periods a public-launch gate.
+- Consolidated outstanding numerical values into a bounded threshold register.
+- Marked business discovery substantially complete pending Jaime validation, legal review, and final coherence review.
+- Added `JV-DELEGATION`, `JV-LEGAL-RETENTION`, `JV-THRESHOLDS`, and `JV-COHERENCE`.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.16 — 2026-07-25
 
