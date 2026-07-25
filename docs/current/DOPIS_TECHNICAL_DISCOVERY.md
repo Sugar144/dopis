@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.17
+**Version:** 0.18
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -125,6 +125,8 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Routine MVP operation is primarily performed by Jaime and one other worker who takes responsibility when Jaime is absent.
 - The delegated worker can perform almost all operational and administrative tasks performed by Jaime.
 - The first MVP does not need an extensive employee, permission, and escalation hierarchy.
+- The delegated responsible person is the current worker who normally takes charge when Jaime is absent; the nominal identity and authorisation scope still require Jaime's formal confirmation.
+- The controlled pilot and public launch are distinct milestones: selected real customers participate first, and public availability may follow later.
 
 ### 3.2 Provisional
 
@@ -328,9 +330,27 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Pending decisions receive priority at the next service opening and in Jaime's next review report.
 - Substitutions use explicit product relationships or validated fallback rules by category or price; the delegate may not improvise unrestricted alternatives.
 - Jaime defines a fixed maximum per order that the delegate may absorb as a price difference without further consultation.
-- Concrete retention periods for identified orders, telephone numbers, incidents, and audit records must be defined and legally reviewed before public launch.
+- Concrete retention periods for identified orders, telephone numbers, incidents, and audit records must be defined through the applicable pre-launch compliance review.
 - Outstanding numeric values are collected in one bounded Jaime-validation list rather than discovered through further extensive interview rounds.
-- First-MVP business discovery is substantially complete, pending concrete Jaime validation, legal privacy and retention review, and a final cross-domain coherence review.
+- First-MVP business discovery is formally closed after reconciliation of `BD-DELTA-014`.
+- Web, telephone, and in-person orders always share real kitchen capacity, availability, and stock; pausing web ordering does not create capacity for manual channels.
+- A safely isolated incident does not require stopping unaffected channels or capabilities.
+- An accepted order preserves its confirmed price despite later catalog changes.
+- Later product deactivation blocks new sales but does not cancel or rewrite accepted orders.
+- If an accepted product can no longer be prepared, the order moves to operational attention.
+- Later capacity reductions affect only new admissions and do not displace accepted orders.
+- Incorrect published allergen information immediately disables affected sales, triggers review of accepted undelivered orders, and pauses the affected service scope.
+- No product may participate in real orders until its product-specific allergen information is complete and validated; a general warning is insufficient.
+- Simulated and internal-test orders are excluded from real pilot metrics or clearly separated.
+- Real pilot data uses the privacy notice, minimum access, security controls, and personal-data request procedure from the first real order.
+- Operational thresholds may begin conservatively and remain configurable during the pilot.
+- One threshold table records concept, initial value, pilot adjustability, review point, and validator.
+- The pilot may begin with Jaime as the only responsible person present; a formally authorised delegate is required only when operating without Jaime.
+- Before the pilot, Jaime validates initial specific substitutions, fallback substitution rules, and the maximum absorbed price difference per order.
+- Critical failures that recur after a supposed fix trigger rollback to manual review or pause of the affected function until the cause is understood and corrected.
+- Before public launch, Dopis completes an applicable compliance review covering customer information, treatment purpose and basis, retention, rights requests, processors, commercial communications, cookies, electronic contracting, and consumer obligations.
+- Compliance work may be prepared internally from official sources and tools; external professional review is conditional on unresolved material doubt, increased risk, specialised obligations, or Dopis choosing additional assurance.
+- Business contradictions pause only the affected scope and return to business validation; implementation must not silently choose the newest decision.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -914,7 +934,18 @@ The delegated responsible person may apply configured rules but may not invent u
 
 ### 6.20 Operational threshold register
 
-Outstanding numerical values should be held in one bounded pre-pilot validation list, including:
+Outstanding numerical values should be held in one bounded pre-pilot validation table.
+
+Required columns:
+
+- `concept`;
+- `initial_value`;
+- `pilot_adjustable`;
+- `review_moment`;
+- `validated_by`;
+- optional `evidence_or_reason`.
+
+Initial concepts include:
 
 - large-order threshold;
 - relevant-delay threshold;
@@ -924,6 +955,8 @@ Outstanding numerical values should be held in one bounded pre-pilot validation 
 - maximum absorbed price difference per order;
 - alert and escalation timeouts;
 - other already identified operational limits.
+
+Initial values may be conservative and configurable. Pilot evidence informs later calibration before values become routine policy.
 
 This register validates values for discovered rules; it is not a new broad discovery phase.
 
@@ -1027,6 +1060,19 @@ In-person order entry follows the same domain flow. Requiring a telephone number
 Manual orders receive the next feasible pickup opportunity. They do not silently displace already confirmed orders.
 
 A responsible operator may override calculated capacity only through an explicit exceptional action that records the actor and acknowledged operational risk.
+
+Channel invariants:
+
+- web, telephone, and in-person orders consume the same real stock and capacity;
+- pausing one channel never permits another channel to ignore those shared limits;
+- only the safely affected channel or capability needs to pause when isolation is possible.
+
+Accepted-order invariants:
+
+- confirmed price is preserved;
+- later product deactivation blocks new sales only;
+- later capacity reduction affects new admissions only;
+- an accepted order that can no longer be fulfilled as confirmed moves to `Requires attention` rather than being silently changed or cancelled.
 
 Each order preserves its source channel:
 
@@ -1530,6 +1576,16 @@ The interface must:
 - allow staff to disable the gluten-free dough option independently;
 - disable it whenever the validated operating procedure cannot be followed.
 
+If published allergen information is discovered to be incorrect:
+
+1. immediately disable the affected product or option for new sales;
+2. identify accepted orders not yet handed over that include the affected configuration;
+3. move those orders to operational review;
+4. pause the affected service scope until the discrepancy is resolved;
+5. preserve the incident and correction trail.
+
+A general cross-contact or allergen warning does not replace complete product-specific validation.
+
 Public launch is blocked until Jaime validates:
 
 - supplier documentation;
@@ -1678,11 +1734,11 @@ Kitchen staff do not resolve these requests during active service.
 
 Where removal is appropriate, the accepted direction is to delete or anonymise identifying data while preserving only business, accounting, or operational records that may legitimately remain.
 
-The procedure, identity-verification method, response ownership, and legal retention exceptions must be defined before production.
+The procedure, identity-verification method, response ownership, and applicable retention exceptions must be defined before public launch and applied in a minimum viable form from the first real pilot order.
 
 ### 11.5 Retention and anonymisation
 
-Concrete retention periods must be defined and legally reviewed before public launch for:
+Concrete retention periods must be defined through the pre-launch compliance review for:
 
 - identified orders;
 - telephone numbers;
@@ -1723,7 +1779,8 @@ They do not include the complete order detail.
 - restrict weekly reports and data exports to Jaime and authorised delegated access;
 - preserve previous and new values for sensitive administrative changes;
 - record shift responsibility and shared-session attribution;
-- obtain legal and privacy review before public production.
+- complete an applicable privacy and operational compliance review before public launch;
+- seek external professional review when material uncertainty, increased risk, or specialised obligations remain unresolved.
 
 This section is a design baseline, not legal advice.
 ---
@@ -1833,7 +1890,7 @@ Initial rollout direction:
   - order reception;
   - order handling.
 
-Before accepting real pilot orders, run a complete operational rehearsal including:
+Before accepting real pilot orders, run and pass a complete operational rehearsal including:
 
 - web, telephone, and in-person orders;
 - alerts and acknowledgement;
@@ -1842,6 +1899,20 @@ Before accepting real pilot orders, run a complete operational rehearsal includi
 - connection loss and recovery;
 - payment and handover;
 - shift close.
+
+Real-pilot prerequisites:
+
+- initial participating catalog is approved;
+- ingredients and allergens are complete and validated;
+- initial hours are confirmed;
+- initial stock and availability are confirmed;
+- Jaime or an authorised responsible person is present;
+- reception and alerts are verified;
+- conservative provisional thresholds are loaded;
+- simulated orders are excluded from, or explicitly separated from, real pilot metrics;
+- privacy information, minimum-access controls, security measures, and the data-request procedure are active.
+
+The pilot may start with Jaime as the sole responsible person. Formal delegated authorisation becomes a blocker only before a service operates without Jaime.
 
 ### 12.5 Pilot pause and rollback
 
@@ -1853,6 +1924,14 @@ Pause the pilot when a critical failure occurs, including:
 - allergen or dietary information is incorrect.
 
 A single manageable delay does not automatically require a pause.
+
+If a critical failure reappears after it was considered corrected:
+
+- return to `MANUAL_REVIEW`; or
+- pause the affected capability;
+- investigate and correct the cause before resuming.
+
+Recording the failure in the weekly report is not sufficient while continuing unchanged.
 
 Transition from `MANUAL_REVIEW` to `AUTO_ACCEPT`, rollback from automatic acceptance, and expansion to the full service schedule require explicit validated criteria.
 
@@ -1885,6 +1964,8 @@ Additional candidate MVP metrics:
 - pilot pause events and causes;
 - accepted orders not received on time by the kitchen;
 - personal-data requests by type and resolution status, without exposing request content in routine analytics.
+
+Simulated and internal-test orders must be excluded from real pilot calculations or reported in a separately labelled test-data segment.
 
 Product-margin reporting is explicitly deferred until Dopis has validated product-cost data.
 
@@ -2117,8 +2198,16 @@ Online orders open only after staff complete the readiness checklist and explici
 | Sensitive catalog data is validated without evidence | Incorrect allergen or dietary information | Require reliable documentation and responsible review |
 | Delegate improvises an unsupported substitution | Safety, pricing, or customer-dispute risk | Enforce specific relationships or approved category and price rules |
 | Absorbed price differences are unbounded | Inconsistent financial decisions | Configure a fixed per-order maximum approved by Jaime |
-| Retention periods remain undefined at public launch | Personal data is retained indefinitely | Treat approved legally reviewed periods as a launch gate |
+| Retention periods remain undefined at public launch | Personal data is retained indefinitely | Treat approved periods from the applicable compliance review as a launch gate |
 | Discovery continues through repetitive numeric interviews | Delay without new business-rule value | Consolidate unresolved numbers into one bounded validation register |
+| Web pause is treated as spare manual-channel capacity | Telephone or in-person orders overload the same kitchen | Enforce shared capacity across every channel |
+| Later catalog or capacity change mutates accepted orders | Confirmed customer commitments become unstable | Preserve confirmed price and accepted-order admission |
+| Incorrect allergen data affects already accepted orders | Customers may receive unsafe or misleading products | Disable affected sales, review undelivered orders, and pause the affected scope |
+| Test orders contaminate pilot metrics | Adoption and reliability results become misleading | Exclude or separately label simulations |
+| Pilot status is used to defer privacy controls | Real customer data is handled without safeguards | Apply minimum privacy and security controls from the first real order |
+| Reappearing critical fault is only reported | Known unsafe or unreliable behaviour continues | Roll back to manual review or pause the affected function |
+| Latest decision silently wins a contradiction | Implementation embeds an unvalidated business choice | Stop the affected scope and return it to business validation |
+| External legal advice is treated as universally mandatory or unnecessary | Compliance work is either over-scoped or under-assured | Complete internal compliance review and escalate material unresolved issues |
 | Shared kitchen access exposes administration | Temporary or operational staff change sensitive data | Limit shared sessions to operational functions only |
 | Shift lead can change access permissions | Privilege expansion without owner control | Reserve authorisation, revocation, and permission changes to Jaime |
 | Departing staff retain access | Unauthorised access after employment | Revoke access before the next service and review when personnel change |
@@ -2178,7 +2267,7 @@ Online orders open only after staff complete the readiness checklist and explici
 
 ---
 
-## 15. Open decisions — discovery backlog
+## 15. Post-discovery validation and calibration backlog
 
 ### Order operation
 
@@ -2288,7 +2377,7 @@ Still open:
 - who besides Jaime may approve dietary and allergen information;
 - the exact provider-document review procedure;
 - which non-ingredient instructions and authorised exceptions may use free-text notes;
-- whether every product without documentary allergen verification must remain offline at launch;
+- final evidence package proving every real-pilot product has complete validated ingredient and allergen information;
 - who normally performs opening and closing counts;
 - which drinks, desserts, and limited products require mandatory counts;
 - whether closing reconciliation is daily or product-specific;
@@ -2337,16 +2426,14 @@ Still open:
 
 ### Shift authority and incident escalation
 
-- which operational exceptions the delegate may approve without contacting Jaime;
-- which decisions always require Jaime;
+- nominal identity of the current delegated responsible person;
+- dates or conditions of delegated authorisation before operating without Jaime;
+- exact operational exceptions the delegate may approve;
 - the initial specific substitution relationships;
 - validated fallback substitution rules by category or price;
 - the fixed per-order amount the delegate may absorb;
 - which measures count as operationally safe when Jaime is unavailable;
-- how and when Jaime receives the pending-decision summary;
-- which validations block the pilot;
-- which validations block only public launch;
-- which pending validations block formal discovery closure.
+- how and when Jaime receives the pending-decision summary.
 
 ### Customers and privacy
 
@@ -2360,7 +2447,7 @@ Still open:
 - Which accounting or legal records must remain identifiable?
 - Which data can be anonymised while preserving useful metrics?
 - Who is the delegated responsible person?
-- Is delegated authority stable or limited to defined shifts or dates?
+- What dates or operating conditions define delegated authority?
 - Which exceptional actions remain outside delegated authority?
 - What exact onboarding, revocation, and access-review procedure will Jaime use?
 - When must the shared kitchen session be replaced by individual operational identities?
@@ -2372,31 +2459,56 @@ Still open:
 
 ### Pending external validation — Jaime
 
-The detailed validation register will be created as a structured artifact for the stakeholder-validation workflow. Until then, the canonical discovery tracks these current validation gates:
+The detailed validation register will be created as a structured artifact for the stakeholder-validation workflow.
 
-- `JV-CAPACITY`: production points, capacity templates, and preparation timing;
-- `JV-DELAYS`: serious-delay thresholds, customer-contact rules, and delay-response timing;
-- `JV-COMPENSATION`: whether compensation belongs in the MVP and, if so, its permitted types and limits;
-- `JV-MODIFIERS`: allowed removals, substitutions, extras, limits, and pricing;
-- `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and online offer policy;
-- `JV-ALLERGENS`: complete product and modifier ingredient, allergen, and trace information;
-- `JV-CATALOG-APPROVAL`: authorised approvers, supplier-change review, and publication gates;
-- `JV-STOCK`: opening and closing counts, critical ingredients, daily limits, carry-over, perishables, replenishment, adjustment reasons, and physical-sales reconciliation;
-- `JV-MANUAL-ORDERS`: telephone and in-person entry, required customer data, manual capacity overrides, and channel workflow;
-- `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
-- `JV-PRIVACY`: operational notice, anonymisation, data requests, staff visibility, and lawful record preservation;
-- `JV-LEGAL-RETENTION`: legally reviewed periods for identified orders, telephones, incidents, payment records, audit history, and SMS records before public launch;
-- `JV-DELEGATION`: named delegate, authorisation duration or shift scope, opening responsibility, administrative authority, reporting and export access, and boundary between temporary adjustment and permanent policy;
-- `JV-ACCESS`: Jaime-only access management, onboarding, revocation, review, shared kitchen session, mobile-backup limits, and physical tablet protection;
-- `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, weekly reporting, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
-- `JV-CONTENT`: authorised editors, Spanish and Catalan copy, category order, featured and temporary products, and launch photography;
-- `JV-UPSELL`: concrete relationships, priority, authorised editors, dietary compatibility, excluded products, checkout-impact threshold, and post-pilot success threshold;
-- `JV-THRESHOLDS`: one bounded list of large-order, delay, response, extension, alert, escalation, and absorbed-price-difference values;
-- `JV-DISCOVERY-CLOSE`: pilot blockers, public-launch blockers, remaining material Jaime validations, and explicit first-MVP exclusions;
-- `JV-SHIFT-AUTHORITY`: permitted exceptions, prepared-order cancellation, approved substitution rules, price-difference handling, safe isolation measures, escalation, reopening, and Jaime review channel;
-- `JV-COHERENCE`: final cross-domain contradiction and consistency review before formal discovery closure.
+#### Required before the first real pilot order
+
+- `JV-CAPACITY`: initial conservative capacity and preparation values;
+- `JV-DELAYS`: initial delay, response, and escalation thresholds;
+- `JV-MODIFIERS`: initial allowed removals, substitutions, extras, limits, and pricing;
+- `JV-GLUTEN`: supplier information, actual kitchen procedure, cross-contact wording, and pilot offer policy;
+- `JV-ALLERGENS`: complete validated ingredient, allergen, and trace information for every participating product and modifier;
+- `JV-CATALOG-APPROVAL`: approved initial catalog and publication evidence;
+- `JV-STOCK`: opening stock, availability, critical options, and count procedure;
+- `JV-PILOT`: rehearsal pass, launch timing, participant group, observer ownership, manual review, pause, and rollback controls;
+- `JV-THRESHOLDS`: one approved table of conservative initial operating values;
+- `JV-SHIFT-AUTHORITY`: initial substitution rules, price-difference limit, and safe incident measures.
+
+The pilot may begin with Jaime as the only responsible person present.
+
+#### Required before operating without Jaime
+
+- `JV-DELEGATION`: nominal delegate, authorisation duration or shift scope, operating knowledge, and accepted limits;
+- `JV-ACCESS`: active access, revocation procedure, shared kitchen session, and mobile-backup limits.
+
+#### Required before public launch
+
+- `JV-COMPLIANCE`: customer information, treatment purpose and basis, retention, rights handling, processors, commercial communication, cookies, electronic contracting, and consumer obligations;
+- `JV-CONTENT`: final Spanish and Catalan copy and public menu presentation;
+- `JV-PRIVACY`: final privacy notice, anonymisation, data-request procedure, access boundaries, and processor inventory;
+- public infrastructure, monitoring, backup, and security readiness.
+
+External professional review is conditional rather than universally mandatory. It is escalated when internal official-source review leaves material uncertainty or specialised obligations.
+
+#### Calibrated during or after the pilot
+
+- final capacity and delay thresholds;
+- quantitative call-reduction objective;
+- acceptable opening and closing workload;
+- evidence for enabling `AUTO_ACCEPT`;
+- upselling conversion and checkout impact;
+- need for a ticket printer;
+- longer-term stock reconciliation simplification.
+
+#### Closed integration gates
+
+- `JV-DISCOVERY-CLOSE`: CLOSED by canonical reconciliation of `BD-DELTA-014`;
+- `JV-COHERENCE`: CLOSED for the current business baseline; no additional material contradiction was identified in the final round.
+
+A future contradiction does not reopen all discovery automatically. The affected business rule returns to bounded validation.
 
 These references are validation gates, not replacements for the future structured register.
+
 
 ### Business outcomes and pilot
 
@@ -2425,8 +2537,8 @@ Still open:
 - exact rollback criteria from automatic acceptance;
 - conditions for expanding the pilot to the full service schedule;
 - acceptable opening and closing workload;
-- exact set of material Jaime validations required before initial discovery closure;
-- exact boundary of capabilities remaining outside the operational MVP;
+- exact pass evidence from the operational rehearsal;
+- exact separation between first-pilot participants and later public availability;
 - concrete pizza-to-drink, dessert, and extra recommendation relationships for the pilot;
 - priority order for each recommendation group;
 - exact authorised people who may edit commercial relationships;
@@ -2470,27 +2582,27 @@ Completed:
 - updated and validated GitHub Pages deployment;
 - recorded the current FastAPI recommendation.
 
-### Phase 0B — business discovery substantially complete; architecture discovery in progress
+### Phase 0B — first-MVP business discovery CLOSED; architecture discovery in progress
 
 Remaining:
 
-- stop broad business-interview expansion and prepare bounded Jaime validation;
+- preserve the closed business baseline and prepare bounded Jaime validation;
 - normalise and validate the real menu;
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
 - validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
 - validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
-- define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation with Jaime and legal review;
+- define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation through the applicable compliance review;
 - validate the two-week baseline, weekly report, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
 - validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, concrete upselling relationships, compatibility, permissions, and pilot thresholds;
-- confirm the material gates required to close initial discovery and the explicit first-MVP exclusions;
+- maintain the closed discovery baseline and the explicit first-MVP exclusions while completing milestone-specific validations;
 - validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - validate the delegated responsible person, authorisation scope, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
 - validate delegated exceptions, explicit and fallback substitution rules, absorbed-price limit, safe isolation measures, escalation, incident reopening, and Jaime's review channel;
 - validate the bounded operational threshold register;
-- complete legal review of privacy procedures and retention periods;
-- perform the final cross-domain coherence review;
+- complete the applicable compliance review, define retention periods, and escalate unresolved material legal questions when necessary;
+- preserve the completed cross-domain coherence result and return only future contradictions to bounded validation;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
 - define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
@@ -2517,23 +2629,36 @@ After explicit implementation authority:
 - local Compose environment;
 - automated tests.
 
-### Phase 2 — launch readiness
+### Phase 2 — pilot and public-launch readiness
+
+#### Controlled real pilot
 
 - two-week channel and call baseline;
+- approved participating catalog and validated allergens;
 - complete operational rehearsal;
 - one-hour lower-pressure controlled launch;
 - initial manual-review operation;
-- validated promotion and rollback criteria for automatic acceptance;
+- verified alerts and order reception;
+- conservative threshold table;
+- real-versus-simulated data separation;
+- minimum privacy, access, security, and data-request controls;
+- validated rollback criteria;
 - four-week pilot measurement and review;
-- weekly pilot reporting;
-- bilingual content readiness;
+- weekly pilot reporting.
+
+#### Public launch
+
+- public bilingual content readiness;
 - validated menu presentation and bounded upselling configuration;
+- completed applicable compliance review;
+- defined retention and personal-data request procedures;
+- processor review for SMS, hosting, and other services;
+- applicable cookie, electronic-contracting, and consumer controls;
 - production hosting;
 - domain and TLS;
 - backups and restoration tests;
 - monitoring and alerting;
 - secure secret management;
-- privacy notices and retention process;
 - operational fallback;
 - production analytics baseline.
 
@@ -2567,20 +2692,25 @@ The repository audit, documentation custody, frontend migration, and GitHub Page
 Recommended sequence:
 
 1. Install this reconciled version as the canonical document.
-2. Prepare a bounded Jaime validation package covering delegation, thresholds, substitutions, catalog and allergen evidence, pilot gates, and launch gates.
-3. Complete legal privacy and retention review and a final cross-domain coherence review.
-4. Create and review ADRs for:
+2. Mark first-MVP business discovery formally closed and stop broad interview rounds.
+3. Prepare a bounded Jaime validation package separated into:
+   - first real pilot blockers;
+   - operating-without-Jaime blockers;
+   - public-launch blockers;
+   - pilot calibrations.
+4. Complete the internal official-source compliance review, define retention and rights procedures, and escalate externally only unresolved material issues.
+5. Create and review ADRs for:
    - monorepo architecture;
    - provisional FastAPI selection;
    - weighted pickup-capacity windows;
    - secure guest tracking;
    - transactional stock and capacity holds.
-5. Transcribe product-source material into a draft structured catalog.
-6. Validate the catalog, modifiers, prices, allergens, and operating hours with Jaime.
-7. Draft the MVP requirements baseline.
-8. Draft the API contract and database schema.
-9. Draft a bounded backend-scaffold plan.
-10. Grant separate implementation authority only after those artifacts are reviewed.
+6. Transcribe product-source material into a draft structured catalog.
+7. Validate the catalog, modifiers, prices, allergens, and operating hours with Jaime.
+8. Draft the MVP requirements baseline.
+9. Draft the API contract and database schema.
+10. Draft a bounded backend-scaffold plan.
+11. Grant separate implementation authority only after those artifacts are reviewed.
 
 ### 17.1 Cross-chat synchronisation protocol
 
@@ -2590,12 +2720,16 @@ Canonical path:
 
 `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`
 
-The business-discovery chat should accumulate answers and produce a delta checkpoint when the first of these occurs:
+The broad first-MVP business-discovery interview is now closed.
 
-- approximately 15–20 questions have been answered;
-- five material decisions have been closed;
-- a previous decision is contradicted;
-- scope, domain model, or operating rules change materially.
+That chat must not continue generating exploratory question rounds. Future business-side outputs are limited to:
+
+- Jaime validation responses;
+- corrections to a discovered rule;
+- a newly discovered material contradiction;
+- a formally authorised scope change.
+
+Such outputs should be bounded validation or correction deltas rather than renewed open-ended discovery.
 
 Each checkpoint should contain only:
 
@@ -2644,23 +2778,87 @@ These sources inform the discovery model; Dopis business rules still require val
 
 ---
 
-## 18A. Initial discovery closure criteria
+## 18A. Formal first-MVP business discovery closure
 
-First-MVP business discovery is substantially complete.
+**Status:** `CLOSED_PENDING_VALIDATION_AND_IMPLEMENTATION_PLANNING`
 
-It may close formally when:
+Canonical reconciliation of `BD-DELTA-014` formally closes first-MVP business discovery.
 
-- the complete customer and staff operating flow remains coherent after cross-domain review;
-- Jaime validates the named delegate and delegation scope;
-- the bounded numerical threshold list is approved;
-- substitution rules and the absorbed-price limit are approved;
-- initial catalog content and allergen evidence are validated;
-- pilot blockers and public-launch blockers are explicitly separated;
-- privacy procedure and retention periods receive required legal review;
-- every remaining material item has a clear owner and validation gate;
-- unresolved implementation details do not imply implementation authority.
+Closure means:
 
-The following are not required to close first-MVP discovery:
+- the customer and staff operating flow is sufficiently defined;
+- channel, stock, capacity, accepted-order, payment, handover, catalog, allergen, privacy, pilot, and authority rules form a coherent business baseline;
+- pending Jaime decisions are classified by milestone;
+- conservative configurable values may be validated without further broad discovery;
+- pilot calibration is distinguished from prerequisite validation;
+- implementation may now derive requirements, use cases, acceptance criteria, ADRs, contracts, and plans from this baseline.
+
+Closure does not mean:
+
+- all numerical values are final;
+- the pilot is authorised to start;
+- public launch requirements are complete;
+- implementation authority has been granted.
+
+### Pilot blockers
+
+Before the first real order:
+
+- initial participating catalog is approved;
+- product-specific ingredients and allergens are complete and validated;
+- initial hours, stock, and availability are confirmed;
+- operational rehearsal passes;
+- alerts and order reception are verified;
+- conservative threshold values are loaded;
+- substitution rules and absorbed-price limit are approved;
+- simulated and real data are separated;
+- minimum privacy, access, security, and rights-request controls are active;
+- Jaime or an authorised responsible person is present.
+
+### Operating-without-Jaime blockers
+
+- nominal delegate is confirmed;
+- authorisation dates or conditions are recorded;
+- delegate understands approved rules, limits, and safe measures;
+- access is active and bounded.
+
+### Public-launch blockers
+
+- applicable compliance review is complete;
+- retention periods are defined;
+- personal-data request procedure is defined;
+- public customer and privacy texts are approved;
+- relevant processors are reviewed;
+- applicable cookie, electronic-contracting, and consumer obligations are addressed;
+- production security and operational readiness are validated.
+
+External professional advice is conditional on unresolved material uncertainty, increased risk, specialised obligations, or Dopis seeking additional assurance.
+
+### Pilot calibrations
+
+The following may remain provisional at pilot start and be revised from evidence:
+
+- capacity and delay thresholds;
+- call-reduction target;
+- opening and closing workload limit;
+- automatic-acceptance evidence threshold;
+- upselling success thresholds;
+- printer necessity.
+
+### Coherence result
+
+No additional material contradiction was identified in the final business round.
+
+The previously over-broad mandatory-external-legal-review wording is superseded: a compliance review is mandatory, while external professional review is conditional.
+
+For any future contradiction:
+
+1. stop or isolate only the affected scope;
+2. return the incompatible business rule to explicit validation;
+3. preserve both competing decisions and their evidence;
+4. do not allow implementation to select silently or apply a latest-decision-wins rule.
+
+The following remain outside first-MVP discovery closure:
 
 - online payment;
 - loyalty;
@@ -2669,13 +2867,27 @@ The following are not required to close first-MVP discovery:
 - validated product-margin reporting;
 - automatic recommendation engines.
 
-Upselling is included in the first MVP through manually configured relationships; automatic recommendation engines remain outside scope.
-
-Further broad interview rounds are not required merely to choose already identified numerical values. Those values belong in the bounded validation package.
-
+Implementation authority remains `NOT GRANTED`.
 ---
 
 ## 19. Change log
+
+### 0.18 — 2026-07-25
+
+- Reconciled `BD-DELTA-014` against canonical version 0.17.
+- Formally closed first-MVP business discovery without granting implementation authority.
+- Distinguished controlled real pilot, operation without Jaime, and public launch as separate validation milestones.
+- Added cross-channel capacity invariants and protection of accepted prices, products, and capacity commitments.
+- Added immediate allergen-discrepancy containment and review of accepted undelivered orders.
+- Required real-versus-simulated pilot-data separation and minimum privacy and security controls from the first real order.
+- Converted outstanding numerical values into one conservative configurable threshold table with explicit review metadata.
+- Clarified that the pilot may start with Jaime alone and delegated authorisation is required before operating without him.
+- Added mandatory pre-pilot substitution rules and an absorbed-price limit.
+- Strengthened rollback when critical failures reappear.
+- Replaced mandatory external legal review with mandatory applicable compliance review and conditional external escalation.
+- Closed `JV-DISCOVERY-CLOSE` and `JV-COHERENCE`; no additional material contradiction was identified.
+- Preserved online payment, loyalty, advanced marketing, advanced analytics, and automatic recommendation engines outside first-MVP scope.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.17 — 2026-07-25
 
