@@ -1,148 +1,108 @@
-schema_version: "1.0"
-milestone: MILESTONE-SPEC-001
-status: DRAFT_FOR_REVIEW
-baseline:
-  discovery:
-    id: SRC-DISCOVERY-018
-    artifact: docs/current/DOPIS_TECHNICAL_DISCOVERY.md
-    version: "0.18"
-    status: CANONICAL
-  requirements:
-    artifact: docs/current/DOPIS_MVP_REQUIREMENTS.md
-    version: "0.1"
-  epics:
-    artifact: docs/backlog/DOPIS_EPICS.yaml
-    version: "1.0"
-
-node_types:
-  - BUSINESS_SOURCE
-  - REQUIREMENT
-  - VALIDATION_GATE
-  - EPIC
-  - USE_CASE
-  - STORY
-  - ACCEPTANCE_CRITERION
-  - ARCHITECTURE_DECISION
-  - CONTRACT
-  - TASK
-  - TEST
-  - RELEASE_EVIDENCE
-
-relation_types:
-  - DERIVES
-  - REFINES
-  - COVERS
-  - VALIDATES
-  - BLOCKS_OR_CALIBRATES
-  - DEPENDS_ON
-  - REALIZES
-  - VERIFIES
-  - PROTECTS
-  - SUPERSEDES
-  - PRODUCES_EVIDENCE_FOR
-
-requirements_by_epic:
-  EPIC-ORDERING: [FR-ORDER-001, FR-ORDER-002, DATA-ORDER-001, BR-ORDER-001, FR-ORDER-003, BR-ORDER-002, FR-ORDER-004, FR-ORDER-005, BR-ORDER-003, BR-ORDER-004, FR-ORDER-006]
-  EPIC-KITCHEN-OPERATIONS: [FR-KITCHEN-001, FR-KITCHEN-002, FR-KITCHEN-003, NFR-KITCHEN-001, NFR-KITCHEN-002, OPS-KITCHEN-001, FR-KITCHEN-004]
-  EPIC-CAPACITY: [BR-CAPACITY-001, FR-CAPACITY-001, FR-CAPACITY-002, BR-CAPACITY-002, AUDIT-CAPACITY-001, OPS-HOURS-001]
-  EPIC-STOCK: [FR-STOCK-001, FR-STOCK-002, BR-STOCK-001, FR-STOCK-003, FR-STOCK-004, BR-STOCK-002]
-  EPIC-CATALOG: [FR-CATALOG-001, FR-CATALOG-002, BR-CATALOG-001, DATA-CATALOG-001, BR-CATALOG-002, DATA-ALLERGEN-001, FR-ALLERGEN-001, BR-ALLERGEN-001, OPS-ALLERGEN-001, FR-UPSELL-001, BR-UPSELL-001, AUDIT-UPSELL-001]
-  EPIC-COMMUNICATIONS: [FR-COMMS-001, FR-COMMS-002, SEC-TRACKING-001, PRIV-COMMS-001]
-  EPIC-PAYMENT-HANDOVER: [BR-PAYMENT-001, FR-PAYMENT-001, BR-PAYMENT-002, AUDIT-PAYMENT-001]
-  EPIC-INCIDENTS: [FR-INCIDENT-001, AUDIT-INCIDENT-001, OPS-INCIDENT-001, FR-ORDER-006, OPS-ALLERGEN-001, PILOT-005]
-  EPIC-ACCESS: [FR-ACCESS-001, SEC-ACCESS-001, SEC-ACCESS-002, AUDIT-ACCESS-001]
-  EPIC-PRIVACY: [DATA-ORDER-001, PRIV-COMMS-001, PRIV-DATA-001, BR-PRIV-001, PRIV-DATA-002, PRIV-DATA-003, PRIV-RETENTION-001]
-  EPIC-PILOT: [AUDIT-UPSELL-001, PILOT-001, PILOT-002, PILOT-003, PILOT-004, PILOT-005, AUDIT-PILOT-001, PILOT-006, NFR-RELIABILITY-001]
-
-validation_gate_links:
-  JV-CAPACITY: [FR-ORDER-003, BR-ORDER-002, FR-CAPACITY-001, FR-CAPACITY-002, BR-CAPACITY-002]
-  JV-DELAYS: [FR-ORDER-004]
-  JV-PRIVACY: [DATA-ORDER-001, PRIV-DATA-001, PRIV-DATA-002, PRIV-DATA-003, PRIV-RETENTION-001, PILOT-004]
-  JV-STOCK: [BR-ORDER-002, FR-STOCK-002, BR-STOCK-001, FR-STOCK-003, PILOT-004]
-  JV-THRESHOLDS: [FR-ORDER-003, NFR-KITCHEN-001, OPS-KITCHEN-001, BR-CAPACITY-002, BR-STOCK-001, PILOT-004, NFR-RELIABILITY-001]
-  JV-PILOT: [FR-KITCHEN-003, NFR-KITCHEN-001, OPS-KITCHEN-001, PILOT-001, PILOT-002, PILOT-003, PILOT-004, PILOT-005, PILOT-006, NFR-RELIABILITY-001]
-  JV-ACCESS: [FR-KITCHEN-004, SEC-ACCESS-001, SEC-ACCESS-002, AUDIT-ACCESS-001]
-  JV-SHIFT-AUTHORITY: [AUDIT-CAPACITY-001, OPS-INCIDENT-001]
-  JV-CATALOG-APPROVAL: [FR-CATALOG-001, BR-CATALOG-001, FR-UPSELL-001, PILOT-004]
-  JV-CONTENT: [FR-CATALOG-001, BR-CATALOG-001, DATA-CATALOG-001]
-  JV-MODIFIERS: [FR-CATALOG-002]
-  JV-ALLERGENS: [BR-CATALOG-001, DATA-ALLERGEN-001, FR-ALLERGEN-001, PILOT-004]
-  JV-GLUTEN: [DATA-ALLERGEN-001, BR-ALLERGEN-001]
-  JV-PAYMENT: [FR-PAYMENT-001, BR-PAYMENT-002, AUDIT-PAYMENT-001]
-  JV-DELEGATION: [FR-ACCESS-001, AUDIT-ACCESS-001]
-  JV-COMPLIANCE: [PRIV-DATA-003, PRIV-RETENTION-001]
-
-link_rules:
-  - from_type: BUSINESS_SOURCE
-    relation: DERIVES
-    to_type: REQUIREMENT
-    required: true
-  - from_type: EPIC
-    relation: COVERS
-    to_type: REQUIREMENT
-    required: true
-  - from_type: VALIDATION_GATE
-    relation: BLOCKS_OR_CALIBRATES
-    to_type: REQUIREMENT
-    required_when_status: BLOCKED_BY_VALIDATION
-  - from_type: USE_CASE
-    relation: REFINES
-    to_type: REQUIREMENT
-    required_in_phase: S3_USE_CASES
-  - from_type: STORY
-    relation: REALIZES
-    to_type: REQUIREMENT
-    required_in_phase: S5_BACKLOG
-  - from_type: ACCEPTANCE_CRITERION
-    relation: VALIDATES
-    to_type: REQUIREMENT
-    required_before_story_ready: true
-  - from_type: ARCHITECTURE_DECISION
-    relation: REALIZES
-    to_type: REQUIREMENT
-    required_when_material: true
-  - from_type: TASK
-    relation: REALIZES
-    to_type: ACCEPTANCE_CRITERION
-    required_before_task_ready: true
-  - from_type: TEST
-    relation: VERIFIES
-    to_type: ACCEPTANCE_CRITERION
-    required_before_done: true
-  - from_type: RELEASE_EVIDENCE
-    relation: PRODUCES_EVIDENCE_FOR
-    to_type: TEST
-    required_before_release: true
-
-coverage_rules:
-  requirement_requires_business_source: true
-  requirement_requires_epic: true
-  baselined_requirement_requires_verification_method: true
-  blocked_requirement_requires_validation_gate: true
-  use_case_requires_requirement: true
-  story_requires_requirement: true
-  task_requires_requirement: true
-  task_requires_acceptance_criterion: true
-  test_requires_acceptance_target: true
-  superseded_node_requires_successor: true
-  duplicate_business_rule_forbidden: true
-
-orphan_checks:
-  requirements_without_epic: []
-  requirements_without_source: []
-  blocked_requirements_without_gate: []
-  stories_without_requirements: []
-  tasks_without_requirements: []
-  tasks_without_acceptance_criteria: []
-  tests_without_acceptance_targets: []
-  stale_superseded_links: []
-
-future_nodes:
-  use_cases: []
-  stories: []
-  acceptance_criteria: []
-  architecture_decisions: []
-  contracts: []
-  tasks: []
-  tests: []
-  release_evidence: []
+{
+  "schema_version": "1.1",
+  "format": "JSON subset of YAML 1.2",
+  "milestone": "MILESTONE-SPEC-001",
+  "status": "REVIEWED_PENDING_OWNER_APPROVAL",
+  "baseline": {
+    "discovery": {
+      "id": "SRC-DISCOVERY-018",
+      "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+      "version": "0.18",
+      "status": "CANONICAL"
+    },
+    "requirements": {
+      "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
+      "registry_parts": [
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS_PART_1.json",
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS_PART_2.json",
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS_PART_3.json",
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS_PART_4.json"
+      ],
+      "version": "0.2",
+      "expected_count": 84
+    },
+    "epics": {
+      "artifact": "docs/backlog/DOPIS_EPICS.yaml",
+      "version": "1.1",
+      "expected_count": 11
+    }
+  },
+  "node_types": [
+    "BUSINESS_SOURCE",
+    "REQUIREMENT",
+    "VALIDATION_GATE",
+    "EPIC",
+    "USE_CASE",
+    "STORY",
+    "ACCEPTANCE_CRITERION",
+    "ARCHITECTURE_DECISION",
+    "CONTRACT",
+    "TASK",
+    "TEST",
+    "RELEASE_EVIDENCE"
+  ],
+  "relation_types": [
+    "DERIVES",
+    "COVERS",
+    "BLOCKS",
+    "CALIBRATES",
+    "VALIDATES",
+    "REFINES",
+    "DEPENDS_ON",
+    "REALIZES",
+    "VERIFIES",
+    "SUPERSEDES",
+    "PRODUCES_EVIDENCE_FOR"
+  ],
+  "normalized_link_sources": {
+    "business_source_to_requirement": "Each requirement record's source field",
+    "epic_to_requirement": "docs/backlog/DOPIS_EPICS.yaml epics[].requirements",
+    "validation_gate_to_requirement": "Each requirement record's gates tuples",
+    "future_links": "future_nodes collections in this artifact"
+  },
+  "gate_effects": {
+    "BLOCK": "Prevents implementation readiness for the affected requirement or milestone.",
+    "CALIBRATE": "Sets or adjusts a value through stakeholder or pilot evidence.",
+    "VALIDATE": "Confirms wording, procedure, or evidence without reopening the accepted obligation."
+  },
+  "coverage_rules": {
+    "requirement_requires_business_source": true,
+    "requirement_requires_epic": true,
+    "requirement_requires_verification_method": true,
+    "blocked_requirement_requires_block_gate": true,
+    "epic_requirement_ids_must_exist": true,
+    "epic_and_traceability_views_must_agree": true,
+    "use_case_requires_requirement": true,
+    "story_requires_requirement": true,
+    "task_requires_requirement": true,
+    "task_requires_acceptance_criterion": true,
+    "test_requires_acceptance_target": true,
+    "superseded_node_requires_successor": true
+  },
+  "orphan_checks": {
+    "requirements_without_epic": [],
+    "requirements_without_source": [],
+    "blocked_requirements_without_block_gate": [],
+    "epic_links_to_unknown_requirements": [],
+    "stories_without_requirements": [],
+    "tasks_without_requirements": [],
+    "tasks_without_acceptance_criteria": [],
+    "tests_without_acceptance_targets": [],
+    "stale_superseded_links": []
+  },
+  "future_nodes": {
+    "use_cases": [],
+    "stories": [],
+    "acceptance_criteria": [],
+    "architecture_decisions": [],
+    "contracts": [],
+    "tasks": [],
+    "tests": [],
+    "release_evidence": []
+  },
+  "validation": {
+    "command": "python scripts/validate_specification.py",
+    "dependency_policy": "Python standard library only",
+    "last_local_result": "PASS: 84 requirements, 11 epics, 17 validation gates, zero declared orphans"
+  }
+}
