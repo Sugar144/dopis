@@ -1,7 +1,7 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
 **Document status:** DRAFT — discovery in progress
-**Version:** 0.15
+**Version:** 0.16
 **Date:** 2026-07-25
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
@@ -286,6 +286,30 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - If a later pizza modification makes an already-added recommendation incompatible, the customer is warned and chooses whether to keep or remove it; the system does not remove it silently.
 - Pilot measurement records aggregated recommendation impressions and additions, separated by post-pizza and cart-review placement, without creating individual customer profiles.
 - Upselling remains enabled after the pilot only if it adds products without material complaints, errors, or an appreciable reduction in checkout completion.
+- Operational staff may change availability and stock during service.
+- Prices, names, descriptions, commercial content, and sensitive configuration remain restricted to Jaime or an explicitly authorised responsible person.
+- Temporary or reinforcement staff use operational access without sensitive administration capabilities.
+- Personal and administrative credentials are never shared.
+- A common kitchen operational session may exist during the first MVP only when the current responsible shift lead is explicitly recorded and the session has no sensitive administration authority.
+- Only Jaime may authorise, revoke, or change staff access and permissions.
+- Access for departing staff is removed before the next service, and Jaime reviews active access before the pilot and whenever personnel change.
+- Weekly reports are limited to Jaime and people he authorises.
+- Export of order lists, telephone numbers, reports, or other commercial or operational information requires Jaime or explicit export authority.
+- Availability and stock changes retain actor and timestamp.
+- Price, text, and sensitive-configuration changes retain previous value, new value, actor, and timestamp.
+- Routine commercial changes do not require a written justification, but accidental corrections remain auditable.
+- The mobile backup supports order management, status changes, and urgent availability changes, but not prices, commercial content, access management, or full administration.
+- The responsible shift lead is explicitly identified at opening; a responsibility change records the new person and handover time.
+- The responsible shift lead may correct payments, resolve incidents, confirm close, and authorise explicitly permitted operational exceptions.
+- Unattended critical alerts escalate to the responsible shift lead.
+- Open incidents are reviewed before close and are not closed automatically at the end of service.
+- Decisions beyond shift authority remain recorded as pending Jaime, while staff apply a safe operational measure.
+- A shift may close with an item pending Jaime only when immediate operation is safe and the item remains clearly visible for follow-up.
+- Jaime receives a summary of pending decisions during the next shift review or report.
+- The responsible shift lead may cancel an already prepared order when the reason and operational loss are recorded.
+- When an accepted item is unavailable, staff may offer a valid alternative and record the customer's choice.
+- If the alternative costs more, the responsible shift lead may collect the difference or absorb it as the incident resolution; the decision is recorded and does not alter the original product's published price.
+- Jaime or an authorised responsible person may reopen an incorrectly resolved incident while preserving its link to the original record.
 
 The frontend may initially present a simplified subset while the backend retains safe terminal states and ordering modes.
 
@@ -549,27 +573,47 @@ Store a commercial snapshot so historical orders do not change when the menu cha
 - `line_total`
 - `selected_options_snapshot`
 
-### 6.5 Staff user
+### 6.5 Staff identity, access profile, and shift responsibility
 
-Initial fields:
+Candidate staff-user fields:
 
 - `id`
 - `username`
 - `password_hash`
+- `access_profile`
 - `is_active`
+- `authorised_by`
 - `last_login_at`
+- `revoked_at`
 - `created_at`
 - `updated_at`
 
-Only one staff role is initially required, but authorisation checks must exist on the backend.
+Initial bounded access profiles:
 
-Operational responsibility also requires:
+- `OWNER_ADMIN`: Jaime; access management and all authorised administrative operations;
+- `AUTHORISED_MANAGER`: explicitly authorised commercial or sensitive administration within granted permissions;
+- `SHIFT_LEAD`: operational responsibility, incident resolution, payment correction, close confirmation, and permitted exceptions;
+- `OPERATIONAL`: orders, status changes, availability, and stock;
+- `KITCHEN_SHARED`: common operational session without sensitive administration, attributed to the registered shift lead.
 
-- explicit current shift lead or responsible person;
+The MVP does not require a complex role-management interface, but backend authorisation must distinguish these capabilities.
+
+Access-management rules:
+
+- only Jaime authorises, revokes, or modifies staff access;
+- personal and administrative credentials are not shared;
+- departing staff lose access before the next service;
+- active access is reviewed before the pilot and whenever personnel change;
+- the shift lead cannot grant or change access;
+- temporary staff receive operational permissions only.
+
+Operational responsibility requires:
+
+- an explicit current shift lead;
 - responsibility handover history;
+- handover timestamp;
 - session close at the end of the shift;
-- honest distinction between individual and shared credentials;
-- revocation or deactivation when a person no longer works at Dopis.
+- accurate distinction between individual and shared kitchen sessions.
 
 ### 6.6 Payment and handover preparation
 
@@ -759,6 +803,58 @@ Each event may retain:
 
 Routine reporting must aggregate these events and must not construct individual customer recommendation profiles.
 
+### 6.16 Administrative change event
+
+Material administrative changes retain an append-only history.
+
+Candidate fields:
+
+- `id`
+- `entity_type`
+- `entity_id`
+- `field_name`
+- `previous_value`
+- `new_value`
+- `actor_id`
+- `shared_session_responsible_id`
+- `reason`
+- `created_at`
+
+Rules:
+
+- availability and stock changes require actor and timestamp;
+- price, text, and sensitive-configuration changes also retain previous and new values;
+- routine commercial changes do not require a written reason;
+- payment-state reversal, incident escalation, cancellation of a prepared order, and other exceptional corrections require a reason;
+- correcting an accidental change creates another event rather than deleting history.
+
+### 6.17 Shift responsibility and handover event
+
+The operational system records:
+
+- responsible person at service opening;
+- start time;
+- replacement responsible person;
+- handover time;
+- closing confirmation;
+- unresolved incidents and decisions pending Jaime.
+
+A common kitchen session is attributed to the responsible shift lead without pretending that every action identifies an individual operator.
+
+### 6.18 Pending-Jaime decision
+
+When an incident exceeds shift authority, retain:
+
+- related order or incident;
+- safe operational measure applied;
+- summary of the unresolved decision;
+- responsible shift lead;
+- created time;
+- review status;
+- Jaime review or resolution.
+
+The record may remain open after shift close when immediate operation is safe.
+
 ---
 
 ## 7. Draft order lifecycle
@@ -939,6 +1035,42 @@ The MVP must not assume:
 
 If Jaime later validates compensation as an MVP capability, structured authorisation, type, value, responsibility, expiry, and fulfilment rules may be added.
 
+### 7.9 Shift incident authority and escalation
+
+The responsible shift lead may:
+
+- correct permitted payment errors;
+- resolve operational incidents;
+- authorise explicitly permitted exceptions;
+- cancel an already prepared order;
+- offer configured valid substitutions;
+- decide whether to collect or absorb an authorised price difference;
+- confirm shift close.
+
+Prepared-order cancellation records:
+
+- reason;
+- operational loss;
+- actor;
+- timestamp.
+
+When an accepted product is unavailable:
+
+1. the order moves to `Requires attention`;
+2. staff offer only valid configured alternatives;
+3. the customer's selection is recorded;
+4. any higher price is either collected or absorbed as the recorded incident resolution;
+5. the substitution does not change the original product's published price.
+
+A decision beyond shift authority:
+
+- remains visible as pending Jaime;
+- records the safe temporary measure;
+- does not disappear merely to permit shift close;
+- appears in Jaime's next review summary.
+
+Jaime or an authorised responsible person may reopen an incorrectly resolved incident. Reopening preserves the original incident and adds a linked continuation.
+
 ---
 
 ## 8. Kitchen tablet requirements
@@ -978,8 +1110,11 @@ Additional working requirements from business discovery:
 - if the tablet loses connection, the panel retains the last visible data as clearly stale and prevents state-changing actions;
 - after an initial three-minute disconnection, new online orders pause;
 - recovery requires staff review and explicit `Resume`;
-- a mobile backup may view orders and change operational states, but need not expose full administration;
-- staff complete a readiness checklist and explicitly select `Open orders`;
+- a mobile backup may view orders, change operational states, and apply urgent availability changes;
+- the mobile backup must not edit prices, commercial content, access permissions, or expose full administration;
+- staff complete a readiness checklist, explicitly identify the responsible shift lead, and select `Open orders`;
+- a common kitchen operational session may be used during the first MVP only after a responsible shift lead is registered;
+- the common kitchen session never exposes sensitive administrative functions;
 - the pre-opening checklist covers kitchen readiness, shift capacity, countable drinks and desserts, sold-out products, and a short list of critical ingredients or options;
 - any authorised operator may mark an item sold out, while reactivation requires Jaime or the responsible shift lead;
 - delivered orders leave the primary view but remain available in shift history;
@@ -992,7 +1127,7 @@ Additional working requirements from business discovery:
 
 The digital panel remains the source of truth. A ticket printer is outside the initial MVP scope and is reconsidered only if operational tests show that tablet and mobile alerts are insufficient. If later introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
 
-At shift end, the responsible operator must close the operational session. A responsibility change during service records who hands over and who assumes the shift-lead function.
+At shift end, the responsible shift lead reviews open incidents, payments, and pending Jaime decisions before confirming close. Incidents do not close automatically. A responsibility change during service records the new responsible person and handover time.
 
 ---
 
@@ -1169,7 +1304,13 @@ Historical records must be preserved through order-item snapshots and soft delet
 
 Availability permissions are intentionally asymmetric: authorised staff may disable an item quickly, while reactivation requires Jaime or the responsible shift lead. Stock and availability changes retain operator, timestamp, and reason.
 
-Jaime may manage ordinary commercial catalog data. Ingredient, allergen, dietary, and other safety-sensitive changes require Jaime or another explicitly authorised responsible person.
+Operational staff may change availability and stock during service.
+
+Prices, names, descriptions, commercial content, upselling configuration, and other administrative data require Jaime or an explicitly authorised responsible person. Ingredient, allergen, dietary, and other safety-sensitive changes remain within the stricter authorised boundary.
+
+Temporary or reinforcement staff receive no sensitive administration access.
+
+Administrative corrections retain the original change and the corrective event.
 
 Image upload may be deferred if it materially expands storage and deployment scope; an image path or URL field can be retained.
 
@@ -1437,7 +1578,14 @@ Operational access follows least-necessary visibility:
 - shift staff see the current order and relevant incident summary;
 - complete commercial history is not exposed by default.
 
-Access events and administrative changes should be auditable where proportionate.
+Access events, report access, exports, and administrative changes should be auditable where proportionate.
+
+A common kitchen operational session may exist during the first MVP, but:
+
+- the current shift lead must be registered;
+- the session exposes only operational functions;
+- personal and administrative credentials remain individual;
+- audit history must identify shared-session use honestly rather than claiming individual attribution.
 
 ### 11.4 Personal-data requests
 
@@ -1485,7 +1633,11 @@ They do not include the complete order detail.
 - avoid direct storage of payment-card data;
 - support correction, anonymisation, and deletion workflows;
 - retain auditability for material corrections;
-- define account deactivation when staff leave;
+- restrict access management to Jaime;
+- remove departing-staff access before the next service;
+- restrict weekly reports and data exports;
+- preserve previous and new values for sensitive administrative changes;
+- record shift responsibility and shared-session attribution;
 - obtain legal and privacy review before public production.
 
 This section is a design baseline, not legal advice.
@@ -1530,6 +1682,10 @@ Compare both:
 Exact days, time bands, observer ownership, and acceptable recording burden require Jaime validation.
 
 ### 12.3 Four-week pilot scorecard
+
+Weekly reports are accessible only to Jaime and people he explicitly authorises.
+
+Exporting order lists, telephone numbers, reports, or other commercial or operational information requires Jaime or a person with explicit export authority.
 
 Jaime receives a weekly summary containing:
 
@@ -1869,7 +2025,16 @@ Online orders open only after staff complete the readiness checklist and explici
 | Tablet alert is inaudible in a noisy kitchen | Order remains unseen | Persistent highlight, explicit acknowledgement, repeated alert, safety pause, real-device testing |
 | Panel loses connectivity | Staff act on stale information or unseen orders arrive | Stale indicator, blocked writes, mobile backup, timed pause, manual resume |
 | Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
-| Shared access is mistaken for individual attribution | Misleading audit history | Record the authenticated actor or shared session accurately and validate the staff identity model |
+| Shared access is mistaken for individual attribution | Misleading audit history | Record the shared kitchen session and current shift lead accurately |
+| Shared kitchen access exposes administration | Temporary or operational staff change sensitive data | Limit shared sessions to operational functions only |
+| Shift lead can change access permissions | Privilege expansion without owner control | Reserve authorisation, revocation, and permission changes to Jaime |
+| Departing staff retain access | Unauthorised access after employment | Revoke access before the next service and review when personnel change |
+| Reports or telephone lists are broadly exportable | Commercial and personal data leave controlled use | Restrict viewing and export authority and audit exports |
+| Sensitive catalog edits overwrite prior values | Incorrect content cannot be reconstructed | Retain previous value, new value, actor, and timestamp |
+| Incident is hidden to permit shift close | Material unresolved decision is lost | Allow safe close with a visible `Pending Jaime` record |
+| Prepared-order cancellation lacks loss recording | Operational waste and responsibility are unclear | Require reason and operational-loss record |
+| Uncontrolled substitution changes published pricing | Customer disputes and catalog inconsistency | Record incident resolution without modifying the original published price |
+| Incorrect incident resolution cannot be revisited | Permanent operational or customer-history error | Permit linked reopening with preserved history |
 | Product availability is inaccurate | Orders cannot be fulfilled | Start with simple availability controls and define ownership |
 | Physical stock differs from a valid reservation | Accepted order cannot be fulfilled as configured | Route to `Requires attention`; offer allowed alternative or cancel manually |
 | Telephone or in-person orders bypass shared stock and capacity | Overbooking and stock discrepancies | Require every order channel to use the same operational system |
@@ -2077,6 +2242,16 @@ Still open:
 - future refund rules before and after preparation when online payments are introduced;
 - future criteria for requiring prepayment after repeated incidents.
 
+### Shift authority and incident escalation
+
+- which operational exceptions the shift lead may approve without contacting Jaime;
+- which decisions always require later Jaime validation;
+- which substitutions may be offered for each unavailable item;
+- when a higher substitution price is collected or absorbed;
+- which measures count as operationally safe when Jaime is unavailable;
+- how and when Jaime receives the pending-decision summary;
+- which pending Jaime validations block initial discovery closure.
+
 ### Customers and privacy
 
 - Is the telephone number only for order contact?
@@ -2088,8 +2263,11 @@ Still open:
 - What exact procedure and identity checks will Jaime use for access, correction, or deletion requests?
 - Which accounting or legal records must remain identifiable?
 - Which data can be anonymised while preserving useful metrics?
-- Which staff roles receive administration access?
-- How are staff accounts revoked or disabled when employment ends?
+- Which named people may act as shift leads?
+- Which named people may edit commercial content or sensitive configuration?
+- Which named people may view or export reports?
+- What exact onboarding, revocation, and access-review procedure will Jaime use?
+- When must the shared kitchen session be replaced by individual operational identities?
 - How is the tablet physically protected outside service hours?
 - Which operational incidents may affect manual review?
 - How long should incident data be retained beyond the provisional 90-day risk window?
@@ -2111,11 +2289,12 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-MANUAL-ORDERS`: telephone and in-person entry, required customer data, manual capacity overrides, and channel workflow;
 - `JV-PAYMENT`: cash/card operation, optional receipts, correction authority, non-payment, handover, cash discrepancies, and shift-close procedure;
 - `JV-PRIVACY`: operational notice, retention, anonymisation, data requests, staff visibility, and lawful record preservation;
-- `JV-ACCESS`: administrative permissions, shift responsibility, session closure, physical tablet protection, and staff-account deactivation;
+- `JV-ACCESS`: named administrators, report and export authority, Jaime-only access management, onboarding, revocation, review, shared kitchen session, mobile-backup limits, and physical tablet protection;
 - `JV-PILOT`: baseline burden, launch timing, participant group, observer ownership, weekly reporting, manual-review evidence, automatic-acceptance criteria, pause and rollback rules, expansion, and success thresholds;
 - `JV-CONTENT`: authorised editors, Spanish and Catalan copy, category order, featured and temporary products, and launch photography;
 - `JV-UPSELL`: concrete relationships, priority, authorised editors, dietary compatibility, excluded products, checkout-impact threshold, and post-pilot success threshold;
 - `JV-DISCOVERY-CLOSE`: remaining material Jaime validations and explicit first-MVP exclusions;
+- `JV-SHIFT-AUTHORITY`: named shift leads, permitted exceptions, prepared-order cancellation, substitutions, price-difference handling, safe pending measures, escalation, reopening, and Jaime review channel;
 - `JV-STAFF`: operational responsibility and shift-lead authority.
 
 These references are validation gates, not replacements for the future structured register.
@@ -2208,6 +2387,8 @@ Remaining:
 - confirm the material gates required to close initial discovery and the explicit first-MVP exclusions;
 - validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
+- validate named access holders, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
+- validate shift-lead exceptions, cancellation and substitution authority, safe pending measures, escalation, incident reopening, and Jaime's review channel;
 - decide staff authentication UX;
 - decide SSE versus WebSockets;
 - define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
@@ -2384,6 +2565,20 @@ Upselling is included in the first MVP through manually configured relationships
 ---
 
 ## 19. Change log
+
+### 0.16 — 2026-07-25
+
+- Reconciled `BD-DELTA-012` against canonical version 0.15.
+- Defined operational, shift-lead, authorised-manager, owner-admin, and common-kitchen access boundaries.
+- Reserved staff access creation, revocation, and permission changes to Jaime.
+- Restricted temporary staff, mobile backup, and common kitchen sessions to bounded operational capabilities.
+- Restricted weekly reports and commercial or personal-data exports to explicitly authorised people.
+- Added append-only auditing for availability, stock, prices, text, sensitive configuration, and corrective changes.
+- Added explicit shift-lead registration, responsibility handover, close review, and critical-alert escalation.
+- Added `Pending Jaime` handling that permits safe shift close without hiding unresolved decisions.
+- Added prepared-order cancellation, valid substitution, price-difference resolution, and incident-reopening rules.
+- Expanded access, authority, export, audit, and incident risks and added `JV-SHIFT-AUTHORITY`.
+- Preserved implementation authority as `NOT GRANTED`.
 
 ### 0.15 — 2026-07-25
 
