@@ -15,6 +15,7 @@ Standard library only. Exits non-zero if any case behaves unexpectedly.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 import sys
@@ -175,7 +176,89 @@ def mutate_closed_gate_blocks(tree: Path) -> None:
 def mutate_markdown_disagreement(tree: Path) -> None:
     path = tree / BASELINE_MD
     text = path.read_text(encoding="utf-8")
-    path.write_text(text.replace("REGISTRY-TOTAL: 210", "REGISTRY-TOTAL: 84"), encoding="utf-8")
+    # Derived from whatever the document currently declares, so the fixture does
+    # not hard-code a total that changes with every baseline revision.
+    mutated, count = re.subn(
+        r"REGISTRY-TOTAL:\s*(\d+)",
+        lambda m: f"REGISTRY-TOTAL: {int(m.group(1)) + 1}",
+        text,
+        count=1,
+    )
+    assert count == 1, "baseline markdown declares no REGISTRY-TOTAL marker"
+    path.write_text(mutated, encoding="utf-8")
+
+
+def mutate_markdown_uses_retired_gate(tree: Path) -> None:
+    """Reference a retired gate identifier as if it were current."""
+    gates = read_json(tree, GATES)
+    retired = gates["retired_gates"][0]["id"]
+    path = tree / BASELINE_MD
+    text = path.read_text(encoding="utf-8")
+    path.write_text(
+        text + f"\nOutstanding wording is confirmed under `{retired}`.\n",
+        encoding="utf-8",
+    )
+
+
+def _first_blocked(data: dict) -> dict:
+    for req in data["requirements"]:
+        if req["status"] == "BLOCKED_BY_VALIDATION":
+            return req
+    raise AssertionError("registry declares no blocked requirement to mutate")
+
+
+def mutate_blocked_without_justification(tree: Path) -> None:
+    """A blocked record that never says why the obligation cannot be accepted."""
+    data = read_json(tree, REGISTRY)
+    _first_blocked(data).pop("block_justification", None)
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_accepted_blocked_as_undecided(tree: Path) -> None:
+    """The reported defect: an accepted canonical obligation reported as blocked.
+
+    An obligation canonical discovery accepts cannot also be undecided. When only
+    its wording, procedure, owner, or evidence is outstanding, the record belongs
+    in BASELINED with VALIDATE or CALIBRATE, and the milestone entry-condition
+    record carries the block.
+    """
+    data = read_json(tree, REGISTRY)
+    req = _first_blocked(data)
+    req["acceptance_state"] = "ACCEPTED"
+    req["block_justification"]["reason_code"] = "OBLIGATION_NOT_YET_ACCEPTED"
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_block_justification_unknown_question(tree: Path) -> None:
+    """Block on a concern the gate never declared as an open question."""
+    data = read_json(tree, REGISTRY)
+    req = _first_blocked(data)
+    req["block_justification"]["canonical_open_question"] = (
+        "an operating concern this gate does not declare"
+    )
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_block_justification_foreign_gate(tree: Path) -> None:
+    """Justify a block with a gate the record does not actually link as BLOCK."""
+    data = read_json(tree, REGISTRY)
+    req = _first_blocked(data)
+    blocked_gates = {link[1] for link in req["validation_links"] if link[0] == "BLOCK"}
+    gates = read_json(tree, GATES)
+    other = next(g["id"] for g in gates["gates"] if g["id"] not in blocked_gates)
+    req["block_justification"]["gate"] = other
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_baselined_with_justification(tree: Path) -> None:
+    """A baselined record must not claim anything is holding its obligation back."""
+    data = read_json(tree, REGISTRY)
+    donor = _first_blocked(data)["block_justification"]
+    for req in data["requirements"]:
+        if req["status"] == "BASELINED":
+            req["block_justification"] = dict(donor)
+            break
+    write_json(tree, REGISTRY, data)
 
 
 def mutate_implementation_authority(tree: Path) -> None:
@@ -216,6 +299,18 @@ CASES = [
     ("implementation authority granted", mutate_implementation_authority,
      "implementation_authority must remain"),
     ("weak modal statement", mutate_weak_statement, "weak modal verb"),
+    ("markdown using a retired gate as current", mutate_markdown_uses_retired_gate,
+     "retired gate"),
+    ("blocked requirement without a block justification", mutate_blocked_without_justification,
+     "must carry a block_justification"),
+    ("accepted obligation reported as undecided", mutate_accepted_blocked_as_undecided,
+     "contradicts block reason_code"),
+    ("block justification citing an undeclared open question",
+     mutate_block_justification_unknown_question, "does not declare"),
+    ("block justification naming a gate the record does not block on",
+     mutate_block_justification_foreign_gate, "not one of this record"),
+    ("baselined requirement carrying a block justification",
+     mutate_baselined_with_justification, "must not carry a block_justification"),
 ]
 
 

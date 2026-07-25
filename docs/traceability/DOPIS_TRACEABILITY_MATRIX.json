@@ -15,15 +15,15 @@
     },
     "requirements": {
       "artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-      "version": "0.3"
+      "version": "0.4"
     },
     "validation_gates": {
       "artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
-      "version": "0.3"
+      "version": "0.4"
     },
     "exclusions": {
       "artifact": "docs/current/requirements/DOPIS_EXCLUSIONS.json",
-      "version": "0.3"
+      "version": "0.4"
     },
     "epics": {
       "artifact": "docs/backlog/DOPIS_EPICS.json",
@@ -31,7 +31,7 @@
     },
     "human_readable_baseline": {
       "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
-      "version": "0.3"
+      "version": "0.4"
     }
   },
   "node_types": [
@@ -130,6 +130,13 @@
     "requirement_requires_rationale": true,
     "blocked_requirement_requires_block_gate": true,
     "baselined_requirement_forbids_block_gate": true,
+    "blocked_requirement_requires_block_justification": true,
+    "baselined_requirement_forbids_block_justification": true,
+    "block_justification_reason_code_from_closed_vocabulary": true,
+    "block_justification_gate_must_be_block_linked": true,
+    "block_justification_must_cite_a_declared_gate_open_question": true,
+    "accepted_requirement_must_not_claim_its_obligation_is_undecided": true,
+    "authorisation_block_requires_a_prohibition_statement": true,
     "gate_reference_must_resolve": true,
     "closed_gate_must_not_block": true,
     "epic_requirement_ids_must_exist": true,
@@ -145,10 +152,11 @@
     "superseded_node_requires_successor": true
   },
   "gate_effects": {
-    "BLOCK": "Prevents specification or implementation readiness for the affected requirement.",
+    "BLOCK": "The candidate obligation is recorded, but it cannot be accepted as final or made implementation-ready until the gate resolves.",
     "CALIBRATE": "The obligation is accepted; a value or operating rule is set from stakeholder or pilot evidence.",
     "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
   },
+  "milestone_blocking_note": "An unresolved gate blocks a milestone globally through the milestone entry-condition records PILOT-004, OPS-DELEGATION-001, and BR-LAUNCH-001, which correspond to the three canonical section 18A blocker lists. Marking every dependent obligation blocked is not how milestone readiness is represented, and would misreport an accepted obligation as unspecifiable.",
   "orphan_checks": {
     "notice": "Every array below is recomputed by the validator and compared exactly. A non-empty computed set with an empty declaration fails the run.",
     "requirements_without_primary_epic": [],
@@ -173,12 +181,12 @@
   },
   "derived_counts": {
     "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",
-    "requirements": 210,
+    "requirements": 216,
     "epics": 13,
     "gates_defined": 20,
     "gates_referenced": 18,
     "exclusions": 17,
-    "blocked_requirements": 24
+    "blocked_requirements": 5
   },
   "future_nodes": {
     "use_cases": [],

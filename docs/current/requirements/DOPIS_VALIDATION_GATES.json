@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "baseline_version": "0.3",
+  "baseline_version": "0.4",
   "status": "AUDITED_PENDING_OWNER_APPROVAL",
   "implementation_authority": "NOT_GRANTED",
   "source": {
@@ -49,10 +49,11 @@
     "CLOSED": "Already resolved; retained for traceability and reopening rules."
   },
   "effects": {
-    "BLOCK": "The obligation itself cannot be specified or implemented until the gate resolves.",
+    "BLOCK": "The candidate obligation is recorded, but it cannot be accepted as final or made implementation-ready until the gate resolves.",
     "CALIBRATE": "The obligation is accepted; a value or operating rule is set from stakeholder or pilot evidence.",
     "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
   },
+  "effect_note": "These four things are distinct and none implies the next: recording a candidate requirement; accepting the obligation; the milestone being ready; implementation being authorised. A record may be present and accepted while its milestone is blocked, and every accepted record is still without implementation authority. An unresolved gate blocks a milestone globally through the milestone entry-condition records rather than by marking every dependent obligation blocked, so BLOCK is reserved for a candidate obligation that cannot yet be accepted as final. Each blocked requirement must carry a block_justification naming which kind of unresolvedness applies; see block_justification_contract in the requirement registry.",
   "gates": [
     {
       "id": "JV-CAPACITY",
@@ -87,8 +88,9 @@
       "milestone": "PILOT",
       "origin": "CANONICAL",
       "source_sections": ["15", "10.3"],
-      "resolution_criteria": "Jaime validates supplier documentation, the actual kitchen procedure, the exact customer-facing cross-contact wording, whether explicit acknowledgement is required, and which severe-allergy requests the premises can responsibly accept.",
-      "open_questions": ["exact gluten cross-contact wording and whether explicit acknowledgement is required", "supplier information for gluten-free dough", "when staff must disable gluten-free dough because the validated procedure cannot be followed"]
+      "canonical_note": "Canonical discovery section 10.3 already requires the interface to show a general menu cross-contact warning, show a specific warning on selection, require explicit confirmation that the customer has read and understood the warning, avoid claiming coeliac or severe-allergy suitability, advise severely allergic customers to contact the premises, state that online ordering cannot guarantee absence of cross-contact, allow independent disablement of the option, and disable it whenever the validated procedure cannot be followed. This gate does not reopen any of those obligations. The existence of the acknowledgement obligation in particular is settled canonically and is not a question for this gate; only its exact customer-facing wording is. This gate covers only what section 10.3 itself leaves open.",
+      "resolution_criteria": "Jaime validates supplier documentation, the actual kitchen procedure, the exact customer-facing cross-contact and acknowledgement wording, which severe-allergy requests the premises can responsibly accept, the detailed conditions under which staff must disable the gluten-free dough option, and who besides Jaime may approve safety and dietary information.",
+      "open_questions": ["exact customer-facing cross-contact and acknowledgement wording", "supplier documentation for gluten-free dough", "actual kitchen procedure for preparing gluten-free dough", "which severe-allergy requests the premises can responsibly accept", "when staff must disable gluten-free dough because the validated procedure cannot be followed", "who besides Jaime may approve safety and dietary information"]
     },
     {
       "id": "JV-ALLERGENS",

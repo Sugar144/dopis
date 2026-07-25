@@ -79,6 +79,127 @@ REQUIRED_REQ_FIELDS = (
 # Weak modal verbs must not carry the obligation of a requirement statement.
 WEAK_OPENERS = ("should ", "could ", "might ", "may want", "ideally")
 
+# A gate being unresolved is not by itself a reason to block. Every blocked
+# record must name which kind of unresolvedness it faces, drawn from this closed
+# vocabulary. The vocabulary deliberately offers no code meaning that only
+# wording, procedure, ownership, or evidence is outstanding: those are exactly
+# the cases that belong on a BASELINED record as VALIDATE or CALIBRATE, so the
+# defect of representing an accepted canonical obligation as blocked because its
+# final wording is unsettled has no representation here.
+BLOCK_REASON_CODES = {
+    "OBLIGATION_NOT_YET_ACCEPTED",
+    "SUBJECT_MATTER_NOT_YET_SELECTABLE",
+    "AUTHORISATION_NOT_YET_CONFERRED",
+}
+
+# An ACCEPTED record may not claim its own obligation is undecided: acceptance
+# and undecidedness are contradictory by definition of acceptance_state.
+BLOCK_REASONS_FORBIDDEN_WHEN_ACCEPTED = {"OBLIGATION_NOT_YET_ACCEPTED"}
+
+# A milestone entry condition is a prohibition on entering the milestone. This
+# keeps the authorisation code from being borrowed for an ordinary obligation.
+AUTHORISATION_STATEMENT_PREFIX = "do not "
+
+REQUIRED_BLOCK_JUSTIFICATION_FIELDS = (
+    "reason_code",
+    "gate",
+    "canonical_open_question",
+    "explanation",
+)
+
+
+def check_block_justification(req: dict, gate_by_id: dict[str, dict]) -> list[str]:
+    """Validate one record's block_justification against the corrected BLOCK semantics.
+
+    Deterministic and record-agnostic: no requirement id, gate id, or count is
+    referenced. The rules constrain the shape of a justification and its
+    agreement with the record's own acceptance_state, its own BLOCK links, and
+    the open questions the gate registry declares.
+    """
+    rid = req.get("id", "<unknown>")
+    blocked = req.get("status") == "BLOCKED_BY_VALIDATION"
+    justification = req.get("block_justification")
+
+    if not blocked:
+        if justification is not None:
+            return [
+                f"{rid}: a BASELINED record must not carry a block_justification; "
+                f"its obligation is accepted, so nothing is being held back"
+            ]
+        return []
+
+    if justification is None:
+        return [
+            f"{rid}: a blocked record must carry a block_justification naming why "
+            f"the candidate obligation cannot yet be accepted as final. An "
+            f"unresolved gate alone is not a reason to block: an accepted "
+            f"obligation whose wording, procedure, owner, or evidence is "
+            f"outstanding belongs on a BASELINED record as VALIDATE or CALIBRATE"
+        ]
+    if not isinstance(justification, dict):
+        return [f"{rid}: block_justification must be an object"]
+
+    problems: list[str] = []
+    missing = [f for f in REQUIRED_BLOCK_JUSTIFICATION_FIELDS if not str(justification.get(f, "")).strip()]
+    if missing:
+        problems.append(f"{rid}: block_justification missing fields: {missing}")
+        return problems
+
+    reason = justification["reason_code"]
+    if reason not in BLOCK_REASON_CODES:
+        problems.append(
+            f"{rid}: unknown block reason_code {reason!r}. Permitted codes are "
+            f"{sorted(BLOCK_REASON_CODES)}; none of them means that only wording, "
+            f"procedure, ownership, or evidence is unresolved, because that case "
+            f"is a BASELINED record with VALIDATE or CALIBRATE"
+        )
+        return problems
+
+    if req.get("acceptance_state") == "ACCEPTED" and reason in BLOCK_REASONS_FORBIDDEN_WHEN_ACCEPTED:
+        problems.append(
+            f"{rid}: acceptance_state ACCEPTED contradicts block reason_code "
+            f"{reason}. Canonical discovery accepts this obligation, so it may "
+            f"not also be recorded as undecided. If only its wording, procedure, "
+            f"owner, or evidence is outstanding, baseline it with VALIDATE or "
+            f"CALIBRATE and let a milestone entry-condition record carry the block"
+        )
+
+    if reason == "AUTHORISATION_NOT_YET_CONFERRED":
+        statement = str(req.get("statement", "")).strip().lower()
+        if not statement.startswith(AUTHORISATION_STATEMENT_PREFIX):
+            problems.append(
+                f"{rid}: block reason_code {reason} is reserved for a milestone "
+                f"entry condition, whose statement must be a prohibition "
+                f"beginning {AUTHORISATION_STATEMENT_PREFIX.strip()!r}"
+            )
+
+    gate_id = justification["gate"]
+    block_gates = {
+        link[1]
+        for link in req.get("validation_links", [])
+        if isinstance(link, list) and len(link) == 2 and link[0] == "BLOCK"
+    }
+    if gate_id not in block_gates:
+        problems.append(
+            f"{rid}: block_justification names {gate_id}, which is not one of this "
+            f"record's BLOCK-linked gates {sorted(block_gates)}"
+        )
+        return problems
+
+    gate = gate_by_id.get(gate_id)
+    if gate is None:
+        problems.append(f"{rid}: block_justification names unknown gate {gate_id}")
+        return problems
+
+    declared = gate.get("open_questions") or []
+    if justification["canonical_open_question"] not in declared:
+        problems.append(
+            f"{rid}: block_justification cites an open question that {gate_id} does "
+            f"not declare. A blocking concern must be a registered open question "
+            f"of the gate, not an unstated one"
+        )
+    return problems
+
 
 class Failure(Exception):
     """Raised with an accumulated list of human-readable problems."""
@@ -180,7 +301,8 @@ def check_gates(gates_doc: dict) -> tuple[dict[str, dict], list[str]]:
     return by_id, problems
 
 
-def check_requirements(registry: dict, sections: set[str], gate_ids: set[str]) -> tuple:
+def check_requirements(registry: dict, sections: set[str], gate_by_id: dict[str, dict]) -> tuple:
+    gate_ids = set(gate_by_id)
     problems: list[str] = []
     requirements = registry.get("requirements")
     if not isinstance(requirements, list) or not requirements:
@@ -276,6 +398,8 @@ def check_requirements(registry: dict, sections: set[str], gate_ids: set[str]) -
             orphans["blocked_requirements_without_block_gate"].append(rid)
         if req["status"] == "BASELINED" and has_block:
             orphans["baselined_requirements_with_block_gate"].append(rid)
+
+        problems.extend(check_block_justification(req, gate_by_id))
 
         if not isinstance(req["dependencies"], list):
             problems.append(f"{rid}: dependencies must be a list")
@@ -385,7 +509,11 @@ def check_exclusions(exclusions_doc: dict, by_id: dict[str, dict]) -> tuple:
 
 
 def check_markdown(
-    by_id: dict[str, dict], epics: list, gate_ids: set[str], registry: dict
+    by_id: dict[str, dict],
+    epics: list,
+    gate_ids: set[str],
+    registry: dict,
+    retired_gate_ids: set[str] | None = None,
 ) -> list[str]:
     """The human-readable baseline must agree with the machine registry."""
     if not BASELINE_MD_PATH.exists():
@@ -418,9 +546,24 @@ def check_markdown(
     for eid in re.findall(r"\bEPIC-[A-Z][A-Z-]*\b", text):
         if eid not in epic_ids:
             disagreements.append(f"markdown references unknown epic {eid}")
-    for gid in re.findall(r"\bJV-[A-Z][A-Z0-9-]*\b", text):
-        if gid not in gate_ids:
-            disagreements.append(f"markdown references unknown gate {gid}")
+    # A retired identifier may be discussed as history, but never used as if it
+    # were current. The mention must identify itself as historical on its own
+    # line, so a stale reference that reads as live still fails.
+    retired = retired_gate_ids or set()
+    for line in text.splitlines():
+        historical = any(word in line.lower() for word in ("retired", "stale"))
+        for gid in re.findall(r"\bJV-[A-Z][A-Z0-9-]*\b", line):
+            if gid in gate_ids:
+                continue
+            if gid in retired and historical:
+                continue
+            if gid in retired:
+                disagreements.append(
+                    f"markdown references retired gate {gid} without identifying it "
+                    f"as retired or stale on the same line"
+                )
+            else:
+                disagreements.append(f"markdown references unknown gate {gid}")
     pattern = r"\b(?:%s)-[A-Z][A-Z0-9]*-\d{3}\b" % "|".join(CLASS_PREFIXES)
     for rid in re.findall(pattern, text):
         if rid not in by_id:
@@ -442,7 +585,7 @@ def main() -> int:
     gate_by_id, gate_problems = check_gates(gates_doc)
     problems += gate_problems
 
-    by_id, req_orphans, req_problems = check_requirements(registry, sections, set(gate_by_id))
+    by_id, req_orphans, req_problems = check_requirements(registry, sections, gate_by_id)
     problems += req_problems
 
     epics, epic_orphans, epic_problems = check_epics(epics_doc, by_id)
@@ -477,7 +620,12 @@ def main() -> int:
             f"requirement references a gate retired from the canonical register: {reference}"
         )
 
-    md_disagreements = check_markdown(by_id, epics, set(gate_by_id), registry)
+    retired_gate_ids = {
+        r.get("id") for r in gates_doc.get("retired_gates", []) if r.get("id")
+    }
+    md_disagreements = check_markdown(
+        by_id, epics, set(gate_by_id), registry, retired_gate_ids
+    )
 
     computed = {
         **req_orphans,

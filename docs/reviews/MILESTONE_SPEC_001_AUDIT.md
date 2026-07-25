@@ -6,6 +6,8 @@
 **Verdict:** `CHANGES_REQUIRED` at entry — all `CRITICAL` and `MAJOR` findings corrected in baseline version `0.3`
 **Implementation authority:** `NOT GRANTED` before, during, and after this audit
 
+> **Sections 1 to 16 record the original audit of baseline `0.2` and are preserved unchanged, including where the Project Owner's review later corrected them.** Section 17 is the Owner-review addendum: it records the Owner's findings on baseline `0.3`, their disposition, and the corrections that produced baseline `0.4`. Where the two disagree, **section 17 governs** — in particular the disposition of M3, the status of the gluten requirements, and the blocked count.
+
 ---
 
 ## 1. Verified repository state
@@ -358,3 +360,196 @@ Before approving, please make three decisions that are yours rather than the aud
 Two things this audit deliberately did not do: it did not resolve any Jaime decision, and it did not modify canonical business intent.
 
 Implementation authority remains **`NOT GRANTED`**. A `BASELINED` requirement is an accepted obligation for specification only. Architecture, contracts, use cases, acceptance criteria, and a bounded task packet remain prerequisites before any implementation authority is considered.
+
+---
+
+## 17. Owner-review addendum — baseline `0.3` to `0.4`
+
+**Review subject:** requirements baseline version `0.3`, as published in this pull request
+**Reviewer:** Project Owner
+**Date:** `2026-07-25`
+**Result:** six findings, all accepted and corrected in baseline version `0.4`
+**Implementation authority:** unchanged — `NOT GRANTED`
+
+### 17.1 Provisional acceptances recorded
+
+The Project Owner provisionally accepts, and this addendum records:
+
+1. the three derived gates `JV-MANUAL-CHANNELS`, `JV-PAYMENT-PROCEDURE`, and `JV-INCIDENT-FAIRNESS` — **as specification-derived validation nodes only**. They do not become canonical section 15 gates, and each retains `origin: DERIVED` with its written derivation rationale. The validator rejects a derived gate that lacks one, and the independent cross-check asserts the derived set and its origins have not silently changed;
+2. the 210-requirement granularity of baseline `0.3`, as the basis on which this correction pass builds;
+3. handling the stale canonical change-log identifiers through a later bounded canonical-maintenance change rather than modifying discovery in this pull request. Finding O1 therefore remains open and deliberately uncorrected.
+
+### 17.2 Root cause common to findings 2, 3, and 5
+
+Baseline `0.3` treated *"the gate is unresolved"* as equivalent to *"the obligation is undecided."* They are not the same. Canonical discovery frequently accepts an obligation in full while leaving its exact wording, its operating procedure, its owner, or its supporting evidence to a validation gate. Baseline `0.3` recorded those cases as `BLOCKED_BY_VALIDATION`, which reported settled business intent as unspecifiable and materially understated readiness — the same defect the original audit had itself identified as M3, applied at a smaller scale to the records M3 did not reach.
+
+### 17.3 Finding OW1 — stale-gate historical statement
+
+**Finding.** `docs/current/DOPIS_MVP_REQUIREMENTS.md` stated that the version `0.2` identifiers appear in no part of the canonical discovery document. That contradicted both the audit report at section 5 (M1) and the gate registry, each of which correctly records the identifiers as present in the section 19 change log.
+
+**Evidence.** `JV-MANUAL-ORDERS` and `JV-PAYMENT` appear at discovery line 2992, inside `## 19. Change log`, entered by discovery version `0.11`. They are absent from the section 15 validation register of version `0.18`.
+
+**Disposition — corrected.** The Markdown baseline now states all three parts: absent from the current section 15 register; surviving only as historical entries in the section 19 change log; therefore **stale or retired, not fabricated and not absent from the complete document**.
+
+A sweep of every changed artifact and of the pull request description found the inaccurate wording in that one sentence only. The gate registry's `retired_gates` evidence and the M1 entry in section 5 were already accurate; the M1 correction note at section 5 had already caught and recorded the earlier imprecision.
+
+**Regression control.** The validator previously rejected *any* mention of a retired identifier in the Markdown baseline, which meant the correction could not be written at all. It now permits a retired identifier only on a line that identifies it as retired or stale, so a historical statement is expressible while a stale reference that reads as live still fails. A negative fixture covers it.
+
+### 17.4 Finding OW2 — `JV-GLUTEN` reopened a settled obligation
+
+**Finding.** `JV-GLUTEN` asked "whether explicit acknowledgement is required" in both its resolution criteria and its open questions. Canonical section 10.3 already requires "explicit confirmation that the customer has read and understood the warning". The gate was reopening a settled food-safety obligation.
+
+**Disposition — corrected.** The gate no longer questions the existence of the acknowledgement obligation. It now covers only genuinely unresolved matters: the exact customer-facing cross-contact and acknowledgement wording, supplier documentation for gluten-free dough, the actual kitchen procedure, which severe-allergy requests the premises can responsibly accept, the detailed conditions under which staff must disable the option, and who besides Jaime may approve safety and dietary information. A `canonical_note` field records the eight section 10.3 interface obligations the gate does not reopen.
+
+### 17.5 Finding OW3 — gluten requirement status against `BLOCK` semantics
+
+**Finding.** Seven gluten records were `BLOCKED_BY_VALIDATION` although canonical section 10.3 states each obligation as a requirement of the interface.
+
+**Evidence.** Section 10.3, "The interface must:" — show a general cross-contact warning in the menu; show a specific warning when the customer selects the option; require explicit confirmation that the customer has read and understood the warning; avoid claiming suitability for coeliac customers or severe allergies before validation; advise customers with severe allergies to contact the premises before ordering; state that online ordering cannot guarantee absence of cross-contact; allow staff to disable the option independently; disable it whenever the validated operating procedure cannot be followed.
+
+**Disposition — corrected.** All seven are now `acceptance_state: ACCEPTED`, `status: BASELINED`, with `VALIDATE` on `JV-GLUTEN`.
+
+| Requirement | Canonical acceptance | What remains open |
+|---|---|---|
+| `BR-ALLERGEN-001` | Present as a dough option; claim no coeliac suitability | Exact wording |
+| `FR-GLUTEN-001` | General menu cross-contact warning | Exact wording |
+| `FR-GLUTEN-002` | Specific warning on selection | Exact wording |
+| `FR-GLUTEN-003` | Explicit read-and-understood confirmation | Exact acknowledgement wording |
+| `FR-GLUTEN-004` | No-guarantee statement and severe-allergy contact advice | Exact wording; severe-allergy policy |
+| `FR-GLUTEN-005` | Independent disablement of the option | Nothing; linked for coherence with `OPS-GLUTEN-001` |
+| `OPS-GLUTEN-001` | Disablement when the validated procedure cannot be followed | Detailed conditions; kitchen procedure |
+
+**No gluten requirement remains `BLOCKED_BY_VALIDATION`.** Food safety is not weakened by this: `PILOT-004` still carries `BLOCK` on `JV-GLUTEN`, so the unresolved gate continues to block the `PILOT` milestone globally and no pilot order may be accepted before it resolves. What changed is that an accepted obligation is no longer described as one that cannot be stated.
+
+### 17.6 Finding OW4 — telephone-number scope
+
+**Finding.** `DATA-ORDER-001` stated that name and telephone number are mandatory for **every** order, while `JV-MANUAL-CHANNELS` simultaneously recorded whether every in-person order needs a telephone number as unresolved. The accepted record decided the open question.
+
+**Evidence.** Discovery line 85 (section 2.1): "Guest checkout requires a name and telephone number." Discovery line 208 (section 3.2): in-person orders "also use name and telephone number **as the current working direction**". Discovery line 1058 (section 7.4A): "Requiring a telephone number for every in-person order **remains a working decision pending Jaime's validation** of operational burden and privacy necessity." Section 14 additionally names "In-person telephone collection is excessive" as a risk.
+
+**Disposition — corrected.** The single record is reformulated as three:
+
+| Requirement | Statement | State |
+|---|---|---|
+| `DATA-ORDER-001` | Name and telephone number are the only mandatory customer data **for a web or telephone order** | `ACCEPTED` / `BASELINED` / `VALIDATE JV-PRIVACY` |
+| `BR-ORDER-013` | Collect no mandatory customer data beyond name and telephone number **on any order channel** | `ACCEPTED` / `BASELINED` / `VALIDATE JV-PRIVACY` |
+| `DATA-ORDER-003` | Require a telephone number for every in-person order | `PROVISIONAL` / `BLOCKED_BY_VALIDATION` / `BLOCK JV-MANUAL-CHANNELS` |
+
+Data minimisation stays binding on every channel through `BR-ORDER-013`, which states the ceiling and therefore holds whichever way the in-person question resolves. No accepted statement now claims the in-person rule has been decided. Dependencies, the epic map, the traceability counts, and the negative fixtures were updated with them.
+
+### 17.7 Finding OW5 — re-audit of every blocked requirement
+
+Each of the twenty-four blocked records was tested against one question. **A:** is the obligation itself genuinely undecided? **B:** is the obligation accepted, with only a value, wording, procedure, owner, or evidence unresolved? Nineteen were case B.
+
+| Requirement | New state | Canonical acceptance of the obligation |
+|---|---|---|
+| `BR-CATALOG-001` | `VALIDATE` ×2 | 10.1A, 18A — the prohibition on publishing an incomplete product |
+| `DATA-CATALOG-001` | `VALIDATE JV-CONTENT` | 10.1B, 3.1 — the bilingual mechanism and fallback |
+| `DATA-ALLERGEN-001` | `VALIDATE JV-ALLERGENS` | 10.3 — "The catalog must store…" |
+| `BR-ALLERGEN-001`, `FR-GLUTEN-001…004`, `OPS-GLUTEN-001` | `VALIDATE JV-GLUTEN` | 10.3 — see OW3 |
+| `FR-SUBST-001` | `VALIDATE` + `CALIBRATE` | 6.19, 7.9 — the two-tier substitution mechanism and its preference order |
+| `BR-SUBST-001` | `VALIDATE` | 7.9 — "may not improvise an alternative outside approved rules" |
+| `BR-SUBST-003` | `CALIBRATE` | 7.9 step 5 — collect or absorb within the configured limit; the limit is a value |
+| `OPS-INCIDENT-001` | `VALIDATE` | 7.9 — pause only the affected scope, lowest-risk measure |
+| `BR-GOVERNANCE-001` | `VALIDATE` | 7.9 — the shift-close condition, stated verbatim |
+| `DATA-THRESHOLD-001` | `VALIDATE` | 6.20 — the register and its columns; the rows are content |
+| `DATA-ACCESS-001` | `VALIDATE` | 6.5, 11.7 — explicit representation of delegated responsibility |
+| `PRIV-RETENTION-001` | `CALIBRATE` + `VALIDATE` | 11.5, 18A — apply the approved periods; the periods are values |
+| `PILOT-001` | `VALIDATE` + `CALIBRATE` | 12.2 — the two-week pre-pilot baseline |
+| `PILOT-002` | `VALIDATE` | 12.4 — the first-segment shape |
+| `PILOT-003` | `VALIDATE` | 12.4, 18A — the rehearsal and its coverage |
+| `BR-PILOT-002` | `VALIDATE` | 12.5 — the requirement for explicit validated criteria |
+| `PILOT-006` | `CALIBRATE` | 12.3 — the four-week evaluation |
+
+`FR-INCIDENT-002` bundled two obligations of different status and was split. The staff contact and resolution obligation (7.5, 3.2) and the prohibition on automatic customer blocking (`BR-INCIDENT-003`) are accepted and baselined. The provisional two-incidents-in-90-days rule is now `BR-INCIDENT-002` and remains blocked.
+
+**Five records remain blocked, each with a written justification.**
+
+| Requirement | Reason code | Why `BLOCK` is valid |
+|---|---|---|
+| `PILOT-004` | `AUTHORISATION_NOT_YET_CONFERRED` | The canonical section 18A pilot entry condition; authorisation to begin the pilot has not been conferred |
+| `OPS-DELEGATION-001` | `AUTHORISATION_NOT_YET_CONFERRED` | The canonical section 18A operating-without-Jaime entry condition |
+| `BR-LAUNCH-001` | `AUTHORISATION_NOT_YET_CONFERRED` | The canonical section 18A public-launch entry condition |
+| `DATA-ORDER-003` | `OBLIGATION_NOT_YET_ACCEPTED` | Section 7.4A records the in-person telephone rule as a working decision pending Jaime |
+| `BR-INCIDENT-002` | `OBLIGATION_NOT_YET_ACCEPTED` | Section 3.2 records the repeat-incident rule as pending fairness and privacy validation |
+
+**A gap this re-audit exposed.** Canonical section 18A states three blocker lists — pilot, operating without Jaime, and public launch — but baseline `0.3` represented only the pilot one, as `PILOT-004`. The other two were carried implicitly by individual blocked obligations such as `DATA-ACCESS-001` and `PRIV-RETENTION-001`. Correcting those to `BASELINED` would have silently removed the only representation of two canonical milestone conditions. `OPS-DELEGATION-001` and `BR-LAUNCH-001` were added so each list is represented explicitly, by a record whose whole subject is the authorisation. The independent cross-check asserts that all three milestones are covered by an authorisation-blocked record; losing one is now a validation failure rather than an unnoticed regression.
+
+**Totals.** Requirements 210 → 216, none removed. Blocked 24 → 5. The blocked count was treated as an output of the evidence, not as a target; no record was unblocked to reach a number, and three of the five remaining blocks are new records rather than survivors.
+
+### 17.8 Finding OW6 — `BLOCK` wording
+
+**Finding.** `BLOCK` was defined as "the obligation itself cannot be specified or implemented until the gate resolves." A blocked record necessarily contains a candidate statement, so "cannot be specified" contradicted the artifact's own contents.
+
+**Disposition — corrected.** In all four places that define the effect — the gate registry, the requirement registry field contract, the traceability contract, and the Markdown baseline — `BLOCK` now reads:
+
+> The candidate obligation is recorded, but it cannot be accepted as final or made implementation-ready until the gate resolves.
+
+Section 3 of the Markdown baseline now keeps four levels explicitly distinct, none implying the next: **recording a candidate requirement**; **accepting the obligation**; **milestone readiness**; **implementation authority**.
+
+### 17.9 Regression control added
+
+A gate being unresolved is not by itself a reason to block. Every `BLOCKED_BY_VALIDATION` record now carries a `block_justification` object with `reason_code`, `gate`, `canonical_open_question`, and `explanation`. The validator enforces:
+
+1. `BLOCKED_BY_VALIDATION` if and only if a well-formed `block_justification` is present; a `BASELINED` record carrying one fails;
+2. `reason_code` drawn from a closed vocabulary of three codes — `OBLIGATION_NOT_YET_ACCEPTED`, `SUBJECT_MATTER_NOT_YET_SELECTABLE`, `AUTHORISATION_NOT_YET_CONFERRED`. **The vocabulary contains no code meaning that only wording, procedure, ownership, or evidence is unresolved**, because that case is a `BASELINED` record with `VALIDATE` or `CALIBRATE`;
+3. `gate` must be one of that record's own `BLOCK`-linked gates;
+4. `canonical_open_question` must match an entry in that gate's `open_questions` **verbatim**, so a blocking concern is always a registered open question rather than an unstated one;
+5. **an `ACCEPTED` record may not use `OBLIGATION_NOT_YET_ACCEPTED`** — acceptance and undecidedness are contradictory by the definition of `acceptance_state`;
+6. `AUTHORISATION_NOT_YET_CONFERRED` requires a prohibition statement, so the milestone code cannot be borrowed for an ordinary obligation.
+
+Rules 2 and 5 together make the reported defect unrepresentable: an accepted canonical obligation whose final wording or operating procedure is unresolved has no way to be recorded as blocked. None of the rules names a requirement identifier, a gate identifier, or a count, so they do not encode the current records.
+
+Six negative fixtures were added, each selecting its target by scanning rather than by identifier: a blocked record with the justification removed; an `ACCEPTED` blocked record claiming its obligation is undecided; a justification citing an open question the gate does not declare; a justification naming a gate the record does not block on; a `BASELINED` record carrying a justification; and a Markdown baseline using a retired gate identifier as if it were current. The suite covers 23 defect classes, up from 17. `mutate_stale_counts` and `mutate_markdown_disagreement` were also made count-agnostic, so no fixture hard-codes a requirement total.
+
+### 17.10 Incidental observation
+
+The M6 disposition in section 7 states that "every link now carries a `rationale`". That is not literally true of `validation_links`, which are `[effect, gate]` pairs with no per-link field; the `rationale` is carried once per requirement. The new `block_justification` supplies a per-link explanation for `BLOCK` links specifically. This is recorded for accuracy rather than corrected in the historical section, which is preserved as written.
+
+### 17.11 Validation after correction
+
+```text
+$ python3 scripts/validate_specification.py
+PASS: 216 requirements, 13 epics, 18 of 20 gates referenced, 17 exclusions, 5 blocked requirements
+      canonical discovery sections resolved: 112
+      unreferenced gates (expected: closed only): ['JV-COHERENCE', 'JV-DISCOVERY-CLOSE']
+      all declared orphan checks recomputed and matching
+exit=0
+
+$ python3 scripts/test_validate_specification.py
+PASS: 23 defect fixtures rejected, control fixture accepted
+      no fixture state written to the repository
+exit=0
+
+$ independent cross-checks (sharing no code with the validator)
+requirements=216 unique=216 epics=13 exclusions=17 gates=20 retired=4
+canonical headings parsed: 112
+gates: CANONICAL=17 DERIVED=3
+section-15 register gates : 17
+declared CANONICAL        : 17  match=True
+blocked=5: ['DATA-ORDER-003', 'BR-INCIDENT-002', 'OPS-DELEGATION-001', 'BR-LAUNCH-001', 'PILOT-004']
+milestone entry conditions: ['BR-LAUNCH-001', 'OPS-DELEGATION-001', 'PILOT-004']
+                            covering ['PILOT', 'PUBLIC_LAUNCH', 'WITHOUT_JAIME']
+gluten records: 7
+result: ALL INDEPENDENT CHECKS PASS
+```
+
+Confirmed by the run above: every canonical source section resolves; all gate references resolve; no retired gate is referenced by any requirement; the three derived gates remain `DERIVED` with rationales and are excluded from the canonical set, which still matches the section 15 register exactly at 17; every blocked requirement satisfies the corrected `BLOCK` semantics; `DATA-ORDER-001` no longer decides the in-person telephone rule; `JV-GLUTEN` no longer asks whether canonical acknowledgement is required; the Markdown baseline, registries, epic map, traceability matrix, and this report agree; and implementation authority is `NOT_GRANTED` in all five machine artifacts and in the Markdown baseline.
+
+During this correction pass the validator again rejected a defect in the corrector's own work: the first attempt at the OW1 wording named the two retired identifiers in the Markdown baseline and was rejected as a stale gate reference. That is what prompted the historical-mention rule in 17.3 rather than a silent loosening of the check.
+
+### 17.12 Residual risks after this pass
+
+Residual risks 2 to 9 of section 15 stand, with these amendments:
+
+1. **Risk 1 is restated.** 17 canonical gates remain unresolved — 12 pilot, 2 operating-without-Jaime, 3 public launch. **5** requirements are `BLOCKED_BY_VALIDATION`, not 24. The lower number reflects corrected semantics, not increased readiness: three unresolved milestone entry conditions still stop the pilot, operating without Jaime, and public launch respectively.
+2. **Risk 2 is partially closed.** The Owner provisionally accepts the three derived gates as specification-derived nodes; they do not enter the canonical register.
+3. **Risk 5 is restated.** `PRIV-RETENTION-001` is now `BASELINED` with `CALIBRATE`. No retention period was invented, and `BR-LAUNCH-001` blocks public launch until the periods are defined.
+4. **New.** `OPS-DELEGATION-001` and `BR-LAUNCH-001` are the auditor's formulation of canonical section 18A blocker lists that had no baseline representation. They introduce no new business intent, but the Owner should confirm the wording matches the intended entry conditions.
+5. **New.** The three-code block vocabulary is a governance decision embedded in the validator. If the Owner later finds a legitimate blocking situation none of the three codes describes, the vocabulary must be extended deliberately rather than by relabelling a record.
+
+### 17.13 Disposition
+
+Pull request #1 remains **open, unmerged, and ready for Project Owner review**. It was not merged, and no Jaime decision was resolved. Canonical business intent was not modified; finding O1 remains open by the Owner's own instruction.
+
+Implementation authority remains **`NOT GRANTED`**.
