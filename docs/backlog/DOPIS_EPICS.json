@@ -1,0 +1,132 @@
+{
+  "schema_version": "2.0",
+  "format": "JSON",
+  "milestone": "MILESTONE-SPEC-001",
+  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "implementation_authority": "NOT_GRANTED",
+  "source": {
+    "discovery": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+    "discovery_version": "0.18",
+    "requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+    "requirements_version": "0.3"
+  },
+  "notice": "Epics are business or operational capabilities, never technical layers. Every requirement has exactly one primary epic, which owns it. A supporting mapping records a deliberate cross-cutting concern and never duplicates the obligation: the requirement is specified once, in its primary epic. Validation gates are derived from the member requirements by scripts/validate_specification.py and are deliberately not declared here, because a hand-written gate list cannot be kept true.",
+  "authority_note": "This map implies no implementation order, estimate, delivery commitment, or authority. Readiness additionally requires everything listed in readiness_requires.",
+  "epics": [
+    {
+      "id": "EPIC-ORDERING",
+      "title": "Ordering and Pickup",
+      "goal": "A customer can place a pickup order through any channel and receive a feasible pickup commitment that Dopis then protects.",
+      "primary": ["FR-ORDER-001", "FR-ORDER-002", "DATA-ORDER-001", "BR-ORDER-001", "BR-ORDER-010", "FR-ORDER-003", "FR-ORDER-012", "BR-ORDER-002", "BR-ORDER-005", "FR-ORDER-011", "BR-ORDER-006", "FR-ORDER-004", "FR-ORDER-009", "BR-ORDER-007", "FR-ORDER-005", "BR-ORDER-003", "BR-ORDER-009", "BR-ORDER-004", "FR-ORDER-006", "FR-ORDER-007", "NFR-ORDER-001", "DATA-ORDER-002", "BR-ORDER-011", "FR-ORDER-008", "FR-ORDER-010", "BR-ORDER-012", "OPS-ORDER-001", "FR-ORDER-013", "FR-ORDER-015", "BR-ORDER-008", "FR-ORDER-014"],
+      "supporting": ["BR-CAPACITY-001", "FR-CAPACITY-003", "OPS-HOURS-002", "FR-STOCK-001", "SEC-TRACKING-002"],
+      "supporting_rationale": "Order admission is only meaningful against the shared capacity, hours, and stock rules owned by other epics, and the two customer tracking actions are bounded by the communications epic."
+    },
+    {
+      "id": "EPIC-KITCHEN-OPERATIONS",
+      "title": "Kitchen Operations",
+      "goal": "The kitchen reliably receives, acknowledges, prepares, and progresses every accepted order on a real tablet under real service conditions.",
+      "primary": ["FR-KITCHEN-001", "FR-KITCHEN-002", "FR-KITCHEN-012", "FR-KITCHEN-003", "NFR-KITCHEN-001", "FR-KITCHEN-011", "OPS-KITCHEN-001", "OPS-KITCHEN-004", "NFR-KITCHEN-002", "BR-KITCHEN-001", "NFR-KITCHEN-004", "OPS-KITCHEN-003", "FR-KITCHEN-004", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "OPS-KITCHEN-005", "NFR-KITCHEN-003", "FR-KITCHEN-005", "FR-KITCHEN-013", "FR-KITCHEN-006", "FR-KITCHEN-007", "FR-KITCHEN-008", "FR-KITCHEN-009", "FR-KITCHEN-010", "BR-SCOPE-004"],
+      "supporting": ["FR-INCIDENT-001", "FR-ORDER-006", "PRIV-DATA-002", "PRIV-DATA-005"],
+      "supporting_rationale": "The exception queue and the least-necessary-visibility rules are exercised inside the kitchen panel but are owned by the incidents and privacy epics."
+    },
+    {
+      "id": "EPIC-CAPACITY",
+      "title": "Capacity and Service Scheduling",
+      "goal": "Order admission reflects real kitchen workload, pickup windows, and service hours across every channel.",
+      "primary": ["BR-CAPACITY-001", "BR-CAPACITY-005", "FR-CAPACITY-001", "FR-CAPACITY-002", "FR-CAPACITY-003", "BR-CAPACITY-002", "BR-CAPACITY-004", "FR-CAPACITY-004", "FR-CAPACITY-005", "BR-CAPACITY-003", "AUDIT-CAPACITY-001", "OPS-HOURS-001", "OPS-HOURS-002", "OPS-HOURS-003"],
+      "supporting": ["FR-ORDER-003", "BR-ORDER-002", "BR-ORDER-005", "FR-ORDER-011", "BR-ORDER-006", "BR-ORDER-011", "FR-KITCHEN-005", "FR-KITCHEN-008", "FR-STOCK-008", "BR-THRESHOLD-001"],
+      "supporting_rationale": "Capacity is consumed by the ordering flow and surfaced in the kitchen queue; the values that parameterise it live in the pilot threshold register."
+    },
+    {
+      "id": "EPIC-STOCK",
+      "title": "Stock and Availability",
+      "goal": "Every channel sells only what physically exists, with auditable adjustments and safe availability control.",
+      "primary": ["FR-STOCK-001", "FR-STOCK-002", "BR-STOCK-001", "BR-STOCK-003", "OPS-STOCK-001", "FR-STOCK-003", "FR-STOCK-004", "BR-STOCK-004", "BR-STOCK-002", "FR-STOCK-011", "FR-STOCK-005", "FR-STOCK-006", "FR-STOCK-012", "FR-STOCK-007", "FR-STOCK-008", "FR-STOCK-009", "OPS-STOCK-002", "FR-STOCK-010"],
+      "supporting": ["BR-ORDER-002", "BR-ORDER-005", "BR-ORDER-009", "FR-ORDER-011", "FR-ORDER-007", "FR-KITCHEN-012", "OPS-KITCHEN-005"],
+      "supporting_rationale": "Stock reservation and release are driven by the order lifecycle and by the Start preparation event; the opening checklist reviews stock but is owned by kitchen operations."
+    },
+    {
+      "id": "EPIC-CATALOG",
+      "title": "Catalog Administration and Presentation",
+      "goal": "Jaime maintains a correct, bilingual, well-ordered menu without developer intervention, and historical orders remain intact.",
+      "primary": ["FR-CATALOG-001", "SEC-CATALOG-001", "FR-CATALOG-002", "BR-CATALOG-005", "BR-CATALOG-006", "BR-CATALOG-011", "BR-CATALOG-012", "DATA-CATALOG-001", "BR-CATALOG-007", "BR-CATALOG-009", "FR-CATALOG-005", "BR-CATALOG-008", "BR-CATALOG-013", "FR-CATALOG-006", "BR-CATALOG-002", "AUDIT-ADMIN-001", "BR-SCOPE-002", "BR-SCOPE-005", "BR-SCOPE-006"],
+      "supporting": ["BR-CATALOG-001", "BR-CATALOG-003", "BR-CATALOG-004", "BR-CATALOG-010", "FR-STOCK-004", "BR-ORDER-004"],
+      "supporting_rationale": "Publication approval and the safety-review rules constrain catalog administration but are owned by the food-safety epic, which is where their verification evidence lives."
+    },
+    {
+      "id": "EPIC-FOOD-SAFETY",
+      "title": "Allergen, Dietary, and Cross-Contact Safety",
+      "goal": "A customer never receives incorrect or incomplete allergen, dietary, or cross-contact information, and unsafe information stops sales immediately.",
+      "primary": ["BR-CATALOG-010", "BR-CATALOG-001", "BR-CATALOG-003", "BR-CATALOG-004", "OPS-ALLERGEN-003", "DATA-ALLERGEN-001", "FR-ALLERGEN-001", "FR-ALLERGEN-002", "FR-ALLERGEN-003", "FR-ALLERGEN-004", "FR-ALLERGEN-005", "BR-ALLERGEN-001", "FR-GLUTEN-001", "FR-GLUTEN-002", "FR-GLUTEN-003", "FR-GLUTEN-004", "FR-GLUTEN-005", "OPS-GLUTEN-001", "OPS-ALLERGEN-001", "OPS-ALLERGEN-002"],
+      "supporting": ["BR-CATALOG-005", "BR-CATALOG-006", "BR-CATALOG-013", "BR-UPSELL-002", "FR-UPSELL-002", "FR-STOCK-005", "FR-STOCK-006", "FR-STOCK-012", "SEC-CATALOG-001"],
+      "supporting_rationale": "Free-text notes, recommendation surfaces, and shared critical-ingredient controls can all invalidate a computed allergen result, so they are tracked here even though they are owned elsewhere."
+    },
+    {
+      "id": "EPIC-UPSELL",
+      "title": "Bounded Upselling",
+      "goal": "Manually configured recommendations add value without blocking checkout, misleading the customer, or becoming an automated commercial engine.",
+      "primary": ["FR-UPSELL-001", "FR-UPSELL-002", "FR-UPSELL-003", "BR-UPSELL-001", "BR-UPSELL-003", "BR-UPSELL-004", "BR-UPSELL-005", "BR-UPSELL-002", "AUDIT-UPSELL-001", "BR-SCOPE-003"],
+      "supporting": ["BR-CATALOG-001", "BR-CATALOG-013", "FR-ALLERGEN-003"],
+      "supporting_rationale": "Recommendation eligibility depends on publication completeness and on the dietary recalculation owned by the food-safety epic."
+    },
+    {
+      "id": "EPIC-COMMUNICATIONS",
+      "title": "Customer Communications and Tracking",
+      "goal": "A guest customer can securely follow their order and receives the minimum operational messages, with no redundant or over-disclosing communication.",
+      "primary": ["FR-COMMS-001", "FR-COMMS-002", "BR-COMMS-001", "FR-COMMS-003", "BR-COMMS-002", "SEC-TRACKING-001", "SEC-TRACKING-002", "SEC-TRACKING-003"],
+      "supporting": ["FR-ORDER-009", "FR-ORDER-010", "BR-ORDER-007", "BR-ORDER-012", "OPS-ORDER-001", "PRIV-COMMS-001"],
+      "supporting_rationale": "The two permitted customer tracking actions and the SMS content limit are exercised here but owned by the ordering and privacy epics."
+    },
+    {
+      "id": "EPIC-PAYMENT-HANDOVER",
+      "title": "Payment, Handover, and Shift Close",
+      "goal": "Payment at the premises, handover, and cash reconciliation are separate, correctable, and auditable events with an accountable close.",
+      "primary": ["BR-PAYMENT-001", "FR-PAYMENT-001", "BR-PAYMENT-002", "OPS-PAYMENT-001", "AUDIT-PAYMENT-001", "SEC-PAYMENT-002", "FR-PAYMENT-002", "AUDIT-PAYMENT-002", "OPS-SHIFT-001", "OPS-SHIFT-002", "SEC-PAYMENT-001"],
+      "supporting": ["FR-ORDER-013", "FR-ORDER-014", "BR-ORDER-008", "DATA-GOVERNANCE-001"],
+      "supporting_rationale": "Non-collection, third-party collection, and the pending-decision record all terminate at the handover and shift-close boundary."
+    },
+    {
+      "id": "EPIC-INCIDENTS",
+      "title": "Incidents, Substitutions, and Recovery",
+      "goal": "Exceptional situations are visible, resolved within authorised limits, recorded without losing history, and escalated safely when they exceed shift authority.",
+      "primary": ["FR-SUBST-001", "BR-SUBST-001", "BR-SUBST-002", "BR-SUBST-003", "AUDIT-SUBST-001", "FR-INCIDENT-001", "FR-INCIDENT-002", "BR-INCIDENT-001", "AUDIT-INCIDENT-001", "FR-INCIDENT-003", "OPS-INCIDENT-001", "DATA-GOVERNANCE-001", "BR-GOVERNANCE-001", "FR-GOVERNANCE-001", "BR-SCOPE-001"],
+      "supporting": ["FR-ORDER-006", "FR-ORDER-013", "BR-ORDER-008", "OPS-STOCK-001", "OPS-ALLERGEN-001", "OPS-ALLERGEN-002", "OPS-PAYMENT-001", "FR-KITCHEN-007", "PILOT-005", "BR-PILOT-003"],
+      "supporting_rationale": "Every exception path in the ordering, stock, safety, payment, and pilot epics terminates in this queue and in this history."
+    },
+    {
+      "id": "EPIC-ACCESS",
+      "title": "Responsibility, Access, and Attribution",
+      "goal": "Service runs only under an accountable responsible person, with bounded access, honest attribution, and owner-controlled permissions.",
+      "primary": ["FR-ACCESS-001", "DATA-ACCESS-001", "SEC-ACCESS-001", "SEC-ACCESS-002", "SEC-ACCESS-003", "BR-ACCESS-001", "AUDIT-ACCESS-001", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001"],
+      "supporting": ["FR-KITCHEN-001", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "SEC-CATALOG-001", "OPS-SHIFT-001", "OPS-SHIFT-002", "AUDIT-ADMIN-001", "BR-CAPACITY-003"],
+      "supporting_rationale": "Authentication, mobile-backup limits, opening, close, and the reservation of permanent policy changes to Jaime are all expressions of the same authority model."
+    },
+    {
+      "id": "EPIC-PRIVACY",
+      "title": "Privacy and Compliance",
+      "goal": "Operational customer data is collected for a stated purpose, seen only where necessary, kept separate from marketing, and retained under approved rules.",
+      "primary": ["PRIV-DATA-001", "BR-PRIV-001", "BR-PRIV-002", "PRIV-DATA-002", "PRIV-DATA-003", "PRIV-DATA-004", "PRIV-DATA-005", "PRIV-DATA-006", "PRIV-COMMS-001", "PRIV-RETENTION-001"],
+      "supporting": ["DATA-ORDER-001", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001", "SEC-TRACKING-001", "SEC-TRACKING-003", "SEC-PAYMENT-001", "OPS-PILOT-001", "OPS-SHIFT-002"],
+      "supporting_rationale": "Data minimisation, disclosure control, tracking-session lifetime, and the pilot minimum-controls obligation are privacy concerns owned by the epics that implement them."
+    },
+    {
+      "id": "EPIC-PILOT",
+      "title": "Pilot Governance, Calibration, and Reporting",
+      "goal": "The controlled rollout produces the evidence needed to calibrate operating values and to decide whether Dopis continues, without unsafe automatic or public progression.",
+      "primary": ["DATA-THRESHOLD-001", "BR-THRESHOLD-001", "OPS-PILOT-001", "PILOT-001", "BR-PILOT-004", "PILOT-002", "PILOT-003", "BR-PILOT-001", "BR-PILOT-002", "PILOT-004", "PILOT-005", "BR-PILOT-003", "AUDIT-PILOT-001", "PILOT-006", "NFR-RELIABILITY-001", "NFR-OPERABILITY-001", "AUDIT-PILOT-002", "AUDIT-PILOT-003", "AUDIT-PILOT-004"],
+      "supporting": ["DATA-ORDER-002", "AUDIT-UPSELL-001", "SEC-REPORT-001", "AUDIT-CAPACITY-001", "FR-ORDER-008"],
+      "supporting_rationale": "Channel origin, upselling measurement, report access control, and override recording are the data sources the pilot scorecard consumes."
+    }
+  ],
+  "readiness_requires": [
+    "reviewed_requirements",
+    "use_cases",
+    "acceptance_criteria",
+    "architecture_contracts",
+    "known_dependencies",
+    "resolved_blocking_gates",
+    "test_strategy",
+    "bounded_scope",
+    "explicit_implementation_authority"
+  ]
+}

@@ -1,0 +1,152 @@
+{
+  "schema_version": "2.0",
+  "format": "JSON",
+  "milestone": "MILESTONE-SPEC-001",
+  "baseline_version": "0.3",
+  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "implementation_authority": "NOT_GRANTED",
+  "source": {
+    "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+    "version": "0.18"
+  },
+  "notice": "Explicit first-MVP exclusions taken from canonical discovery. Each entry carries forbidden_terms so a validator can detect a requirement that would silently reintroduce excluded scope. A term may appear only in a requirement listed under enforced_by, which is the requirement that states the exclusion itself.",
+  "promotion_rule": "An exclusion may be lifted only through an authorised scope change recorded in the canonical discovery. A derived requirements artifact must never promote excluded scope on its own authority.",
+  "exclusions": [
+    {
+      "id": "EXC-PAYMENT-ONLINE",
+      "title": "Online payment",
+      "detail": "Online card payments, Apple Pay, and Google Pay are outside the first operational MVP. Payment occurs at the premises.",
+      "source_sections": ["2.2", "6.6", "18A"],
+      "forbidden_terms": ["online payment", "apple pay", "google pay", "payment intent", "payment provider integration"],
+      "enforced_by": ["BR-PAYMENT-001"]
+    },
+    {
+      "id": "EXC-ACCOUNTS-LOYALTY",
+      "title": "Customer accounts, loyalty, and birthday benefits",
+      "detail": "Customer accounts, loyalty points, birthday rewards, and marketing campaigns are outside the first operational MVP.",
+      "source_sections": ["2.2", "11.1", "11.2"],
+      "forbidden_terms": ["loyalty point", "birthday reward", "birthday benefit", "marketing campaign", "customer account"],
+      "enforced_by": ["BR-PRIV-001"]
+    },
+    {
+      "id": "EXC-DELIVERY-RESERVATION",
+      "title": "Delivery and table reservations",
+      "detail": "Orders are pickup-only. Delivery and table reservations are outside the first operational MVP.",
+      "source_sections": ["2.2", "3.1"],
+      "forbidden_terms": ["delivery address", "table reservation", "home delivery"],
+      "enforced_by": ["BR-ORDER-001"]
+    },
+    {
+      "id": "EXC-COFFEE",
+      "title": "Coffee products",
+      "detail": "Coffee is excluded from the menu scope.",
+      "source_sections": ["2.2", "3.1"],
+      "forbidden_terms": ["coffee"],
+      "enforced_by": ["BR-SCOPE-005"]
+    },
+    {
+      "id": "EXC-SELF-CANCEL",
+      "title": "Customer self-service cancellation",
+      "detail": "General customer self-service cancellation is deferred. Staff cancellation is required. The tracking page allows only the narrowly scoped alternative-slot and delay-response actions.",
+      "source_sections": ["2.2", "7.3", "10B"],
+      "forbidden_terms": ["self-service cancellation", "customer cancels their own"],
+      "enforced_by": ["BR-ORDER-003", "SEC-TRACKING-002"]
+    },
+    {
+      "id": "EXC-RECIPE-INVENTORY",
+      "title": "Gram-level recipe inventory",
+      "detail": "Recipe or bill-of-material depletion and gram-level ingredient inventory are deferred. The MVP uses approximate remaining-use allowances for a small set of critical shared items.",
+      "source_sections": ["9.4", "6.13"],
+      "forbidden_terms": ["bill of material", "gram-level", "recipe depletion", "ingredient quantity depletion"],
+      "enforced_by": ["FR-STOCK-005"]
+    },
+    {
+      "id": "EXC-AUTOMATIC-SUBSTITUTION",
+      "title": "Automatic substitution and automatic reactivation",
+      "detail": "The system never substitutes an unavailable item automatically, and an estimated replenishment time never re-enables online sale automatically.",
+      "source_sections": ["9.1", "9.4", "3.2"],
+      "forbidden_terms": ["automatic substitution", "automatically substitute", "automatic reactivation", "automatically reactivate"],
+      "enforced_by": ["BR-STOCK-002"]
+    },
+    {
+      "id": "EXC-RECOMMENDATION-ENGINE",
+      "title": "Automatic recommendation engines and commercial automation",
+      "detail": "Discounts, dynamic pricing, automatic promotions, recommendation inference from sales, random recommendations, automatic cart insertion, and automatic quantity increases are excluded. Upselling is manually configured only.",
+      "source_sections": ["12.7", "18A"],
+      "forbidden_terms": ["dynamic pricing", "automatic promotion", "recommendation engine", "inferred recommendation", "random recommendation", "discount code"],
+      "enforced_by": ["BR-SCOPE-003", "BR-SCOPE-001"]
+    },
+    {
+      "id": "EXC-COMPENSATION",
+      "title": "Compensation capabilities",
+      "detail": "Coupon codes, discount codes, automatic compensation rules, future credits, and loyalty benefits are not accepted MVP capabilities. Staff may only record the resolution actually agreed with the customer inside the incident.",
+      "source_sections": ["7.8", "15"],
+      "forbidden_terms": ["coupon", "compensation voucher", "future credit", "promised future benefit"],
+      "enforced_by": ["BR-SCOPE-001"]
+    },
+    {
+      "id": "EXC-HALF-AND-HALF",
+      "title": "Half-and-half pizzas",
+      "detail": "Half-and-half pizzas are excluded initially. All pizzas have one size.",
+      "source_sections": ["3.1", "10.2"],
+      "forbidden_terms": ["half-and-half", "half and half"],
+      "enforced_by": ["BR-SCOPE-002"]
+    },
+    {
+      "id": "EXC-PRINTER",
+      "title": "Ticket printer",
+      "detail": "A ticket printer is outside the initial MVP scope and is reconsidered only if real operational testing shows tablet and mobile alerts are insufficient. The digital panel remains the source of truth.",
+      "source_sections": ["8", "3.2"],
+      "forbidden_terms": ["ticket printer", "print ticket", "printed order ticket"],
+      "enforced_by": ["BR-SCOPE-004"]
+    },
+    {
+      "id": "EXC-MULTILINGUAL-ADMIN",
+      "title": "Multilingual administration",
+      "detail": "Bilingual scope covers public customer content only. The administration interface is not multilingual in the first MVP.",
+      "source_sections": ["2.2", "10.1B"],
+      "forbidden_terms": ["multilingual administration", "bilingual administration interface"],
+      "enforced_by": ["BR-SCOPE-006"]
+    },
+    {
+      "id": "EXC-ADVANCE-ORDERS",
+      "title": "Multi-day advance orders",
+      "detail": "Initial launch accepts same-day orders only. A configurable multi-day advance-order horizon remains a future capability.",
+      "source_sections": ["3.2", "13.4"],
+      "forbidden_terms": ["multi-day advance", "advance-order horizon"],
+      "enforced_by": ["BR-ORDER-010"]
+    },
+    {
+      "id": "EXC-ANALYTICS-MARGIN",
+      "title": "Advanced analytics and product-margin reporting",
+      "detail": "Full business analytics, conversion funnels, cohort analysis, and product-margin reporting are deferred until cost data are validated.",
+      "source_sections": ["2.2", "12.6", "18A"],
+      "forbidden_terms": ["product margin", "margin report", "cohort analysis", "conversion funnel"],
+      "enforced_by": []
+    },
+    {
+      "id": "EXC-SEO",
+      "title": "Advanced SEO work",
+      "detail": "Advanced SEO work and SEO landing pages are outside the first operational MVP.",
+      "source_sections": ["2.2", "12.7"],
+      "forbidden_terms": ["seo landing", "search engine optimisation", "search engine optimization"],
+      "enforced_by": []
+    },
+    {
+      "id": "EXC-PRODUCTION-HOSTING",
+      "title": "Production hosting and public domain configuration",
+      "detail": "Production hosting, public domain configuration, and public-launch infrastructure readiness are outside the local operational implementation slice.",
+      "source_sections": ["2.2", "13.3", "16"],
+      "forbidden_terms": ["production hosting", "public domain configuration", "production deployment"],
+      "enforced_by": []
+    },
+    {
+      "id": "EXC-PERMISSION-HIERARCHY",
+      "title": "Extensive employee and permission hierarchy",
+      "detail": "The first MVP does not need an extensive employee, permission, and escalation hierarchy. It uses principal, delegated, operational, and shared-kitchen capability boundaries only.",
+      "source_sections": ["3.1", "6.5"],
+      "forbidden_terms": ["role hierarchy", "permission hierarchy", "organisational hierarchy"],
+      "enforced_by": []
+    }
+  ]
+}

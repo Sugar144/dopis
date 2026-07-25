@@ -1,0 +1,242 @@
+{
+  "schema_version": "2.0",
+  "format": "JSON",
+  "milestone": "MILESTONE-SPEC-001",
+  "baseline_version": "0.3",
+  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "implementation_authority": "NOT_GRANTED",
+  "source": {
+    "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+    "version": "0.18",
+    "canonical_register": "15"
+  },
+  "notice": "Gates whose origin is CANONICAL appear verbatim in the discovery validation register (section 15). Gates whose origin is DERIVED do not appear there; they are declared here explicitly, with the open canonical question that justifies them, so that no derived gate can be mistaken for stakeholder-registered scope.",
+  "retired_gates": [
+    {
+      "id": "JV-MANUAL-ORDERS",
+      "introduced_in_discovery_version": "0.11",
+      "status": "RETIRED",
+      "evidence": "Appears only in the discovery change log at section 19. It is absent from the current section 15 validation register in version 0.18.",
+      "disposition": "Its remaining open questions are carried by JV-MANUAL-CHANNELS, which is declared DERIVED. Baseline version 0.2 referenced the retired identifier as though it were current."
+    },
+    {
+      "id": "JV-PAYMENT",
+      "introduced_in_discovery_version": "0.11",
+      "status": "RETIRED",
+      "evidence": "Appears only in the discovery change log at section 19. It is absent from the current section 15 validation register in version 0.18.",
+      "disposition": "Its remaining open questions are carried by JV-PAYMENT-PROCEDURE, which is declared DERIVED. Baseline version 0.2 referenced the retired identifier as though it were current, and used it to block payment obligations that sections 3.2, 6.6, and 7.5 already accept."
+    },
+    {
+      "id": "JV-UPSELL",
+      "introduced_in_discovery_version": "0.12",
+      "status": "RETIRED",
+      "evidence": "Appears only in the discovery change log at section 19, where version 0.13 records it as refined into the remaining Jaime validations.",
+      "disposition": "Upselling validation is carried by JV-CATALOG-APPROVAL and JV-PILOT. No requirement references the retired identifier."
+    },
+    {
+      "id": "JV-LEGAL-RETENTION",
+      "introduced_in_discovery_version": "0.17",
+      "status": "RETIRED",
+      "evidence": "Appears only in the discovery change log at section 19. Section 18A supersedes the earlier mandatory-external-legal-review position.",
+      "disposition": "Retention validation is carried by JV-COMPLIANCE and JV-PRIVACY. No requirement references the retired identifier."
+    }
+  ],
+  "retired_gate_note": "Retired identifiers are recorded so that a future reader encountering them in the discovery change log, or in baseline version 0.2, can resolve them to the gate that now carries the concern. They are deliberately not listed in the gates array and must never be referenced by a requirement.",
+  "milestones": {
+    "PILOT": "Must be resolved before the first real pilot order.",
+    "WITHOUT_JAIME": "Must be resolved before a service operates without Jaime present.",
+    "PUBLIC_LAUNCH": "Must be resolved before public launch.",
+    "CLOSED": "Already resolved; retained for traceability and reopening rules."
+  },
+  "effects": {
+    "BLOCK": "The obligation itself cannot be specified or implemented until the gate resolves.",
+    "CALIBRATE": "The obligation is accepted; a value or operating rule is set from stakeholder or pilot evidence.",
+    "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
+  },
+  "gates": [
+    {
+      "id": "JV-CAPACITY",
+      "title": "Initial conservative capacity and preparation values",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "9.3"],
+      "resolution_criteria": "Jaime approves initial production-point values, per-window capacity totals, pickup-window duration, and minimum lead time from real kitchen observation.",
+      "open_questions": ["capacity-point values and the initial calibration method", "the exact minimum lead-time calculation and calibration"]
+    },
+    {
+      "id": "JV-DELAYS",
+      "title": "Initial delay, response, and escalation thresholds",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "7.6", "7.7"],
+      "resolution_criteria": "Jaime approves what counts as a relevant, important, and severe delay, the customer response window, and alert escalation timeouts.",
+      "open_questions": ["the exact threshold for an important delay and a material estimate revision", "whether the initial ten-minute customer delay-response window is operationally appropriate", "whether and when repeated estimate changes require additional SMS messages", "the final resolution policy when the customer rejects a delay after preparation has started"]
+    },
+    {
+      "id": "JV-MODIFIERS",
+      "title": "Initial allowed removals, substitutions, extras, limits, and pricing",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "10.2"],
+      "resolution_criteria": "Jaime approves the modifier matrix per pizza, extra and substitution prices, per-extra maximum quantities, and the permitted kitchen-note exceptions.",
+      "open_questions": ["the exact modifier matrix for every pizza", "price of each extra or substitution", "whether gluten-free dough changes price", "maximum quantity for each extra", "which non-ingredient instructions and authorised exceptions may use free-text notes"]
+    },
+    {
+      "id": "JV-GLUTEN",
+      "title": "Gluten supplier information, kitchen procedure, cross-contact wording, and pilot offer policy",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "10.3"],
+      "resolution_criteria": "Jaime validates supplier documentation, the actual kitchen procedure, the exact customer-facing cross-contact wording, whether explicit acknowledgement is required, and which severe-allergy requests the premises can responsibly accept.",
+      "open_questions": ["exact gluten cross-contact wording and whether explicit acknowledgement is required", "supplier information for gluten-free dough", "when staff must disable gluten-free dough because the validated procedure cannot be followed"]
+    },
+    {
+      "id": "JV-ALLERGENS",
+      "title": "Complete validated ingredient, allergen, and trace information for every participating product and modifier",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "10.3", "18A"],
+      "resolution_criteria": "Jaime provides the complete allergen matrix for products and modifiers, the provider-document review procedure, and the evidence package proving every real-pilot product has complete validated information.",
+      "open_questions": ["the complete allergen matrix for products and modifiers", "how substitutions change allergen and vegan/vegetarian labelling", "the exact provider-document review procedure", "who besides Jaime may approve dietary and allergen information"]
+    },
+    {
+      "id": "JV-CATALOG-APPROVAL",
+      "title": "Approved initial catalog and publication evidence",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "10.1A"],
+      "resolution_criteria": "Jaime approves the participating catalog, product order, featured and temporary products, and the recorded publication evidence for the pilot.",
+      "open_questions": ["initial category and product order", "launch featured products", "first temporary products and active dates", "concrete pizza-to-drink, dessert, and extra recommendation relationships for the pilot"]
+    },
+    {
+      "id": "JV-STOCK",
+      "title": "Opening stock, availability, critical options, and count procedure",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "9.2", "9.2A", "9.2B"],
+      "resolution_criteria": "Jaime confirms which products require counts, who performs opening and closing counts, the critical opening checklist, daily limits, and carry-over policy.",
+      "open_questions": ["who normally performs opening and closing counts", "which drinks, desserts, and limited products require mandatory counts", "which pizzas require daily limits", "which ingredients and options belong to the critical opening checklist", "whether remaining stock carries between service days or is recounted", "low-stock thresholds and warning behaviour by product"]
+    },
+    {
+      "id": "JV-PILOT",
+      "title": "Rehearsal pass, launch timing, participant group, observer ownership, manual review, pause, and rollback controls",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "12.4", "12.5"],
+      "resolution_criteria": "Jaime confirms the rehearsal pass evidence, launch date, participant group, observer ownership, and the criteria governing manual review, pause, and rollback.",
+      "open_questions": ["which regular customers participate in the first live segment", "exact Wednesday or Thursday launch date", "exact pass evidence from the operational rehearsal", "who records and reviews daily baseline and pilot evidence", "exact rollback criteria from automatic acceptance"]
+    },
+    {
+      "id": "JV-THRESHOLDS",
+      "title": "One approved table of conservative initial operating values",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "6.20"],
+      "resolution_criteria": "Jaime approves the bounded operational threshold register: concept, initial value, pilot adjustability, review moment, and validator for every outstanding numeric operating value.",
+      "open_questions": ["the initial large-order manual-review threshold percentage", "the exact grace-period and pickup-extension settings", "alert and escalation timeouts", "customer-response windows", "reservation or review extensions"]
+    },
+    {
+      "id": "JV-SHIFT-AUTHORITY",
+      "title": "Initial substitution rules, price-difference limit, and safe incident measures",
+      "milestone": "PILOT",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "7.9", "6.19"],
+      "resolution_criteria": "Jaime approves the initial specific substitution relationships, validated fallback rules, the fixed per-order absorbed price difference, the exact operational exceptions the delegate may approve, and which measures count as operationally safe.",
+      "open_questions": ["the initial specific substitution relationships", "validated fallback substitution rules by category or price", "the fixed per-order amount the delegate may absorb", "exact operational exceptions the delegate may approve", "which measures count as operationally safe when Jaime is unavailable", "when a responsible operator may override calculated capacity"]
+    },
+    {
+      "id": "JV-DELEGATION",
+      "title": "Nominal delegate, authorisation duration or shift scope, operating knowledge, and accepted limits",
+      "milestone": "WITHOUT_JAIME",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "6.5", "18A"],
+      "resolution_criteria": "Jaime formally confirms the nominal delegated responsible person, the authorisation dates or shift conditions, evidence that the delegate understands the approved rules and limits, and the accepted boundaries of delegated authority.",
+      "open_questions": ["nominal identity of the current delegated responsible person", "dates or conditions of delegated authorisation before operating without Jaime"]
+    },
+    {
+      "id": "JV-ACCESS",
+      "title": "Active access, revocation procedure, shared kitchen session, and mobile-backup limits",
+      "milestone": "WITHOUT_JAIME",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "11.3", "11.7"],
+      "resolution_criteria": "Jaime defines the onboarding, revocation, and access-review procedure, confirms the shared kitchen session boundaries, and approves the mobile-backup permission limits and report or export authority.",
+      "open_questions": ["what exact onboarding, revocation, and access-review procedure will Jaime use", "when must the shared kitchen session be replaced by individual operational identities", "whether staff use individual identities or shared operational access", "session lifetime and re-authentication behaviour"]
+    },
+    {
+      "id": "JV-COMPLIANCE",
+      "title": "Applicable compliance review",
+      "milestone": "PUBLIC_LAUNCH",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "11.5", "18A"],
+      "resolution_criteria": "Dopis completes the applicable compliance review covering customer information, treatment purpose and basis, retention, rights handling, processors, commercial communication, cookies, electronic contracting, and consumer obligations. External professional review is escalated only on unresolved material uncertainty.",
+      "open_questions": ["how long should identified orders, telephone numbers, incidents, payment records, and audit events be retained", "which accounting or legal records must remain identifiable"]
+    },
+    {
+      "id": "JV-CONTENT",
+      "title": "Final Spanish and Catalan copy and public menu presentation",
+      "milestone": "PUBLIC_LAUNCH",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "10.1B"],
+      "resolution_criteria": "Jaime approves the final Spanish and Catalan names, descriptions, and public menu presentation, including available launch photography.",
+      "open_questions": ["final Spanish and Catalan names and descriptions", "available launch photography", "who besides Jaime may administer ordinary products and content"]
+    },
+    {
+      "id": "JV-PRIVACY",
+      "title": "Final privacy notice, anonymisation, data-request procedure, access boundaries, and processor inventory",
+      "milestone": "PUBLIC_LAUNCH",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "11.1", "11.4", "11.5"],
+      "resolution_criteria": "Jaime approves the final privacy notice wording, the anonymisation approach, the personal-data request procedure and identity checks, the access boundaries, and the processor inventory.",
+      "open_questions": ["what exact procedure and identity checks will Jaime use for access, correction, or deletion requests", "which data can be anonymised while preserving useful metrics"],
+      "pilot_note": "Sections 11.4, 12.4, and 18A require a minimum viable form of the privacy notice, access controls, security measures, and data-request procedure to be active from the first real pilot order. Requirements carrying that minimum obligation are therefore PILOT-milestone requirements that link this gate as VALIDATE, not as BLOCK."
+    },
+    {
+      "id": "JV-MANUAL-CHANNELS",
+      "title": "Manual order-entry ownership and in-person telephone-number necessity",
+      "milestone": "PILOT",
+      "origin": "DERIVED",
+      "source_sections": ["15", "7.4A"],
+      "derivation_rationale": "Section 7.4A states manual order entry and channel parity as a firm rule, but leaves two bounded questions explicitly pending Jaime: who normally enters telephone and in-person orders, and whether every in-person order genuinely requires a telephone number. Section 15 lists both under 'Manual channels, payment, and handover' without assigning them a JV identifier. This gate names those two questions only; it does not reopen channel parity itself.",
+      "resolution_criteria": "Jaime confirms who normally enters telephone and in-person orders during peak service, and whether every in-person order requires a telephone number given operational burden and data-minimisation.",
+      "open_questions": ["who normally enters telephone and in-person orders", "whether every in-person order genuinely requires a telephone number", "how manual, telephone, and in-person orders are entered during peak service"]
+    },
+    {
+      "id": "JV-PAYMENT-PROCEDURE",
+      "title": "Receipt practice, correction permissions beyond the accepted baseline, and cash-discrepancy escalation",
+      "milestone": "PILOT",
+      "origin": "DERIVED",
+      "source_sections": ["15", "6.6", "7.5"],
+      "derivation_rationale": "Sections 3.1, 6.6, and 7.5 accept the payment and handover model itself: staff record the method actually used, payment and handover are separate events, corrections are auditable, and shift close compares expected and actual cash. Section 15 leaves only procedural detail open under 'Manual channels, payment, and handover'. This gate names that residual procedure so the accepted obligations are not misreported as blocked.",
+      "resolution_criteria": "Jaime confirms receipt issue and retention practice, the detailed correction permissions beyond the accepted baseline, how cash discrepancies are investigated and escalated, and whether any exceptional unpaid handover is permitted and who authorises it.",
+      "open_questions": ["exact receipt issue and retention practice", "detailed permissions for payment and handover corrections beyond the accepted baseline", "how cash discrepancies are investigated and when escalation is required", "whether any exceptional unpaid handover is allowed and who authorises it", "current cash-register, receipt, and end-of-shift procedures"]
+    },
+    {
+      "id": "JV-INCIDENT-FAIRNESS",
+      "title": "Operational incident fairness, retention, and correction controls",
+      "milestone": "PILOT",
+      "origin": "DERIVED",
+      "source_sections": ["15", "3.2", "11.5"],
+      "derivation_rationale": "Section 3.2 records the provisional two-incidents-in-90-days manual-review rule and the treatment of invalid telephone numbers as explicitly pending fairness and privacy validation, and section 11.5 states that the 90-day window is not a retention policy. Section 15 lists these under 'Customers and privacy' without a JV identifier. Because the underlying rule can unfairly affect real customers, it is named here rather than left implicit.",
+      "resolution_criteria": "Jaime and the compliance review confirm which operational incidents may affect manual review, whether the provisional two-incidents-in-90-days rule is appropriate, how incorrect incidents are corrected and communicated, and how invalid telephone numbers are treated without unfairly penalising customers.",
+      "open_questions": ["whether the provisional two-incidents-in-90-days rule is operationally appropriate", "which operational incidents may affect manual review", "how are incorrect incidents corrected and communicated", "how should invalid telephone numbers be treated without unfairly penalising customers"]
+    },
+    {
+      "id": "JV-DISCOVERY-CLOSE",
+      "title": "First-MVP business discovery closure",
+      "milestone": "CLOSED",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "18A"],
+      "resolution_criteria": "CLOSED by canonical reconciliation of BD-DELTA-014.",
+      "open_questions": []
+    },
+    {
+      "id": "JV-COHERENCE",
+      "title": "Cross-domain business coherence",
+      "milestone": "CLOSED",
+      "origin": "CANONICAL",
+      "source_sections": ["15", "18A"],
+      "resolution_criteria": "CLOSED for the current business baseline; no additional material contradiction was identified in the final round. A future contradiction returns only the affected business rule to bounded validation.",
+      "open_questions": []
+    }
+  ]
+}

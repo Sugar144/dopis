@@ -1,0 +1,199 @@
+{
+  "schema_version": "2.0",
+  "format": "JSON",
+  "milestone": "MILESTONE-SPEC-001",
+  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "implementation_authority": "NOT_GRANTED",
+  "notice": "This artifact declares the traceability contract. It deliberately does not restate the links themselves, because a hand-maintained copy of a link set becomes false the moment either side changes. Every relationship below is derived by scripts/validate_specification.py from the artifact named in derived_from, and every orphan expectation is recomputed and compared on each run. A stale expectation fails the run rather than passing silently.",
+  "baseline": {
+    "discovery": {
+      "id": "SRC-DISCOVERY-018",
+      "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+      "version": "0.18",
+      "status": "CANONICAL",
+      "section_reference_rule": "A requirement business_source entry must match a numbered section heading present in the canonical discovery. Section identifiers are used rather than line numbers because line numbers change on every canonical edit while section identifiers are stable across versions 0.1 to 0.18."
+    },
+    "requirements": {
+      "artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+      "version": "0.3"
+    },
+    "validation_gates": {
+      "artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
+      "version": "0.3"
+    },
+    "exclusions": {
+      "artifact": "docs/current/requirements/DOPIS_EXCLUSIONS.json",
+      "version": "0.3"
+    },
+    "epics": {
+      "artifact": "docs/backlog/DOPIS_EPICS.json",
+      "version": "2.0"
+    },
+    "human_readable_baseline": {
+      "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
+      "version": "0.3"
+    }
+  },
+  "node_types": [
+    "BUSINESS_SOURCE",
+    "REQUIREMENT",
+    "VALIDATION_GATE",
+    "EXCLUSION",
+    "EPIC",
+    "USE_CASE",
+    "STORY",
+    "ACCEPTANCE_CRITERION",
+    "ARCHITECTURE_DECISION",
+    "CONTRACT",
+    "TASK",
+    "TEST",
+    "RELEASE_EVIDENCE"
+  ],
+  "relation_types": [
+    "DERIVES",
+    "COVERS",
+    "SUPPORTS",
+    "BLOCKS",
+    "CALIBRATES",
+    "VALIDATES",
+    "CONSTRAINS",
+    "REFINES",
+    "DEPENDS_ON",
+    "REALIZES",
+    "VERIFIES",
+    "SUPERSEDES",
+    "PRODUCES_EVIDENCE_FOR"
+  ],
+  "derived_relations": [
+    {
+      "relation": "DERIVES",
+      "from": "BUSINESS_SOURCE",
+      "to": "REQUIREMENT",
+      "derived_from": "requirements[].business_source",
+      "checked": "Every referenced section identifier must exist as a heading in the canonical discovery."
+    },
+    {
+      "relation": "COVERS",
+      "from": "EPIC",
+      "to": "REQUIREMENT",
+      "derived_from": "epics[].primary",
+      "checked": "Every requirement has exactly one primary epic; every referenced identifier resolves."
+    },
+    {
+      "relation": "SUPPORTS",
+      "from": "EPIC",
+      "to": "REQUIREMENT",
+      "derived_from": "epics[].supporting",
+      "checked": "Every supporting identifier resolves, is not the epic's own primary, and the epic declares a supporting_rationale."
+    },
+    {
+      "relation": "BLOCKS",
+      "from": "VALIDATION_GATE",
+      "to": "REQUIREMENT",
+      "derived_from": "requirements[].validation_links with effect BLOCK",
+      "checked": "The gate exists; the requirement status is BLOCKED_BY_VALIDATION; a CLOSED-milestone gate never blocks."
+    },
+    {
+      "relation": "CALIBRATES",
+      "from": "VALIDATION_GATE",
+      "to": "REQUIREMENT",
+      "derived_from": "requirements[].validation_links with effect CALIBRATE",
+      "checked": "The gate exists and the requirement remains BASELINED unless separately blocked."
+    },
+    {
+      "relation": "VALIDATES",
+      "from": "VALIDATION_GATE",
+      "to": "REQUIREMENT",
+      "derived_from": "requirements[].validation_links with effect VALIDATE",
+      "checked": "The gate exists and the requirement remains BASELINED unless separately blocked."
+    },
+    {
+      "relation": "CONSTRAINS",
+      "from": "EXCLUSION",
+      "to": "REQUIREMENT",
+      "derived_from": "exclusions[].forbidden_terms matched against requirements[].statement",
+      "checked": "A forbidden term appears only in a requirement listed in that exclusion's enforced_by."
+    },
+    {
+      "relation": "DEPENDS_ON",
+      "from": "REQUIREMENT",
+      "to": "REQUIREMENT",
+      "derived_from": "requirements[].dependencies",
+      "checked": "Every dependency resolves, is not self-referential, and forms no cycle."
+    }
+  ],
+  "coverage_rules": {
+    "requirement_requires_business_source": true,
+    "requirement_business_source_must_resolve": true,
+    "requirement_requires_exactly_one_primary_epic": true,
+    "requirement_requires_verification_method": true,
+    "requirement_requires_rationale": true,
+    "blocked_requirement_requires_block_gate": true,
+    "baselined_requirement_forbids_block_gate": true,
+    "gate_reference_must_resolve": true,
+    "closed_gate_must_not_block": true,
+    "epic_requirement_ids_must_exist": true,
+    "epic_supporting_must_not_duplicate_primary": true,
+    "dependency_must_resolve_and_be_acyclic": true,
+    "exclusion_must_not_be_contradicted": true,
+    "human_readable_baseline_must_agree_with_registry": true,
+    "use_case_requires_requirement": true,
+    "story_requires_requirement": true,
+    "task_requires_requirement": true,
+    "task_requires_acceptance_criterion": true,
+    "test_requires_acceptance_target": true,
+    "superseded_node_requires_successor": true
+  },
+  "gate_effects": {
+    "BLOCK": "Prevents specification or implementation readiness for the affected requirement.",
+    "CALIBRATE": "The obligation is accepted; a value or operating rule is set from stakeholder or pilot evidence.",
+    "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
+  },
+  "orphan_checks": {
+    "notice": "Every array below is recomputed by the validator and compared exactly. A non-empty computed set with an empty declaration fails the run.",
+    "requirements_without_primary_epic": [],
+    "requirements_with_multiple_primary_epics": [],
+    "requirements_without_business_source": [],
+    "requirements_with_unresolved_business_source": [],
+    "requirements_without_rationale": [],
+    "blocked_requirements_without_block_gate": [],
+    "baselined_requirements_with_block_gate": [],
+    "epic_links_to_unknown_requirements": [],
+    "unknown_gate_references": [],
+    "closed_gates_used_as_blockers": [],
+    "unresolved_dependencies": [],
+    "dependency_cycles": [],
+    "contradicted_exclusions": [],
+    "registry_and_markdown_disagreements": [],
+    "stories_without_requirements": [],
+    "tasks_without_requirements": [],
+    "tasks_without_acceptance_criteria": [],
+    "tests_without_acceptance_targets": [],
+    "stale_superseded_links": []
+  },
+  "derived_counts": {
+    "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",
+    "requirements": 210,
+    "epics": 13,
+    "gates_defined": 20,
+    "gates_referenced": 18,
+    "exclusions": 17,
+    "blocked_requirements": 24
+  },
+  "future_nodes": {
+    "use_cases": [],
+    "stories": [],
+    "acceptance_criteria": [],
+    "architecture_decisions": [],
+    "contracts": [],
+    "tasks": [],
+    "tests": [],
+    "release_evidence": []
+  },
+  "validation": {
+    "command": "python scripts/validate_specification.py",
+    "negative_test_command": "python scripts/test_validate_specification.py",
+    "dependency_policy": "Python standard library only",
+    "result_recording_policy": "This artifact deliberately records no pass result. A stored PASS string is a claim, not evidence. Run the command to obtain the current result."
+  }
+}
