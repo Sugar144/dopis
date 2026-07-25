@@ -1,77 +1,211 @@
-schema_version: "1.0"
+schema_version: '1.1'
 milestone: MILESTONE-SPEC-001
-status: DRAFT_FOR_REVIEW
+status: REVIEWED_PENDING_OWNER_APPROVAL
 source:
   discovery: docs/current/DOPIS_TECHNICAL_DISCOVERY.md
-  discovery_version: "0.18"
+  discovery_version: '0.18'
   requirements: docs/current/DOPIS_MVP_REQUIREMENTS.md
-  requirements_version: "0.1"
+  requirements_version: '0.2'
 implementation_authority: NOT_GRANTED
-
 epics:
-  - id: EPIC-ORDERING
-    title: Ordering and Pickup
-    goal: Safe pickup ordering and accepted-order protection across supported channels.
-    requirements: [FR-ORDER-001, FR-ORDER-002, DATA-ORDER-001, BR-ORDER-001, FR-ORDER-003, BR-ORDER-002, FR-ORDER-004, FR-ORDER-005, BR-ORDER-003, BR-ORDER-004, FR-ORDER-006]
-    gates: [JV-CAPACITY, JV-DELAYS, JV-PRIVACY, JV-STOCK, JV-THRESHOLDS]
-  - id: EPIC-KITCHEN-OPERATIONS
-    title: Kitchen Operations
-    goal: Protected reception, acknowledgement, progression, and recovery in the real kitchen.
-    requirements: [FR-KITCHEN-001, FR-KITCHEN-002, FR-KITCHEN-003, NFR-KITCHEN-001, NFR-KITCHEN-002, OPS-KITCHEN-001, FR-KITCHEN-004]
-    gates: [JV-ACCESS, JV-PILOT, JV-THRESHOLDS]
-  - id: EPIC-CAPACITY
-    title: Capacity and Service Scheduling
-    goal: Shared admission against real workload, pickup windows, and service availability.
-    requirements: [BR-CAPACITY-001, FR-CAPACITY-001, FR-CAPACITY-002, BR-CAPACITY-002, AUDIT-CAPACITY-001, OPS-HOURS-001]
-    gates: [JV-CAPACITY, JV-SHIFT-AUTHORITY, JV-THRESHOLDS]
-  - id: EPIC-STOCK
-    title: Stock and Availability
-    goal: Lightweight shared stock control with reservations and auditable adjustments.
-    requirements: [FR-STOCK-001, FR-STOCK-002, BR-STOCK-001, FR-STOCK-003, FR-STOCK-004, BR-STOCK-002]
-    gates: [JV-STOCK, JV-THRESHOLDS]
-  - id: EPIC-CATALOG
-    title: Catalog, Modifiers, Allergens, and Upselling
-    goal: A publishable bilingual catalog with valid configurations, safety data, and bounded recommendations.
-    requirements: [FR-CATALOG-001, FR-CATALOG-002, BR-CATALOG-001, DATA-CATALOG-001, BR-CATALOG-002, DATA-ALLERGEN-001, FR-ALLERGEN-001, BR-ALLERGEN-001, OPS-ALLERGEN-001, FR-UPSELL-001, BR-UPSELL-001, AUDIT-UPSELL-001]
-    gates: [JV-ALLERGENS, JV-CATALOG-APPROVAL, JV-CONTENT, JV-GLUTEN, JV-MODIFIERS]
-  - id: EPIC-COMMUNICATIONS
-    title: Customer Communications and Tracking
-    goal: Secure guest tracking and minimum operational notifications.
-    requirements: [FR-COMMS-001, FR-COMMS-002, SEC-TRACKING-001, PRIV-COMMS-001]
-    gates: []
-  - id: EPIC-PAYMENT-HANDOVER
-    title: Payment, Handover, and Shift Close
-    goal: Pay-at-premises recording, protected handover, and correction evidence.
-    requirements: [BR-PAYMENT-001, FR-PAYMENT-001, BR-PAYMENT-002, AUDIT-PAYMENT-001]
-    gates: [JV-PAYMENT]
-  - id: EPIC-INCIDENTS
-    title: Incidents, Exceptions, and Recovery
-    goal: Visible unresolved work, preserved history, safe isolation, and rollback.
-    requirements: [FR-INCIDENT-001, AUDIT-INCIDENT-001, OPS-INCIDENT-001, FR-ORDER-006, OPS-ALLERGEN-001, PILOT-005]
-    gates: [JV-PILOT, JV-SHIFT-AUTHORITY]
-  - id: EPIC-ACCESS
-    title: Responsibility, Access, and Audit
-    goal: Explicit responsibility and bounded access under the Jaime/delegate model.
-    requirements: [FR-ACCESS-001, SEC-ACCESS-001, SEC-ACCESS-002, AUDIT-ACCESS-001]
-    gates: [JV-ACCESS, JV-DELEGATION]
-  - id: EPIC-PRIVACY
-    title: Privacy and Compliance
-    goal: Defined-purpose data use, minimum visibility, governed rights handling, and retention.
-    requirements: [DATA-ORDER-001, PRIV-COMMS-001, PRIV-DATA-001, BR-PRIV-001, PRIV-DATA-002, PRIV-DATA-003, PRIV-RETENTION-001]
-    gates: [JV-COMPLIANCE, JV-PRIVACY]
-  - id: EPIC-PILOT
-    title: Pilot Governance and Reporting
-    goal: Evidence-driven controlled rollout without unsafe automatic or public progression.
-    requirements: [AUDIT-UPSELL-001, PILOT-001, PILOT-002, PILOT-003, PILOT-004, PILOT-005, AUDIT-PILOT-001, PILOT-006, NFR-RELIABILITY-001]
-    gates: [JV-ALLERGENS, JV-CATALOG-APPROVAL, JV-PILOT, JV-PRIVACY, JV-STOCK, JV-THRESHOLDS]
-
+- id: EPIC-ORDERING
+  title: Ordering and Pickup
+  goal: Safe pickup ordering and accepted-order protection across web, telephone, and in-person channels.
+  requirements:
+  - FR-ORDER-001
+  - FR-ORDER-002
+  - DATA-ORDER-001
+  - BR-ORDER-001
+  - FR-ORDER-003
+  - BR-ORDER-002
+  - FR-ORDER-004
+  - FR-ORDER-005
+  - BR-ORDER-003
+  - BR-ORDER-004
+  - FR-ORDER-006
+  - FR-ORDER-007
+  - DATA-ORDER-002
+  - FR-ORDER-008
+  - FR-ORDER-009
+  gates:
+  - JV-CAPACITY
+  - JV-DELAYS
+  - JV-MANUAL-ORDERS
+  - JV-PILOT
+  - JV-PRIVACY
+  - JV-STOCK
+  - JV-THRESHOLDS
+- id: EPIC-KITCHEN-OPERATIONS
+  title: Kitchen Operations
+  goal: Protected order reception, acknowledgement, progression, visibility, and recovery in the real kitchen.
+  requirements:
+  - FR-KITCHEN-001
+  - FR-KITCHEN-002
+  - FR-KITCHEN-003
+  - NFR-KITCHEN-001
+  - NFR-KITCHEN-002
+  - OPS-KITCHEN-001
+  - FR-KITCHEN-004
+  - NFR-KITCHEN-003
+  - FR-INCIDENT-001
+  gates:
+  - JV-ACCESS
+  - JV-PILOT
+  - JV-THRESHOLDS
+- id: EPIC-CAPACITY
+  title: Capacity and Service Scheduling
+  goal: Shared order admission against real workload, pickup windows, service hours, and current-service controls.
+  requirements:
+  - BR-CAPACITY-001
+  - FR-CAPACITY-001
+  - FR-CAPACITY-002
+  - BR-CAPACITY-002
+  - AUDIT-CAPACITY-001
+  - OPS-HOURS-001
+  - OPS-HOURS-002
+  - OPS-KITCHEN-001
+  gates:
+  - JV-CAPACITY
+  - JV-SHIFT-AUTHORITY
+  - JV-THRESHOLDS
+- id: EPIC-STOCK
+  title: Stock and Availability
+  goal: Lightweight shared stock control with reservations, safe availability, and auditable adjustments.
+  requirements:
+  - FR-STOCK-001
+  - FR-STOCK-002
+  - BR-STOCK-001
+  - FR-STOCK-003
+  - FR-STOCK-004
+  - BR-STOCK-002
+  - BR-ORDER-002
+  - FR-ORDER-007
+  gates:
+  - JV-MANUAL-ORDERS
+  - JV-STOCK
+  - JV-THRESHOLDS
+- id: EPIC-CATALOG
+  title: Catalog, Modifiers, Allergens, and Upselling
+  goal: A publishable bilingual catalog with valid configurations, product safety data, and bounded recommendations.
+  requirements:
+  - FR-CATALOG-001
+  - FR-CATALOG-002
+  - BR-CATALOG-001
+  - DATA-CATALOG-001
+  - BR-CATALOG-002
+  - DATA-ALLERGEN-001
+  - FR-ALLERGEN-001
+  - BR-ALLERGEN-001
+  - OPS-ALLERGEN-001
+  - FR-UPSELL-001
+  - BR-UPSELL-001
+  - AUDIT-UPSELL-001
+  - FR-CATALOG-003
+  - BR-CATALOG-003
+  - FR-ALLERGEN-002
+  gates:
+  - JV-ALLERGENS
+  - JV-CATALOG-APPROVAL
+  - JV-CONTENT
+  - JV-GLUTEN
+  - JV-MODIFIERS
+- id: EPIC-COMMUNICATIONS
+  title: Customer Communications and Tracking
+  goal: Secure guest tracking and minimum operational communication throughout order handling.
+  requirements:
+  - FR-COMMS-001
+  - FR-COMMS-002
+  - SEC-TRACKING-001
+  - PRIV-COMMS-001
+  - FR-COMMS-003
+  - FR-ORDER-009
+  gates:
+  - JV-DELAYS
+  - JV-THRESHOLDS
+- id: EPIC-PAYMENT-HANDOVER
+  title: Payment, Handover, and Shift Close
+  goal: Pay-at-premises recording, protected handover, correction evidence, and responsible close.
+  requirements:
+  - BR-PAYMENT-001
+  - FR-PAYMENT-001
+  - BR-PAYMENT-002
+  - AUDIT-PAYMENT-001
+  - AUDIT-PAYMENT-002
+  gates:
+  - JV-PAYMENT
+- id: EPIC-INCIDENTS
+  title: Incidents, Exceptions, and Recovery
+  goal: Visible unresolved work, preserved history, safe isolation, customer follow-up, and rollback.
+  requirements:
+  - FR-INCIDENT-001
+  - AUDIT-INCIDENT-001
+  - OPS-INCIDENT-001
+  - FR-INCIDENT-002
+  - FR-ORDER-006
+  - OPS-ALLERGEN-001
+  - PILOT-005
+  gates:
+  - JV-DELAYS
+  - JV-PILOT
+  - JV-SHIFT-AUTHORITY
+  - JV-THRESHOLDS
+- id: EPIC-ACCESS
+  title: Responsibility, Access, and Audit
+  goal: Explicit responsibility, bounded access, protected information, and honest attribution.
+  requirements:
+  - FR-ACCESS-001
+  - SEC-ACCESS-001
+  - SEC-ACCESS-002
+  - AUDIT-ACCESS-001
+  - SEC-ACCESS-003
+  gates:
+  - JV-ACCESS
+  - JV-DELEGATION
+- id: EPIC-PRIVACY
+  title: Privacy and Compliance
+  goal: Defined-purpose data use, least-necessary visibility, governed rights handling, and approved retention.
+  requirements:
+  - PRIV-DATA-001
+  - BR-PRIV-001
+  - PRIV-DATA-002
+  - PRIV-DATA-003
+  - PRIV-RETENTION-001
+  - DATA-ORDER-001
+  - PRIV-COMMS-001
+  - SEC-ACCESS-003
+  gates:
+  - JV-COMPLIANCE
+  - JV-PRIVACY
+- id: EPIC-PILOT
+  title: Pilot Governance and Reporting
+  goal: Evidence-driven controlled rollout without unsafe automatic or public progression.
+  requirements:
+  - PILOT-001
+  - PILOT-002
+  - PILOT-003
+  - PILOT-004
+  - PILOT-005
+  - AUDIT-PILOT-001
+  - PILOT-006
+  - NFR-RELIABILITY-001
+  - AUDIT-PILOT-002
+  - AUDIT-UPSELL-001
+  - SEC-ACCESS-003
+  gates:
+  - JV-ACCESS
+  - JV-ALLERGENS
+  - JV-CATALOG-APPROVAL
+  - JV-PILOT
+  - JV-PRIVACY
+  - JV-STOCK
+  - JV-THRESHOLDS
 readiness_requires:
-  - reviewed_requirements
-  - use_cases
-  - acceptance_criteria
-  - architecture_contracts
-  - known_dependencies
-  - resolved_blocking_gates
-  - test_strategy
-  - bounded_scope
-  - explicit_implementation_authority
+- reviewed_requirements
+- use_cases
+- acceptance_criteria
+- architecture_contracts
+- known_dependencies
+- resolved_blocking_gates
+- test_strategy
+- bounded_scope
+- explicit_implementation_authority
