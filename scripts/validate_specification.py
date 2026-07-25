@@ -108,99 +108,6 @@ REQUIRED_BLOCK_JUSTIFICATION_FIELDS = (
 )
 
 
-def check_block_justification(req: dict, gate_by_id: dict[str, dict]) -> list[str]:
-    """Validate one record's block_justification against the corrected BLOCK semantics.
-
-    Deterministic and record-agnostic: no requirement id, gate id, or count is
-    referenced. The rules constrain the shape of a justification and its
-    agreement with the record's own acceptance_state, its own BLOCK links, and
-    the open questions the gate registry declares.
-    """
-    rid = req.get("id", "<unknown>")
-    blocked = req.get("status") == "BLOCKED_BY_VALIDATION"
-    justification = req.get("block_justification")
-
-    if not blocked:
-        if justification is not None:
-            return [
-                f"{rid}: a BASELINED record must not carry a block_justification; "
-                f"its obligation is accepted, so nothing is being held back"
-            ]
-        return []
-
-    if justification is None:
-        return [
-            f"{rid}: a blocked record must carry a block_justification naming why "
-            f"the candidate obligation cannot yet be accepted as final. An "
-            f"unresolved gate alone is not a reason to block: an accepted "
-            f"obligation whose wording, procedure, owner, or evidence is "
-            f"outstanding belongs on a BASELINED record as VALIDATE or CALIBRATE"
-        ]
-    if not isinstance(justification, dict):
-        return [f"{rid}: block_justification must be an object"]
-
-    problems: list[str] = []
-    missing = [f for f in REQUIRED_BLOCK_JUSTIFICATION_FIELDS if not str(justification.get(f, "")).strip()]
-    if missing:
-        problems.append(f"{rid}: block_justification missing fields: {missing}")
-        return problems
-
-    reason = justification["reason_code"]
-    if reason not in BLOCK_REASON_CODES:
-        problems.append(
-            f"{rid}: unknown block reason_code {reason!r}. Permitted codes are "
-            f"{sorted(BLOCK_REASON_CODES)}; none of them means that only wording, "
-            f"procedure, ownership, or evidence is unresolved, because that case "
-            f"is a BASELINED record with VALIDATE or CALIBRATE"
-        )
-        return problems
-
-    if req.get("acceptance_state") == "ACCEPTED" and reason in BLOCK_REASONS_FORBIDDEN_WHEN_ACCEPTED:
-        problems.append(
-            f"{rid}: acceptance_state ACCEPTED contradicts block reason_code "
-            f"{reason}. Canonical discovery accepts this obligation, so it may "
-            f"not also be recorded as undecided. If only its wording, procedure, "
-            f"owner, or evidence is outstanding, baseline it with VALIDATE or "
-            f"CALIBRATE and let a milestone entry-condition record carry the block"
-        )
-
-    if reason == "AUTHORISATION_NOT_YET_CONFERRED":
-        statement = str(req.get("statement", "")).strip().lower()
-        if not statement.startswith(AUTHORISATION_STATEMENT_PREFIX):
-            problems.append(
-                f"{rid}: block reason_code {reason} is reserved for a milestone "
-                f"entry condition, whose statement must be a prohibition "
-                f"beginning {AUTHORISATION_STATEMENT_PREFIX.strip()!r}"
-            )
-
-    gate_id = justification["gate"]
-    block_gates = {
-        link[1]
-        for link in req.get("validation_links", [])
-        if isinstance(link, list) and len(link) == 2 and link[0] == "BLOCK"
-    }
-    if gate_id not in block_gates:
-        problems.append(
-            f"{rid}: block_justification names {gate_id}, which is not one of this "
-            f"record's BLOCK-linked gates {sorted(block_gates)}"
-        )
-        return problems
-
-    gate = gate_by_id.get(gate_id)
-    if gate is None:
-        problems.append(f"{rid}: block_justification names unknown gate {gate_id}")
-        return problems
-
-    declared = gate.get("open_questions") or []
-    if justification["canonical_open_question"] not in declared:
-        problems.append(
-            f"{rid}: block_justification cites an open question that {gate_id} does "
-            f"not declare. A blocking concern must be a registered open question "
-            f"of the gate, not an unstated one"
-        )
-    return problems
-
-
 class Failure(Exception):
     """Raised with an accumulated list of human-readable problems."""
 
@@ -225,6 +132,151 @@ def discovery_sections() -> set[str]:
     if not sections:
         raise Failure(["parsed zero sections from the canonical discovery"])
     return sections
+
+
+def check_block_justifications(req: dict, gate_by_id: dict[str, dict]) -> list[str]:
+    """Validate one record's block_justifications against the corrected BLOCK semantics.
+
+    Deterministic and record-agnostic: no requirement id, gate id, or count is
+    referenced. The rules constrain the shape of each justification and its
+    agreement with the record's own acceptance_state, its own BLOCK links, and
+    the open questions the gate registry declares.
+
+    The coverage rule is an exact set equality, not a membership test. Every gate
+    linked with effect BLOCK must be justified exactly once, and no justification
+    may name a gate that is not so linked. A membership test would let an extra
+    BLOCK link be attached to an already blocked record while an unrelated
+    existing justification kept the record valid, which is precisely the
+    unjustified over-blocking this contract exists to prevent.
+    """
+    rid = req.get("id", "<unknown>")
+    blocked = req.get("status") == "BLOCKED_BY_VALIDATION"
+    justifications = req.get("block_justifications")
+
+    if not blocked:
+        if justifications is not None:
+            return [
+                f"{rid}: a BASELINED record must not carry block_justifications; "
+                f"its obligation is accepted, so nothing is being held back"
+            ]
+        return []
+
+    if justifications is None:
+        return [
+            f"{rid}: a blocked record must carry block_justifications naming, for "
+            f"every gate it blocks on, why the candidate obligation cannot yet be "
+            f"accepted as final. An unresolved gate alone is not a reason to "
+            f"block: an accepted obligation whose wording, procedure, owner, or "
+            f"evidence is outstanding belongs on a BASELINED record as VALIDATE "
+            f"or CALIBRATE"
+        ]
+    if not isinstance(justifications, list) or not justifications:
+        return [f"{rid}: block_justifications must be a non-empty list"]
+
+    problems: list[str] = []
+    block_gates = [
+        link[1]
+        for link in req.get("validation_links", [])
+        if isinstance(link, list) and len(link) == 2 and link[0] == "BLOCK"
+    ]
+
+    justified: list[str] = []
+    for position, justification in enumerate(justifications):
+        label = f"{rid}: block_justifications[{position}]"
+        if not isinstance(justification, dict):
+            problems.append(f"{label} must be an object")
+            continue
+        missing = [
+            f
+            for f in REQUIRED_BLOCK_JUSTIFICATION_FIELDS
+            if not str(justification.get(f, "")).strip()
+        ]
+        if missing:
+            problems.append(f"{label} missing fields: {missing}")
+            continue
+
+        gate_id = justification["gate"]
+        justified.append(gate_id)
+
+        reason = justification["reason_code"]
+        if reason not in BLOCK_REASON_CODES:
+            problems.append(
+                f"{label}: unknown block reason_code {reason!r}. Permitted codes "
+                f"are {sorted(BLOCK_REASON_CODES)}; none of them means that only "
+                f"wording, procedure, ownership, or evidence is unresolved, "
+                f"because that case is a BASELINED record with VALIDATE or "
+                f"CALIBRATE"
+            )
+            continue
+
+        if (
+            req.get("acceptance_state") == "ACCEPTED"
+            and reason in BLOCK_REASONS_FORBIDDEN_WHEN_ACCEPTED
+        ):
+            problems.append(
+                f"{label}: acceptance_state ACCEPTED contradicts block reason_code "
+                f"{reason}. Canonical discovery accepts this obligation, so it may "
+                f"not also be recorded as undecided. If only its wording, "
+                f"procedure, owner, or evidence is outstanding, baseline it with "
+                f"VALIDATE or CALIBRATE and let a milestone entry-condition record "
+                f"carry the block"
+            )
+
+        if reason == "AUTHORISATION_NOT_YET_CONFERRED":
+            statement = str(req.get("statement", "")).strip().lower()
+            if not statement.startswith(AUTHORISATION_STATEMENT_PREFIX):
+                problems.append(
+                    f"{label}: block reason_code {reason} is reserved for a "
+                    f"milestone entry condition, whose statement must be a "
+                    f"prohibition beginning "
+                    f"{AUTHORISATION_STATEMENT_PREFIX.strip()!r}"
+                )
+
+        if gate_id not in block_gates:
+            problems.append(
+                f"{label} justifies {gate_id}, which this record does not link "
+                f"with effect BLOCK. A justification without a corresponding "
+                f"BLOCK link records a constraint that is not actually applied"
+            )
+            continue
+
+        gate = gate_by_id.get(gate_id)
+        if gate is None:
+            problems.append(f"{label} names unknown gate {gate_id}")
+            continue
+
+        declared = gate.get("open_questions") or []
+        if justification["canonical_open_question"] not in declared:
+            problems.append(
+                f"{label} cites an open question that {gate_id} does not declare. "
+                f"A blocking concern must be a registered open question of the "
+                f"gate, not an unstated one"
+            )
+
+    for gate_id in sorted({g for g in justified if justified.count(g) > 1}):
+        problems.append(
+            f"{rid}: duplicate block_justification for gate {gate_id}. Each "
+            f"BLOCK-linked gate is justified exactly once, so that the "
+            f"justification set and the BLOCK link set stay in one-to-one "
+            f"correspondence"
+        )
+
+    for gate_id in sorted(set(block_gates) - set(justified)):
+        problems.append(
+            f"{rid}: has no block_justification for BLOCK-linked gate {gate_id}. "
+            f"Every gate this record blocks on must state why the candidate "
+            f"obligation cannot yet be accepted as final; otherwise a further "
+            f"BLOCK link could be attached to an already blocked record without "
+            f"any justification for it"
+        )
+
+    for gate_id in sorted(set(block_gates)):
+        if block_gates.count(gate_id) > 1:
+            problems.append(
+                f"{rid}: duplicate BLOCK link for gate {gate_id}"
+            )
+
+    return problems
 
 
 def find_cycle(graph: dict[str, list[str]]) -> list[str]:
@@ -399,7 +451,7 @@ def check_requirements(registry: dict, sections: set[str], gate_by_id: dict[str,
         if req["status"] == "BASELINED" and has_block:
             orphans["baselined_requirements_with_block_gate"].append(rid)
 
-        problems.extend(check_block_justification(req, gate_by_id))
+        problems.extend(check_block_justifications(req, gate_by_id))
 
         if not isinstance(req["dependencies"], list):
             problems.append(f"{rid}: dependencies must be a list")

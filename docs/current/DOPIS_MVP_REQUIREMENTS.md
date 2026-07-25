@@ -2,7 +2,7 @@
 
 **Milestone:** `MILESTONE-SPEC-001`
 **Status:** `AUDITED_PENDING_OWNER_APPROVAL`
-**Baseline version:** `0.4`
+**Baseline version:** `0.5`
 **Date:** `2026-07-25`
 **Business source:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.18`
 **Business discovery status:** `CLOSED_PENDING_VALIDATION_AND_IMPLEMENTATION_PLANNING`
@@ -11,7 +11,7 @@
 <!-- Machine-checked agreement markers. scripts/validate_specification.py recomputes
      each value from the registries and fails if this document disagrees. -->
 
-    REGISTRY-VERSION: 0.4
+    REGISTRY-VERSION: 0.5
     REGISTRY-TOTAL: 216
     REGISTRY-EPICS: 13
 
@@ -21,7 +21,7 @@ This baseline translates the closed first-MVP business discovery into uniquely i
 
 Canonical discovery has priority over this document. Where the two conflict, the affected scope stops and returns to explicit business validation rather than being reconciled silently.
 
-Version `0.3` is the result of an independent requirements audit of version `0.2`. Version `0.4` applies the Project Owner's review of version `0.3`: the corrected `BLOCK` semantics, the gluten and telephone-scope corrections, and the re-audit of every blocked record. The audit findings, evidence, and disposition for both rounds are recorded in `docs/reviews/MILESTONE_SPEC_001_AUDIT.md`, whose section 17 is the Owner-review addendum.
+Version `0.3` is the result of an independent requirements audit of version `0.2`. Version `0.4` applies the Project Owner's review of version `0.3`: the corrected `BLOCK` semantics, the gluten and telephone-scope corrections, and the re-audit of every blocked record. Version `0.5` closes a remaining metadata-contract defect by requiring a justification for every `BLOCK` link rather than one per blocked record. The findings, evidence, and disposition for all three rounds are recorded in `docs/reviews/MILESTONE_SPEC_001_AUDIT.md`, whose sections 17 and 18 are the Owner-review addenda.
 
 ## 2. Authoritative artifacts
 
@@ -39,7 +39,7 @@ The registry is a single file. Version `0.2` split it into four arbitrary parts 
 
 ## 3. Requirement record contract
 
-Every record carries: `id`, `statement`, `class`, `acceptance_state`, `readiness_milestone`, `status`, `priority`, `rationale`, `business_source`, `verification_method`, `validation_links`, `dependencies`, and `notes`.
+Every record carries: `id`, `statement`, `class`, `acceptance_state`, `readiness_milestone`, `status`, `priority`, `rationale`, `business_source`, `verification_method`, `validation_links`, `dependencies`, and `notes`. A record carries `block_justifications` if and only if it is `BLOCKED_BY_VALIDATION`, and `supersedes` only where it replaces another record's obligation.
 
 **Classes:** `FR` behaviour, `BR` business rule or invariant, `DATA` data obligation, `SEC` security or access, `PRIV` privacy, `NFR` quality attribute, `AUDIT` audit or evidence, `PILOT` pilot governance, `OPS` operational constraint.
 
@@ -63,9 +63,11 @@ Version `0.2` used a single `classification` field mixing four unrelated dimensi
 
 **Four distinct things, none of which implies the next.** *Recording a candidate requirement* means the obligation is written down and governed. *Accepting the obligation* means canonical discovery confirms Dopis will impose it. *Milestone readiness* means the conditions for entering `PILOT`, `WITHOUT_JAIME`, or `PUBLIC_LAUNCH` are met. *Implementation authority* means work may begin. A blocked record necessarily contains a candidate statement, so `BLOCK` never means the statement is missing; it means the statement may not be treated as accepted or built.
 
-Because a gate being unresolved is not by itself a reason to block, every blocked record carries a `block_justification` naming which kind of unresolvedness applies, drawn from a closed vocabulary: `OBLIGATION_NOT_YET_ACCEPTED` (canonical discovery records a working direction, not an accepted rule), `SUBJECT_MATTER_NOT_YET_SELECTABLE` (the set or register the obligation refers to does not exist in any form), or `AUTHORISATION_NOT_YET_CONFERRED` (the record is a milestone entry condition). The vocabulary deliberately offers no code meaning that only wording, procedure, ownership, or evidence is outstanding, because that case is a `BASELINED` record with `VALIDATE` or `CALIBRATE`. The validator enforces this, and an `ACCEPTED` record may never claim its own obligation is undecided.
+Because a gate being unresolved is not by itself a reason to block, every blocked record carries `block_justifications`: an ordered array with **exactly one justification for every gate the record links with effect `BLOCK`**. Each names which kind of unresolvedness applies to that gate, drawn from a closed vocabulary: `OBLIGATION_NOT_YET_ACCEPTED` (canonical discovery records a working direction, not an accepted rule), `SUBJECT_MATTER_NOT_YET_SELECTABLE` (the set or register the obligation refers to does not exist in any form), or `AUTHORISATION_NOT_YET_CONFERRED` (the record is a milestone entry condition). The vocabulary deliberately offers no code meaning that only wording, procedure, ownership, or evidence is outstanding, because that case is a `BASELINED` record with `VALIDATE` or `CALIBRATE`. The validator enforces this, and an `ACCEPTED` record may never claim its own obligation is undecided.
 
-An unresolved gate can still stop a whole milestone. That is expressed by the three milestone entry-condition records — `PILOT-004`, `OPS-DELEGATION-001`, and `BR-LAUNCH-001` — which correspond to the three canonical section 18A blocker lists, rather than by marking every dependent obligation blocked.
+The justification set and the `BLOCK` link set must correspond **one to one**: every `BLOCK` gate is justified exactly once, no justification names a gate that is not so linked, and duplicates on either side are rejected. This is set equality rather than membership, because a membership test would let a further `BLOCK` link be attached to an already blocked record while an unrelated existing justification kept it valid. Unjustified over-blocking therefore has no representation.
+
+An unresolved gate can still stop a whole milestone. That is expressed by the three milestone entry-condition records — `PILOT-004`, `OPS-DELEGATION-001`, and `BR-LAUNCH-001` — which correspond to the three canonical section 18A blocker lists, rather than by marking every dependent obligation blocked. Each blocks on one gate per canonical blocker it carries and justifies each separately, so no canonical blocker is dropped to simplify the record.
 
 **Verification methods:** `TEST`, `SECURITY_TEST`, `INSPECTION`, `ANALYSIS`, `DEMONSTRATION`, `PILOT_EVIDENCE`, `BUSINESS_REVIEW`.
 
@@ -102,6 +104,14 @@ Version `0.2` referenced `JV-MANUAL-ORDERS` and `JV-PAYMENT` as if they were cur
 **Incident fairness.** `FR-INCIDENT-002` bundled an accepted resolution obligation with the provisional two-incidents-in-90-days rule. It is split: the resolution obligation and the prohibition on automatic customer blocking (`BR-INCIDENT-003`) are accepted and baselined; the provisional repeat-incident rule (`BR-INCIDENT-002`) is recorded as a candidate and remains blocked.
 
 **Totals.** 210 → 216 requirements, 0 removed. Blocked 24 → 5. Epics unchanged at 13. Gates unchanged at 20.
+
+## 5B. Owner-review corrections in version `0.5`
+
+**Complete `BLOCK`-link justification coverage.** Version `0.4` gave each blocked record a single `block_justification`, and the validator checked only that the gate it named was one of the record's `BLOCK` gates. That is a membership test, not coverage. A milestone entry-condition record blocks on several gates — `PILOT-004` on seven — so an arbitrary further `BLOCK` link could have been attached to an already blocked record while the single existing justification kept it valid. Unjustified over-blocking was therefore still representable.
+
+The singular field is replaced by `block_justifications`, an ordered array carrying one justification per `BLOCK` link in the order of those links. The validator now compares the two sets for equality: every `BLOCK` gate justified exactly once, no justification for a gate that is not `BLOCK`-linked, duplicates rejected on either side, each `canonical_open_question` matched verbatim against its own gate, and the existing acceptance-state and prohibition-statement rules applied per justification. The five blocked records now carry fourteen justifications between them. No canonical milestone blocker was removed to simplify them.
+
+**Totals.** Requirements, epics, gates, and blocked records are unchanged. The version moves to `0.5` because the requirement metadata contract changed.
 
 ## 6. Explicit exclusions
 

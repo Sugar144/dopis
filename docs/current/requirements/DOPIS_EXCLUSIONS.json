@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "baseline_version": "0.4",
+  "baseline_version": "0.5",
   "status": "AUDITED_PENDING_OWNER_APPROVAL",
   "implementation_authority": "NOT_GRANTED",
   "source": {

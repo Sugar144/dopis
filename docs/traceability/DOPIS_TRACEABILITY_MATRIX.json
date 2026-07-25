@@ -15,15 +15,15 @@
     },
     "requirements": {
       "artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-      "version": "0.4"
+      "version": "0.5"
     },
     "validation_gates": {
       "artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
-      "version": "0.4"
+      "version": "0.5"
     },
     "exclusions": {
       "artifact": "docs/current/requirements/DOPIS_EXCLUSIONS.json",
-      "version": "0.4"
+      "version": "0.5"
     },
     "epics": {
       "artifact": "docs/backlog/DOPIS_EPICS.json",
@@ -31,7 +31,7 @@
     },
     "human_readable_baseline": {
       "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
-      "version": "0.4"
+      "version": "0.5"
     }
   },
   "node_types": [
@@ -130,10 +130,12 @@
     "requirement_requires_rationale": true,
     "blocked_requirement_requires_block_gate": true,
     "baselined_requirement_forbids_block_gate": true,
-    "blocked_requirement_requires_block_justification": true,
-    "baselined_requirement_forbids_block_justification": true,
+    "blocked_requirement_requires_block_justifications": true,
+    "baselined_requirement_forbids_block_justifications": true,
+    "every_block_link_has_exactly_one_justification": true,
+    "every_justification_has_exactly_one_block_link": true,
+    "duplicate_justification_gates_rejected": true,
     "block_justification_reason_code_from_closed_vocabulary": true,
-    "block_justification_gate_must_be_block_linked": true,
     "block_justification_must_cite_a_declared_gate_open_question": true,
     "accepted_requirement_must_not_claim_its_obligation_is_undecided": true,
     "authorisation_block_requires_a_prohibition_statement": true,
@@ -157,6 +159,7 @@
     "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
   },
   "milestone_blocking_note": "An unresolved gate blocks a milestone globally through the milestone entry-condition records PILOT-004, OPS-DELEGATION-001, and BR-LAUNCH-001, which correspond to the three canonical section 18A blocker lists. Marking every dependent obligation blocked is not how milestone readiness is represented, and would misreport an accepted obligation as unspecifiable.",
+  "block_coverage_note": "Each milestone entry-condition record blocks on several gates, one per canonical blocker it carries, and states a separate justification for each. The validator compares the justification gate set against the BLOCK link set for equality rather than membership, so an additional BLOCK link cannot be attached to an already blocked record while an unrelated existing justification keeps it valid.",
   "orphan_checks": {
     "notice": "Every array below is recomputed by the validator and compared exactly. A non-empty computed set with an empty declaration fails the run.",
     "requirements_without_primary_epic": [],

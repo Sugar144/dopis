@@ -6,7 +6,7 @@
 **Verdict:** `CHANGES_REQUIRED` at entry — all `CRITICAL` and `MAJOR` findings corrected in baseline version `0.3`
 **Implementation authority:** `NOT GRANTED` before, during, and after this audit
 
-> **Sections 1 to 16 record the original audit of baseline `0.2` and are preserved unchanged, including where the Project Owner's review later corrected them.** Section 17 is the Owner-review addendum: it records the Owner's findings on baseline `0.3`, their disposition, and the corrections that produced baseline `0.4`. Where the two disagree, **section 17 governs** — in particular the disposition of M3, the status of the gluten requirements, and the blocked count.
+> **Sections 1 to 16 record the original audit of baseline `0.2` and are preserved unchanged, including where the Project Owner's review later corrected them.** Section 17 records the Owner's findings on baseline `0.3` and the corrections that produced baseline `0.4`. Section 18 records the Owner's findings on baseline `0.4` and the corrections that produced baseline `0.5`. Where sections disagree, **the later one governs** — in particular the disposition of M3, the status of the gluten requirements, the blocked count, and the shape of the block-justification contract.
 
 ---
 
@@ -551,5 +551,138 @@ Residual risks 2 to 9 of section 15 stand, with these amendments:
 ### 17.13 Disposition
 
 Pull request #1 remains **open, unmerged, and ready for Project Owner review**. It was not merged, and no Jaime decision was resolved. Canonical business intent was not modified; finding O1 remains open by the Owner's own instruction.
+
+Implementation authority remains **`NOT GRANTED`**.
+
+---
+
+## 18. Owner-review addendum — baseline `0.4` to `0.5`
+
+**Review subject:** requirements baseline version `0.4`
+**Reviewer:** Project Owner
+**Date:** `2026-07-25`
+**Result:** one bounded validator and metadata-contract defect, corrected in baseline version `0.5`
+**Implementation authority:** unchanged — `NOT GRANTED`
+
+### 18.1 Owner dispositions recorded
+
+The Project Owner confirms that the wording of `OPS-DELEGATION-001` and `BR-LAUNCH-001` accurately represents the operating-without-Jaime blockers and the public-launch blockers of canonical discovery section 18A. Residual risk 4 of section 17.12 is therefore **closed**.
+
+The overall baseline-`0.4` direction, the five remaining blocked records, and the three derived specification gates are accepted.
+
+### 18.2 Finding OW7 — incomplete `BLOCK`-link justification coverage
+
+**Finding.** Baseline `0.4` gave each blocked record a single `block_justification` object, and the validator checked only that the gate it named was one of the record's `BLOCK`-linked gates. That is a **membership test, not coverage**.
+
+**Why it matters.** A milestone entry-condition record blocks on one gate per canonical blocker it carries: `OPS-DELEGATION-001` on two, `BR-LAUNCH-001` on three, `PILOT-004` on seven. Under a membership test, an arbitrary further `BLOCK` link could have been attached to any already blocked record and the single pre-existing justification would still have satisfied the check. Section 17.9 claimed unjustified over-blocking was structurally unrepresentable; for records with more than one `BLOCK` link, it was not. The claim was correct only for the single-gate case.
+
+**Disposition — corrected.** `block_justification` is replaced by `block_justifications`, an ordered array carrying one object per `BLOCK` link, in the order of those links. Each object retains `reason_code`, `gate`, `canonical_open_question`, and `explanation`.
+
+The validator now enforces all of the following, per record:
+
+1. `block_justifications` is present if and only if the record is `BLOCKED_BY_VALIDATION`;
+2. the set of gates named in `block_justifications` **equals** the set of gates linked with effect `BLOCK`;
+3. every `BLOCK`-linked gate has exactly one justification;
+4. no justification names a gate that is not linked with effect `BLOCK`;
+5. duplicate justification gates are rejected, as are duplicate `BLOCK` links;
+6. every `canonical_open_question` matches an entry in **its own gate's** declared `open_questions` verbatim;
+7. every `reason_code` satisfies the acceptance-state rule — an `ACCEPTED` record may not use `OBLIGATION_NOT_YET_ACCEPTED`;
+8. `AUTHORISATION_NOT_YET_CONFERRED` remains restricted to milestone-entry prohibition statements;
+9. no requirement identifier, gate identifier, or current count appears in the validator.
+
+Rule 2 is the substantive change: set equality rather than membership. Rules 6 to 8 were already enforced and are now applied per justification rather than once per record.
+
+### 18.3 The five blocked records after correction
+
+Fourteen justifications across five records, one per `BLOCK` link. **No canonical milestone blocker was removed to simplify the justifications.**
+
+| Requirement | `BLOCK` links | Justified gates and the canonical blocker each carries |
+|---|---|---|
+| `DATA-ORDER-003` | 1 | `JV-MANUAL-CHANNELS` — the undecided in-person telephone rule (§7.4A) |
+| `BR-INCIDENT-002` | 1 | `JV-INCIDENT-FAIRNESS` — the provisional repeat-incident rule (§3.2) |
+| `OPS-DELEGATION-001` | 2 | `JV-DELEGATION` — delegate confirmed, authorisation recorded, rules understood; `JV-ACCESS` — access active and bounded |
+| `BR-LAUNCH-001` | 3 | `JV-COMPLIANCE` — review complete, retention defined, cookie and consumer obligations addressed; `JV-PRIVACY` — request procedure defined, processors reviewed; `JV-CONTENT` — public customer and privacy texts approved |
+| `PILOT-004` | 7 | `JV-PILOT` — rehearsal passes, alerts and reception verified; `JV-ALLERGENS` — ingredients and allergens complete and validated; `JV-CATALOG-APPROVAL` — participating catalog approved; `JV-STOCK` — hours, stock, and availability confirmed; `JV-THRESHOLDS` — conservative values loaded; `JV-SHIFT-AUTHORITY` — substitution rules and absorbed-price limit approved; `JV-GLUTEN` — pilot offer policy for the gluten-free dough option |
+
+All five remain intentionally blocked. The three milestone entry conditions still cover `PILOT`, `WITHOUT_JAIME`, and `PUBLIC_LAUNCH` respectively; the independent cross-check asserts that coverage and fails if any of the three is lost.
+
+### 18.4 Negative tests added
+
+Four fixtures, each selecting its target by scanning the registry and the gate registry rather than by identifier, and none depending on a count:
+
+| Fixture | Defect introduced |
+|---|---|
+| extra `BLOCK` link with no corresponding justification | Append a `BLOCK` link for an open gate the record does not already link, leaving justifications untouched |
+| missing justification for one of several `BLOCK` links | Drop one justification from the first record that blocks on more than one gate |
+| duplicate justifications for the same gate | Overwrite the second justification with a copy of the first |
+| justification for a gate not linked as `BLOCK` | Append a justification for an unlinked open gate |
+
+The first is precisely the mutation the Owner asked to be demonstrated. All existing fixtures are retained; the suite covers **27** defect classes plus a control case, up from 23.
+
+### 18.5 Demonstration of the required mutation
+
+Take an already blocked record, add another valid open gate as `BLOCK`, and leave its existing justifications unchanged:
+
+```text
+target record          : DATA-ORDER-003
+BLOCK links before     : ['JV-MANUAL-CHANNELS']
+justifications before  : ['JV-MANUAL-CHANNELS']
+adding BLOCK link      : JV-CAPACITY  (justifications left untouched)
+
+validator exit code    : 1
+  FAIL: specification validation found problems:
+    - DATA-ORDER-003: has no block_justification for BLOCK-linked gate JV-CAPACITY.
+      Every gate this record blocks on must state why the candidate obligation cannot
+      yet be accepted as final; otherwise a further BLOCK link could be attached to an
+      already blocked record without any justification for it
+```
+
+Under baseline `0.4` this mutation would have passed, because `JV-MANUAL-CHANNELS` was still a member of the record's `BLOCK` gates.
+
+### 18.6 Validation after correction
+
+```text
+$ python3 scripts/validate_specification.py
+PASS: 216 requirements, 13 epics, 18 of 20 gates referenced, 17 exclusions, 5 blocked requirements
+      canonical discovery sections resolved: 112
+      unreferenced gates (expected: closed only): ['JV-COHERENCE', 'JV-DISCOVERY-CLOSE']
+      all declared orphan checks recomputed and matching
+exit=0
+
+$ python3 scripts/test_validate_specification.py
+PASS: 27 defect fixtures rejected, control fixture accepted
+      no fixture state written to the repository
+exit=0
+
+$ independent cross-checks (sharing no code with the validator)
+requirements=216 unique=216 epics=13 exclusions=17 gates=20 retired=4
+canonical headings parsed: 112
+gates: CANONICAL=17 DERIVED=3
+section-15 register gates : 17
+declared CANONICAL        : 17  match=True
+blocked=5: ['DATA-ORDER-003', 'BR-INCIDENT-002', 'OPS-DELEGATION-001', 'BR-LAUNCH-001', 'PILOT-004']
+BLOCK links=14 justifications=14 one-to-one=True
+milestone entry conditions: ['BR-LAUNCH-001', 'OPS-DELEGATION-001', 'PILOT-004']
+                            covering ['PILOT', 'PUBLIC_LAUNCH', 'WITHOUT_JAIME']
+gluten records: 7
+result: ALL INDEPENDENT CHECKS PASS
+```
+
+Confirmed by the run above: every `BLOCK` link has exactly one justification and every justification corresponds to exactly one `BLOCK` link, at 14 of each; all five blocked records remain intentionally blocked; the three milestone entry conditions still cover `PILOT`, `WITHOUT_JAIME`, and `PUBLIC_LAUNCH`; the three derived gates remain `DERIVED` with rationales and the canonical set still matches the section 15 register exactly at 17; and implementation authority is `NOT_GRANTED` in all five machine artifacts and in the Markdown baseline. Canonical discovery was not modified.
+
+### 18.7 Version
+
+The baseline moves from `0.4` to `0.5`. The requirement metadata contract changed — a field was replaced by an array with a stricter invariant — so retaining the `0.4` label would have made the version inaccurate, by the same reasoning that moved `0.3` to `0.4`. Requirement, epic, gate, exclusion, and blocked counts are unchanged.
+
+### 18.8 Residual risks after this pass
+
+Residual risks 1, 3, and 5 of section 17.12 stand unchanged, as do risks 2 and 6 to 9 of section 15. Amendments:
+
+- **Risk 4 of section 17.12 is closed.** The Owner confirms the `OPS-DELEGATION-001` and `BR-LAUNCH-001` wording represents the canonical section 18A blocker lists.
+- **New.** The one-to-one coverage rule makes an unjustified `BLOCK` link unrepresentable, but it cannot judge whether a justification's *content* is sound. A reviewer must still read the fourteen justifications; the validator only guarantees that one exists per link, cites a declared open question of the correct gate, and does not contradict the record's acceptance state.
+
+### 18.9 Disposition
+
+Pull request #1 remains **open, unmerged, and ready for final Project Owner disposition**. No Jaime decision was resolved and canonical business intent was not modified; finding O1 remains open by the Owner's instruction.
 
 Implementation authority remains **`NOT GRANTED`**.

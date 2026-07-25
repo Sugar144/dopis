@@ -8,7 +8,7 @@
     "discovery": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
     "discovery_version": "0.18",
     "requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-    "requirements_version": "0.4"
+    "requirements_version": "0.5"
   },
   "notice": "Epics are business or operational capabilities, never technical layers. Every requirement has exactly one primary epic, which owns it. A supporting mapping records a deliberate cross-cutting concern and never duplicates the obligation: the requirement is specified once, in its primary epic. Validation gates are derived from the member requirements by scripts/validate_specification.py and are deliberately not declared here, because a hand-written gate list cannot be kept true.",
   "authority_note": "This map implies no implementation order, estimate, delivery commitment, or authority. Readiness additionally requires everything listed in readiness_requires.",

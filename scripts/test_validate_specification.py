@@ -207,15 +207,43 @@ def _first_blocked(data: dict) -> dict:
     raise AssertionError("registry declares no blocked requirement to mutate")
 
 
+def _blocked_with_several_gates(data: dict) -> dict:
+    """The first blocked record that blocks on more than one gate."""
+    for req in data["requirements"]:
+        if req["status"] != "BLOCKED_BY_VALIDATION":
+            continue
+        if len([l for l in req["validation_links"] if l[0] == "BLOCK"]) > 1:
+            return req
+    raise AssertionError("registry declares no multi-gate blocked requirement")
+
+
+def _block_gates(req: dict) -> list:
+    return [gate for effect, gate in req["validation_links"] if effect == "BLOCK"]
+
+
+def _unlinked_open_gate(tree: Path, req: dict) -> str:
+    """An open gate this record does not already block on.
+
+    Chosen by scanning the gate registry rather than by identifier, and
+    restricted to gates whose milestone is not CLOSED so the fixture exercises
+    the justification rules rather than the separate closed-gate rule.
+    """
+    linked = {gate for _, gate in req["validation_links"]}
+    for gate in read_json(tree, GATES)["gates"]:
+        if gate["id"] not in linked and gate["milestone"] != "CLOSED":
+            return gate["id"]
+    raise AssertionError("gate registry offers no unlinked open gate")
+
+
 def mutate_blocked_without_justification(tree: Path) -> None:
     """A blocked record that never says why the obligation cannot be accepted."""
     data = read_json(tree, REGISTRY)
-    _first_blocked(data).pop("block_justification", None)
+    _first_blocked(data).pop("block_justifications", None)
     write_json(tree, REGISTRY, data)
 
 
 def mutate_accepted_blocked_as_undecided(tree: Path) -> None:
-    """The reported defect: an accepted canonical obligation reported as blocked.
+    """The originally reported defect: an accepted obligation reported as blocked.
 
     An obligation canonical discovery accepts cannot also be undecided. When only
     its wording, procedure, owner, or evidence is outstanding, the record belongs
@@ -225,7 +253,7 @@ def mutate_accepted_blocked_as_undecided(tree: Path) -> None:
     data = read_json(tree, REGISTRY)
     req = _first_blocked(data)
     req["acceptance_state"] = "ACCEPTED"
-    req["block_justification"]["reason_code"] = "OBLIGATION_NOT_YET_ACCEPTED"
+    req["block_justifications"][0]["reason_code"] = "OBLIGATION_NOT_YET_ACCEPTED"
     write_json(tree, REGISTRY, data)
 
 
@@ -233,31 +261,72 @@ def mutate_block_justification_unknown_question(tree: Path) -> None:
     """Block on a concern the gate never declared as an open question."""
     data = read_json(tree, REGISTRY)
     req = _first_blocked(data)
-    req["block_justification"]["canonical_open_question"] = (
+    req["block_justifications"][0]["canonical_open_question"] = (
         "an operating concern this gate does not declare"
     )
     write_json(tree, REGISTRY, data)
 
 
 def mutate_block_justification_foreign_gate(tree: Path) -> None:
-    """Justify a block with a gate the record does not actually link as BLOCK."""
+    """Repoint an existing justification at a gate the record does not block on."""
     data = read_json(tree, REGISTRY)
     req = _first_blocked(data)
-    blocked_gates = {link[1] for link in req["validation_links"] if link[0] == "BLOCK"}
-    gates = read_json(tree, GATES)
-    other = next(g["id"] for g in gates["gates"] if g["id"] not in blocked_gates)
-    req["block_justification"]["gate"] = other
+    req["block_justifications"][0]["gate"] = _unlinked_open_gate(tree, req)
     write_json(tree, REGISTRY, data)
 
 
 def mutate_baselined_with_justification(tree: Path) -> None:
     """A baselined record must not claim anything is holding its obligation back."""
     data = read_json(tree, REGISTRY)
-    donor = _first_blocked(data)["block_justification"]
+    donor = _first_blocked(data)["block_justifications"]
     for req in data["requirements"]:
         if req["status"] == "BASELINED":
-            req["block_justification"] = dict(donor)
+            req["block_justifications"] = [dict(j) for j in donor]
             break
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_extra_block_link_unjustified(tree: Path) -> None:
+    """The over-blocking defect this contract exists to prevent.
+
+    Take an already blocked record, add another valid open gate as BLOCK, and
+    leave its existing justifications untouched. Under a membership test the
+    record would still validate; under the coverage rule it must not.
+    """
+    data = read_json(tree, REGISTRY)
+    req = _first_blocked(data)
+    req["validation_links"].append(["BLOCK", _unlinked_open_gate(tree, req)])
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_missing_one_of_several_justifications(tree: Path) -> None:
+    """Drop one justification from a record that blocks on several gates."""
+    data = read_json(tree, REGISTRY)
+    req = _blocked_with_several_gates(data)
+    req["block_justifications"] = req["block_justifications"][1:]
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_duplicate_justification_gate(tree: Path) -> None:
+    """Justify the same gate twice, so the one-to-one correspondence is broken."""
+    data = read_json(tree, REGISTRY)
+    req = _blocked_with_several_gates(data)
+    req["block_justifications"][1] = dict(req["block_justifications"][0])
+    write_json(tree, REGISTRY, data)
+
+
+def mutate_justification_for_unlinked_gate(tree: Path) -> None:
+    """Append a justification for a gate that is not linked with effect BLOCK."""
+    data = read_json(tree, REGISTRY)
+    req = _first_blocked(data)
+    gates = {g["id"]: g for g in read_json(tree, GATES)["gates"]}
+    target = _unlinked_open_gate(tree, req)
+    req["block_justifications"].append({
+        "reason_code": req["block_justifications"][0]["reason_code"],
+        "gate": target,
+        "canonical_open_question": gates[target]["open_questions"][0],
+        "explanation": "A constraint recorded without a corresponding BLOCK link.",
+    })
     write_json(tree, REGISTRY, data)
 
 
@@ -302,15 +371,24 @@ CASES = [
     ("markdown using a retired gate as current", mutate_markdown_uses_retired_gate,
      "retired gate"),
     ("blocked requirement without a block justification", mutate_blocked_without_justification,
-     "must carry a block_justification"),
+     "must carry block_justifications"),
     ("accepted obligation reported as undecided", mutate_accepted_blocked_as_undecided,
      "contradicts block reason_code"),
     ("block justification citing an undeclared open question",
      mutate_block_justification_unknown_question, "does not declare"),
     ("block justification naming a gate the record does not block on",
-     mutate_block_justification_foreign_gate, "not one of this record"),
+     mutate_block_justification_foreign_gate, "does not link with effect BLOCK"),
     ("baselined requirement carrying a block justification",
-     mutate_baselined_with_justification, "must not carry a block_justification"),
+     mutate_baselined_with_justification, "must not carry block_justifications"),
+    ("extra BLOCK link with no corresponding justification",
+     mutate_extra_block_link_unjustified, "no block_justification for BLOCK-linked gate"),
+    ("missing justification for one of several BLOCK links",
+     mutate_missing_one_of_several_justifications,
+     "no block_justification for BLOCK-linked gate"),
+    ("duplicate justifications for the same gate", mutate_duplicate_justification_gate,
+     "duplicate block_justification for gate"),
+    ("justification for a gate not linked as BLOCK", mutate_justification_for_unlinked_gate,
+     "does not link with effect BLOCK"),
 ]
 
 

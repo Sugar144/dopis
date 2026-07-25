@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "baseline_version": "0.4",
+  "baseline_version": "0.5",
   "status": "AUDITED_PENDING_OWNER_APPROVAL",
   "implementation_authority": "NOT_GRANTED",
   "source": {
@@ -53,7 +53,7 @@
     "CALIBRATE": "The obligation is accepted; a value or operating rule is set from stakeholder or pilot evidence.",
     "VALIDATE": "The obligation is accepted; wording, procedure, evidence, or stakeholder confirmation remains outstanding."
   },
-  "effect_note": "These four things are distinct and none implies the next: recording a candidate requirement; accepting the obligation; the milestone being ready; implementation being authorised. A record may be present and accepted while its milestone is blocked, and every accepted record is still without implementation authority. An unresolved gate blocks a milestone globally through the milestone entry-condition records rather than by marking every dependent obligation blocked, so BLOCK is reserved for a candidate obligation that cannot yet be accepted as final. Each blocked requirement must carry a block_justification naming which kind of unresolvedness applies; see block_justification_contract in the requirement registry.",
+  "effect_note": "These four things are distinct and none implies the next: recording a candidate requirement; accepting the obligation; the milestone being ready; implementation being authorised. A record may be present and accepted while its milestone is blocked, and every accepted record is still without implementation authority. An unresolved gate blocks a milestone globally through the milestone entry-condition records rather than by marking every dependent obligation blocked, so BLOCK is reserved for a candidate obligation that cannot yet be accepted as final. Each blocked requirement must carry one block_justification per gate it blocks on, naming which kind of unresolvedness applies to that gate; the justification set and the BLOCK link set must correspond one to one. See block_justifications_contract in the requirement registry.",
   "gates": [
     {
       "id": "JV-CAPACITY",
