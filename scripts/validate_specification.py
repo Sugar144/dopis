@@ -13,7 +13,7 @@ REQ_DIR = ROOT / "docs/current/requirements"
 EPICS_PATH = ROOT / "docs/backlog/DOPIS_EPICS.yaml"
 TRACE_PATH = ROOT / "docs/traceability/DOPIS_TRACEABILITY_MATRIX.yaml"
 
-REQ_ID = re.compile(r"^(FR|BR|DATA|SEC|PRIV|NFR|AUDIT|PILOT|OPS)-[A-Z]+-[0-9]{3}$")
+REQ_ID = re.compile(r"^(?:PILOT-[0-9]{3}|(?:FR|BR|DATA|SEC|PRIV|NFR|AUDIT|OPS)-[A-Z]+-[0-9]{3})$")
 ALLOWED_STATUS = {"BASELINED", "BLOCKED_BY_VALIDATION"}
 ALLOWED_CLASSIFICATION = {
     "ACCEPTED_BUSINESS_RULE",
