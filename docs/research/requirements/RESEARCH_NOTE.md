@@ -1,7 +1,7 @@
 # Dopis MVP Requirements Research Note
 
 **Phase:** Specification Phase S1 — MVP requirements baseline and epic map  
-**Status:** DRAFT_FOR_REVIEW  
+**Status:** REVIEWED_PENDING_OWNER_APPROVAL  
 **Date:** 2026-07-25  
 **Canonical project source:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.18`  
 **Implementation authority:** `NOT GRANTED`
@@ -9,162 +9,80 @@
 ## 1. Research questions
 
 1. Which properties make an MVP requirement suitable for review and later verification?
-2. How should business rules, functional behaviour, data obligations, quality attributes, validation gates, and implementation decisions be separated?
+2. How should business rules, behaviour, data obligations, quality attributes, validation gates, and implementation decisions be separated?
 3. How should unresolved values be represented without converting assumptions into facts?
 4. What traceability structure supports forward coverage, reverse impact analysis, orphan detection, and supersession?
-5. How should epics be defined without treating code layers as business capabilities?
+5. How should epics be defined without treating technical layers as business capabilities?
 
-## 2. Sources reviewed
+## 2. Authoritative sources reviewed
 
-### ISO/IEC/IEEE 29148:2018
+- ISO/IEC/IEEE 29148:2018, official ISO catalogue: <https://www.iso.org/standard/72089.html>
+- ISO/IEC 25010:2023, official ISO catalogue: <https://www.iso.org/standard/78176.html>
+- NASA, Appendix C — How to Write a Good Requirement: <https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/>
+- NASA Software Engineering Handbook, SWE-050 — Software Requirements: <https://swehb.nasa.gov/display/SWEHBVD/SWE-050+-+Software+Requirements>
+- NASA Software Engineering Handbook, SWE-053 — Manage Requirements Changes: <https://swehb.nasa.gov/display/7150/SWE-053+-+Manage+Requirements+Changes>
+- Agile Alliance glossary — Epic: <https://agilealliance.org/glossary/epic/>
 
-Official ISO catalogue entry:
+The published 2018 requirements standard is used rather than treating a draft future edition as normative. External sources guide specification quality; they do not create Dopis business rules.
 
-- <https://www.iso.org/standard/72089.html>
+## 3. Adopted guidance
 
-The published standard defines requirements-engineering processes, information items, and characteristics for requirements in systems and software engineering. ISO lists a later revision as under development; this note relies on the published 2018 edition rather than treating a draft edition as normative.
+A baselinable requirement must be necessary, uniquely identified, atomic enough for later verification, explicit about its actor or system obligation, traceable to canonical evidence, and independent of implementation unless a genuine constraint requires otherwise.
 
-### ISO/IEC 25010:2023
+Unresolved numeric values do not become invented facts. The requirement may establish the existence of a configurable rule while a typed validation link records whether the missing decision blocks readiness, calibrates an accepted rule, or validates stakeholder evidence.
 
-Official ISO catalogue entry:
+Epics represent customer or operational capabilities, never code layers such as frontend, backend, API, or database.
 
-- <https://www.iso.org/standard/78176.html>
+## 4. Dopis taxonomy
 
-The product-quality model is used as a completeness checklist for relevant quality attributes. Dopis does not adopt every quality characteristic as an MVP requirement merely because it appears in the model.
+Requirement classes are `FR`, `BR`, `DATA`, `SEC`, `PRIV`, `NFR`, `AUDIT`, `PILOT`, and `OPS`.
 
-### NASA — Appendix C: How to Write a Good Requirement
+Classifications used in this baseline are:
 
-Official source:
+- `ACCEPTED_BUSINESS_RULE`;
+- `PENDING_JAIME_VALIDATION`;
+- `PILOT_CALIBRATION`;
+- `PUBLIC_LAUNCH_BLOCKER`.
 
-- <https://www.nasa.gov/reference/appendix-c-how-to-write-a-good-requirement/>
+Validation effects are:
 
-Relevant guidance includes one obligation per requirement, clear subject and predicate, measurable values, avoidance of ambiguous adjectives, explicit rationale and assumptions, unique identification, feasibility, and bidirectional traceability.
+- `BLOCK`: prevents readiness;
+- `CALIBRATE`: sets or adjusts a value through observation;
+- `VALIDATE`: confirms wording, procedure, or evidence without reopening the accepted obligation.
 
-### NASA Software Engineering Handbook — Software Requirements
+## 5. Independent review findings and disposition
 
-Official source:
+The first draft was not ready to merge. It declared metadata fields that were not present consistently, omitted several discovered capabilities, used ambiguous gate semantics, and asserted zero orphan links without a reproducible check.
 
-- <https://swehb.nasa.gov/display/SWEHBVD/SWE-050+-+Software+Requirements>
+Version `0.2` corrects those problems by:
 
-Relevant guidance includes decomposition from higher-level expectations, traceability to the originating need, and avoidance of unsupported lower-level requirements.
+1. replacing the aspirational metadata contract with a complete tabular registry;
+2. adding explicit requirements for manual channels, order origin, ordering modes, alternative-slot and delay responses, opening readiness, kitchen usability, dynamic cutoff, material estimate communication, cash close, incident handling, caller verification, report/export restrictions, and weekly pilot reporting;
+3. distinguishing blocking, calibration, and validation gate effects;
+4. encoding epic and traceability artifacts as JSON, which is a valid YAML 1.2 subset;
+5. adding `scripts/validate_specification.py`, using only the Python standard library.
 
-### NASA Software Engineering Handbook — Manage Requirements Changes
+## 6. Validation result
 
-Official source:
+The reviewed registry contains **84 unique requirements**, **11 business-capability epics**, and **17 validation gates**.
 
-- <https://swehb.nasa.gov/display/7150/SWE-053+-+Manage+Requirements+Changes>
+The validator checks:
 
-Relevant guidance includes impact analysis, controlled baseline changes, and preserving traceability when a requirement changes.
+- JSON/YAML syntax for machine-readable artifacts;
+- unique and structurally valid requirement IDs;
+- class-prefix consistency;
+- allowed statuses, classifications, priorities, and verification methods;
+- mandatory `BLOCK:*` links for blocked requirements;
+- references to existing requirement IDs;
+- complete epic coverage;
+- exact agreement between the epic map and traceability matrix;
+- exact agreement between requirement gate metadata and traceability links;
+- accuracy of declared orphan-check arrays.
 
-### Agile Alliance — Epic
+## 7. Guidance not adopted
 
-Official glossary entry:
+Dopis does not adopt formal ISO certification, every ISO 25010 characteristic as an MVP obligation, a duplicated heavyweight SRS, technology choices as requirements, epics as delivery promises, or external guidance as a substitute for Jaime's decisions.
 
-- <https://agilealliance.org/glossary/epic/>
+## 8. Remaining boundary
 
-An epic is a body of work too large for one iteration that can be divided into smaller stories. The source does not prescribe one universal epic format.
-
-## 3. Relevant guidance
-
-### 3.1 Requirement quality
-
-A baselinable requirement should be:
-
-- necessary for an accepted Dopis objective or rule;
-- atomic enough to verify without interpreting multiple independent obligations;
-- unambiguous in its actors, conditions, and outcome;
-- feasible within the declared product boundary;
-- implementation-independent unless a genuine constraint requires a technology or mechanism;
-- uniquely identified;
-- traceable to canonical project evidence;
-- associated with at least one verification method;
-- explicitly classified when blocked by stakeholder validation or pilot calibration.
-
-### 3.2 Requirement classes
-
-The baseline separates:
-
-- functional behaviour (`FR-*`);
-- business invariants (`BR-*`);
-- data obligations (`DATA-*`);
-- security and access (`SEC-*`);
-- privacy (`PRIV-*`);
-- quality attributes (`NFR-*`);
-- audit and evidence (`AUDIT-*`);
-- pilot governance (`PILOT-*`);
-- operational constraints (`OPS-*`).
-
-This separation prevents implementation details, validation questions, and operational procedures from being mixed into one undifferentiated list.
-
-### 3.3 Pending values and validation
-
-A requirement may define that a threshold exists and is configurable while leaving the initial value unresolved. The unresolved value is linked to a `JV-*` gate and the requirement remains `BLOCKED_BY_VALIDATION` where the missing value prevents complete verification.
-
-No numeric value is invented merely to make a statement appear complete.
-
-### 3.4 Traceability
-
-Traceability should support:
-
-- source decision to requirement;
-- requirement to epic;
-- requirement to validation gate;
-- later requirement to use case, story, acceptance criterion, architecture decision, task, test, and release evidence;
-- reverse navigation for impact analysis;
-- explicit supersession rather than silent rewriting.
-
-Stable identifiers and typed links are preferable to duplicated prose or document hyperlinks alone.
-
-### 3.5 Epics
-
-Epics represent coherent operational or customer capabilities. The baseline therefore avoids epics named after technical layers such as database, backend, API, or frontend.
-
-## 4. Applicability to Dopis
-
-The canonical discovery contains both accepted business rules and provisional technical proposals. Specification Phase S1 applies the following boundary:
-
-- accepted operating rules become requirements;
-- pending Jaime decisions become validation links;
-- pilot-calibrated values remain configurable and unresolved;
-- provisional frameworks, ORM choices, transport choices, table layouts, and candidate fields do not become requirements;
-- architecture derives later from the reviewed requirement and use-case baseline.
-
-## 5. Guidance not adopted
-
-Dopis does not adopt:
-
-- formal ISO certification as an MVP objective;
-- a heavy duplicated software-requirements specification;
-- every ISO 25010 quality characteristic as a mandatory MVP requirement;
-- epics as estimates or contractual delivery promises;
-- implementation technology merely because an external source recommends it;
-- external guidance as a substitute for Jaime's business decisions;
-- a draft future edition of a standard as though it were the current published authority.
-
-## 6. Resulting design decisions
-
-1. Requirement IDs use `<CLASS>-<DOMAIN>-<SEQUENCE>`.
-2. Requirement statements use normative wording and avoid design detail.
-3. Every requirement records source, priority, status, verification, dependencies, and validation gates.
-4. `BASELINED` means the obligation is accepted, not that implementation is authorised.
-5. `BLOCKED_BY_VALIDATION` means the requirement exists but one or more linked gates prevent complete readiness.
-6. Epics map business capabilities to requirement IDs.
-7. The traceability matrix uses typed links and supports future node classes without duplicating requirement text.
-8. No story or task can be considered ready merely because a requirement link exists.
-
-## 7. Open uncertainties
-
-- The local checkout state could not be inspected from the connected environment; the branch is created from the verified remote `main` commit.
-- Exact values, named delegates, safety wording, catalog content, and several operating procedures remain governed by the existing `JV-*` gates.
-- Verification criteria will become more concrete during use-case, acceptance-criteria, architecture, and test-design phases.
-- The canonical discovery header and sequencing language contain minor metadata inconsistencies; these should be reconciled through a separate complete-file edit because partial replacement of the 3,000-line canonical artifact would be unsafe.
-
-## 8. Source references
-
-Project decisions remain governed by:
-
-- `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.18`;
-- its referenced `BD-DELTA-*` reconciliation history;
-- future bounded Jaime validation resolutions.
-
-External sources provide specification guidance only. They do not create Dopis business requirements.
+Architecture, API, database design, use cases, stories, acceptance criteria, tasks, and tests remain future governed artifacts. `BASELINED` never means implementation authority. Implementation remains `NOT GRANTED`.
