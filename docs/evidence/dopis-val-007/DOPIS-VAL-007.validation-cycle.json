@@ -1,0 +1,4180 @@
+{
+  "schemaVersion": "1.0.0",
+  "cycle": {
+    "id": "DOPIS-VAL-007",
+    "version": 1,
+    "status": "PUBLISHED",
+    "projectRef": "dopis",
+    "title": "Dopis — Validación del funcionamiento de la primera versión",
+    "purpose": "Revisar con Jaime las 89 decisiones de negocio de la primera versión de pedidos online de Dopis: confirmar propuestas, introducir cambios, dejar asuntos pendientes y aportar los datos que faltan. La respuesta es evidencia para una reconciliación posterior; no autoriza implementación ni modifica automáticamente ningún repositorio.",
+    "locale": "es-ES",
+    "stakeholder": {
+      "ref": "jaime",
+      "displayName": "Jaime"
+    },
+    "createdAt": "2026-07-28T00:00:00Z",
+    "publishedAt": "2026-07-28T00:00:00Z",
+    "expiresAt": null
+  },
+  "sections": [
+    {
+      "id": "S01",
+      "kind": "VALIDATION",
+      "title": "Pedidos y recogida",
+      "description": "Decidir cómo compra el cliente, cómo se ofrece una hora posible y qué ocurre ante retrasos, cancelaciones o ausencias.",
+      "items": [
+        {
+          "id": "DVAL2-S01-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Pedir sin crear una cuenta",
+          "question": "El cliente entra en la web desde el móvil, mira la carta y hace su pedido sin crear ninguna cuenta ni contraseña. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que el cliente puede pedir sin cuenta ni contraseña.",
+          "whyItMatters": "Reducir fricción y abandono al pedir desde el móvil.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C15",
+          "kind": "SINGLE_CHOICE",
+          "title": "La primera versión es solo para recoger",
+          "question": "Todos los pedidos son para recoger en el local: no hay reparto a domicilio ni reserva de mesas en esta primera versión. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que el MVP solo ofrece recogida en el local.",
+          "whyItMatters": "Delimitar el servicio inicial y evitar expectativas de reparto o reserva.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C15",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Empezar con pedidos para el mismo día",
+          "question": "Al principio solo se aceptan pedidos para recoger ese mismo día. Pedir con días de antelación quedará para más adelante. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que solo se aceptan pedidos para el mismo día.",
+          "whyItMatters": "Evitar comprometer producción futura antes de validar la operación diaria.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Datos necesarios según el canal",
+          "question": "Para un pedido por web o por teléfono se piden nombre y número de móvil, y nada más es obligatorio. Para los pedidos en persona, pedir también el móvil es una decisión pendiente en la sección de teléfono y mostrador. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar nombre y móvil para web/teléfono, dejando el mostrador como decisión separada.",
+          "whyItMatters": "Recoger solo los datos necesarios para gestionar y avisar sobre el pedido.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Tres formas de aceptar pedidos según la carga",
+          "question": "El personal puede cambiar entre confirmación automática, revisión manual y pausa, en la que no entran pedidos nuevos. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar los tres modos y quién puede cambiarlos.",
+          "whyItMatters": "Permitir adaptar la entrada de pedidos al estado real de la cocina.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Ofrecer solo horas de recogida realmente posibles",
+          "question": "El cliente ve la primera hora disponible o elige entre horas realmente posibles. Al confirmar se guarda el hueco unos minutos y, tras una última comprobación, el pedido queda confirmado. Si algo falla, se ofrecen las horas posibles más cercanas. ¿Refleja lo acordado?",
+          "context": "Lo que Jaime decide: Confirmar selección de horas disponibles, reserva temporal y alternativas cercanas.",
+          "whyItMatters": "No prometer una hora que la cocina ya no puede cumplir.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Revisar a mano los pedidos que puedan saturar la cocina",
+          "question": "Un pedido que ocupe demasiada cocina de golpe, o que no quepa en una sola franja, pasa a revisión manual. El porcentaje exacto se fijará en la tabla de valores. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que los pedidos que superen el umbral pasan a revisión manual.",
+          "whyItMatters": "Evitar que un pedido excepcional bloquee una franja o retrase a los demás.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C14",
+          "kind": "SINGLE_CHOICE",
+          "title": "Medir la carga real de cada franja",
+          "question": "Cada franja de recogida admite una cantidad limitada de trabajo medida en puntos. Una pizza elaborada consume más que una sencilla; tú controlas la capacidad por franja y el equipo técnico calibra los puntos con tu observación. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Decidir si la cocina se planifica con puntos y cómo participa Jaime en su calibración.",
+          "whyItMatters": "Repartir la capacidad según el esfuerzo real, no solo por número de pizzas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C14",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C16",
+          "kind": "SINGLE_CHOICE",
+          "title": "Frenar o cerrar franjas cuando la cocina lo necesite",
+          "question": "Durante el servicio, el personal puede bloquear o reabrir franjas y aplicar un retraso o recorte temporal de capacidad válido solo para ese servicio. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar bloqueo/reapertura de franjas, retraso temporal, recorte de capacidad y autoridad.",
+          "whyItMatters": "Dar al equipo una forma rápida de proteger la puntualidad durante un servicio difícil.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C16",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Respetar siempre lo que ya se aceptó",
+          "question": "Cuando un pedido queda confirmado, su precio y contenido se respetan aunque cambie la carta o la capacidad. Si deja de poder prepararse, pasa a atención del personal; nunca se modifica ni se anula solo. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que un pedido aceptado conserva precio y contenido y nunca se altera solo.",
+          "whyItMatters": "Proteger el compromiso ya adquirido con el cliente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "Proponer otra hora sin bloquear la cocina indefinidamente",
+          "question": "En revisión manual, el personal puede aceptar, rechazar o proponer otra hora. La propuesta se reserva 10 minutos; sin respuesta, caduca, se libera el hueco, se rechaza y se avisa por SMS. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar aceptar/rechazar/proponer otra hora, reserva de 10 minutos y caducidad.",
+          "whyItMatters": "Resolver pedidos manuales sin perder capacidad indefinidamente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C09",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué ocurre cuando el retraso cambia la hora prometida",
+          "question": "Si la hora cambia de forma importante, el cliente lo ve en su página privada y puede rechazar la nueva hora durante 10 minutos. El silencio no cuenta como aceptación y el pedido pasa a revisión manual. Las revisiones quedan registradas. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar aviso, derecho a rechazar, plazo, tratamiento del silencio y registro.",
+          "whyItMatters": "Dar al cliente control cuando un retraso cambia de forma relevante su recogida.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C09",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C10",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué hacemos si el cliente no viene",
+          "question": "Al acabar la franja se espera un margen inicial de 30 minutos, se intenta contactar y solo después el personal marca el pedido como no recogido. Si el cliente avisa de que no vendrá y ya está preparado, se registra como cancelación con pérdida. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar margen, intento de contacto, no recogido y cancelación con pérdida.",
+          "whyItMatters": "Gestionar ausencias sin marcar demasiado pronto un pedido como perdido.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C10",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C11",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cómo se cancela un pedido y qué se recupera",
+          "question": "El cliente no cancela por sí mismo en esta primera versión. Cancela el personal y anota el motivo; antes de preparar se liberan reservas, pero lo ya consumido no se repone automáticamente. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar quién cancela, motivo obligatorio y efecto según el estado del pedido.",
+          "whyItMatters": "Evitar cancelaciones invisibles o reposiciones de stock incorrectas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C11",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C12",
+          "kind": "SINGLE_CHOICE",
+          "title": "Horario de pedidos y recogidas por día",
+          "question": "Lunes y martes cerrado; miércoles y jueves 18:00-22:00; viernes a domingo 18:00-23:00. Pizza desde las 19:00, primera recogida 19:15 y última 21:45 o 22:45 según el día. ¿Sigue siendo correcto?",
+          "context": "Lo que Jaime decide: Validar días, horario de pedidos, inicio de pizzas y primeras/últimas recogidas.",
+          "whyItMatters": "Alinear la disponibilidad online con el horario real de cocina y recogida.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C12",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S01-C13",
+          "kind": "SINGLE_CHOICE",
+          "title": "Fechas especiales que afectarán al piloto",
+          "question": "¿Hay fechas próximas con cierre, apertura especial u horario distinto que debamos configurar para el piloto, como festivos, vacaciones o eventos?",
+          "context": "Lo que Jaime decide: Aportar cierres, aperturas especiales, vacaciones o eventos próximos.",
+          "whyItMatters": "Configurar excepciones reales antes del piloto.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S01-C13",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S02",
+      "kind": "VALIDATION",
+      "title": "La cocina en el día a día",
+      "description": "Confirmar avisos, funcionamiento de la tablet, seguridad ante desconexiones, respaldo móvil, apertura y organización de la cola.",
+      "items": [
+        {
+          "id": "DVAL2-S02-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Asegurar que cada pedido nuevo sea visto",
+          "question": "Un pedido nuevo produce un aviso sonoro pensado para oírse con música, queda resaltado hasta pulsar \"Pedido visto\" y, si nadie lo confirma, el aviso se repite y la aceptación automática se pausa. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar aviso sonoro, reconocimiento, repetición y pausa automática.",
+          "whyItMatters": "Asegurar que ningún pedido nuevo pase inadvertido en un local con ruido y música.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué puede hacerse cuando la tablet pierde conexión",
+          "question": "La pantalla avisa de datos desactualizados, bloquea cambios de estado y, si la desconexión dura unos minutos, pausa pedidos nuevos. Para reanudar, el personal revisa y pulsa \"Reanudar\". ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar aviso de desconexión, bloqueo de cambios, pausa de pedidos y reanudación manual.",
+          "whyItMatters": "Evitar decisiones basadas en datos antiguos cuando falla Internet.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué podrá hacerse desde el móvil de respaldo",
+          "question": "Si la tablet falla, un móvil permite ver pedidos, cambiar estados y hacer cambios urgentes de disponibilidad, pero no precios, textos, permisos ni administración completa. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar funciones permitidas y prohibidas en el móvil de respaldo.",
+          "whyItMatters": "Mantener la operación básica si la tablet principal falla sin abrir funciones sensibles.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Comprobaciones obligatorias antes de abrir pedidos",
+          "question": "Los pedidos online solo se abren tras comprobar cocina, capacidad, recuentos, agotados e ingredientes críticos, registrar al responsable y pulsar \"Abrir pedidos\". ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar la lista previa, responsable registrado y apertura manual.",
+          "whyItMatters": "Evitar abrir pedidos cuando la cocina no está preparada.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Organizar la cola para saber qué preparar y cuándo",
+          "question": "La cola se ordena por la hora recomendada de empezar; los retrasados destacan; se separan atención, preparación, listos, programados e historial; nombre y hora pesan más que el número; el personal inicia preparación y los estados avanzan en orden. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar orden, grupos, información destacada y avance de estados.",
+          "whyItMatters": "Mostrar a cocina qué preparar primero y qué necesita atención.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Panel digital primero; impresora solo si las pruebas la hacen necesaria",
+          "question": "La primera versión usa el panel digital como referencia y solo reconsidera impresora si las pruebas muestran que tablet y móvil no bastan. Habrá un procedimiento escrito para fallos técnicos. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar panel digital como fuente principal y criterio para añadir impresora.",
+          "whyItMatters": "Elegir una referencia operativa principal y un plan de contingencia realista.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S02-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Preparar la prueba real de la tablet y los avisos",
+          "question": "Indica qué tablet y navegador usaréis, dónde estará colocada, a qué volumen puede sonar y cuándo podemos probar los avisos con la música y el ruido reales.",
+          "context": "Lo que Jaime decide: Aportar dispositivo, navegador, ubicación, volumen y fecha de prueba.",
+          "whyItMatters": "Validar la solución en el dispositivo y ruido reales del local.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S02-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S03",
+      "kind": "VALIDATION",
+      "title": "Carta y productos",
+      "description": "Confirmar cómo se administra y presenta la carta; decidir precios de modificaciones y aportar los contenidos del piloto.",
+      "items": [
+        {
+          "id": "DVAL2-S03-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Quién puede cambiar cada parte de la carta",
+          "question": "Tú o una persona autorizada podéis crear, editar, desactivar, reordenar, cambiar precios, destacar y ocultar productos. Ingredientes, alérgenos, precios y textos quedan restringidos y auditados. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Definir quién puede realizar cada acción y qué cambios requieren control adicional.",
+          "whyItMatters": "Permitir gestionar la carta sin perder control sobre información sensible.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cambios controlados; notas solo para instrucciones seguras",
+          "question": "El cliente cambia una pizza solo mediante opciones preparadas por ti. Las notas libres quedan para instrucciones que no alteran ingredientes y nunca saltan precios, disponibilidad ni alérgenos. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que cambios de ingredientes usan opciones configuradas y acotar notas libres.",
+          "whyItMatters": "Evitar pedidos ambiguos, precios incorrectos y riesgos de alérgenos.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "¿Quitar un ingrediente reduce el precio?",
+          "question": "Cuando un cliente quita un ingrediente, ¿debe bajar el precio?",
+          "context": "Lo que Jaime decide: Decidir si quitar reduce precio y qué excepciones existirán.",
+          "whyItMatters": "Fijar una regla comercial coherente al quitar ingredientes.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Quitar no baja el precio",
+              "description": "Selecciono esta alternativa para la decisión: Quitar no baja el precio."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Definir excepciones concretas",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": {
+            "optionId": "OPT-01",
+            "rationale": "Esta es la alternativa recomendada en el material de validación revisado; Jaime conserva la decisión final."
+          },
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Precio de las opciones con coste especial",
+          "question": "La mozzarella vegana y la masa sin gluten tienen un coste propio. ¿Cómo quieres tratar su precio?",
+          "context": "Lo que Jaime decide: Decidir suplemento de mozzarella vegana y masa sin gluten, general o por producto.",
+          "whyItMatters": "Cubrir costes especiales sin sorprender al cliente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Con suplemento propio por opción",
+              "description": "Selecciono esta alternativa para la decisión: Con suplemento propio por opción."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Mismo precio, sin suplemento",
+              "description": "Selecciono esta alternativa para la decisión: Mismo precio, sin suplemento."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Decidirlo producto a producto",
+              "description": "Selecciono esta alternativa para la decisión: Decidirlo producto a producto."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-05",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Definir los cambios permitidos en cada pizza",
+          "question": "Aporta, pizza por pizza, ingredientes que se pueden quitar, sustituciones, extras con precio y cantidad máxima, y excepciones permitidas de nota de cocina. Anota también los documentos o fotos entregados.",
+          "context": "Lo que Jaime decide: Aportar cambios, sustituciones, extras, precios, límites y notas por pizza.",
+          "whyItMatters": "Convertir las preferencias de Jaime en opciones vendibles y preparables.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cómo se ordena y muestra la carta",
+          "question": "Categorías de pizzas, bebidas y postres; destacados primero; resto en el orden manual; agotados visibles pero no añadibles; temporales por fecha; posibilidad de ocultar un producto para un servicio. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar categorías, orden, destacados, agotados, temporales y ocultación.",
+          "whyItMatters": "Controlar cómo encuentra y entiende el cliente la carta.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué queda dentro y fuera de la primera carta",
+          "question": "Una sola medida de pizza, sin mitad y mitad y sin cafés. Todo podrá revisarse en versiones futuras. ¿Sigue siendo lo que quieres?",
+          "context": "Lo que Jaime decide: Confirmar una medida, sin mitad y mitad y sin cafés.",
+          "whyItMatters": "Mantener el primer alcance de carta manejable.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "Idiomas y revisión de la carta pública",
+          "question": "Antes del lanzamiento público, productos en castellano y catalán revisados por una persona; sin traducciones automáticas no revisadas; selector visible; fotos opcionales; administración interna en un solo idioma. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar idiomas, revisión humana, selector, fotos y lengua interna.",
+          "whyItMatters": "Publicar textos comprensibles y revisados en ambos idiomas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C09",
+          "kind": "SINGLE_CHOICE",
+          "title": "Contenido definitivo de la carta",
+          "question": "Aporta nombres y descripciones definitivos en castellano y catalán, fotos disponibles, productos destacados, temporales con fechas y orden inicial de cada categoría.",
+          "context": "Lo que Jaime decide: Aportar textos, fotos, destacados, temporales y orden.",
+          "whyItMatters": "Reunir el contenido exacto que se publicará.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C09",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S03-C10",
+          "kind": "SINGLE_CHOICE",
+          "title": "Aprobar la carta inicial del piloto",
+          "question": "Cuando cada producto tenga textos, precio, ingredientes y alérgenos completos, ¿das tu autorización de negocio al conjunto inicial del piloto? Esta autorización no abre el servicio al público ni autoriza implementación.",
+          "context": "Lo que Jaime decide: Autorizar la carta inicial solo cuando cada producto esté completo.",
+          "whyItMatters": "Obtener aprobación explícita del conjunto de productos que entra al piloto.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Autorizo dentro del límite indicado",
+              "description": "Concedo la autorización de negocio dentro de los límites descritos en la tarjeta."
+            },
+            {
+              "id": "OPT-02",
+              "label": "No autorizo todavía",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No autorizo",
+              "description": "No concedo esta autorización en el estado actual."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S03-C10",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S04",
+      "kind": "VALIDATION",
+      "title": "Seguridad alimentaria y alérgenos",
+      "description": "Confirmar reglas de publicación segura, información al cliente y el procedimiento real con la masa sin gluten.",
+      "items": [
+        {
+          "id": "DVAL2-S04-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "No vender sin información alimentaria completa",
+          "question": "Ningún producto participa en pedidos reales sin ingredientes, alérgenos, trazas y etiquetas dietéticas completos y validados. Un cambio de receta, ingrediente o proveedor obliga a revisar de nuevo. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar bloqueo, validación y nueva revisión ante cambios.",
+          "whyItMatters": "Impedir la venta con información alimentaria incompleta o desactualizada.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S04-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Mostrar los alérgenos antes y después de cada cambio",
+          "question": "Cada producto muestra alérgenos; al cambiar opciones se recalculan, se avisa de nuevos alérgenos, el resumen final los repite y se actualizan etiquetas dietéticas. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar visibilidad, recálculo, aviso y repetición final.",
+          "whyItMatters": "Mantener al cliente informado cuando una personalización cambia los alérgenos.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S04-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Ofrecer masa sin gluten sin ocultar el contacto cruzado",
+          "question": "La masa llega sellada pero comparte horno, espacio y utensilios: hay riesgo real de contacto cruzado. Se avisa, se exige confirmación, no se promete aptitud para celiaquía o alergias graves y puede desactivarse por separado. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar advertencia, confirmación del cliente, límites de promesa y desactivación.",
+          "whyItMatters": "Explicar con honestidad el riesgo de contacto cruzado.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S04-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué hacemos al detectar información alimentaria incorrecta",
+          "question": "Ante información de alérgenos incorrecta se desactiva la venta afectada, se revisan pedidos no entregados, se pausa el ámbito afectado y todo queda registrado. Cualquier persona puede desactivar al detectar el problema. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar retirada, revisión de pedidos, pausa, registro y autoridad para desactivar.",
+          "whyItMatters": "Actuar de inmediato ante un error de seguridad alimentaria.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S04-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Documentos que respaldan ingredientes y alérgenos",
+          "question": "Aporta fichas o etiquetas de proveedores y explica quién y cómo las revisa. Debe completarse la tabla de ingredientes, alérgenos y trazas de cada producto y opción.",
+          "context": "Lo que Jaime decide: Aportar fichas, responsable de revisión y tabla completa.",
+          "whyItMatters": "Sustentar la información publicada con documentación fiable.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S04-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Procedimiento real y límites de la opción sin gluten",
+          "question": "Describe dónde se abre, utensilios, quién la prepara, qué solicitudes de alergias graves puede atender el local y quién puede aprobar información de seguridad alimentaria.",
+          "context": "Lo que Jaime decide: Describir procedimiento sin gluten, límites para alergias graves y autoridad de aprobación.",
+          "whyItMatters": "Alinear la comunicación pública con la práctica real del local.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S04-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S05",
+      "kind": "VALIDATION",
+      "title": "Stock y disponibilidad",
+      "description": "Confirmar recuentos, reservas, agotados, reactivaciones, límites diarios y control de opciones críticas.",
+      "items": [
+        {
+          "id": "DVAL2-S05-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Un único stock real para web, teléfono y mostrador",
+          "question": "El recuento de apertura es el tope de venta online; las unidades se reservan durante la compra y se liberan si se abandona; todos los canales comparten stock y los ajustes quedan registrados. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar recuento inicial, reservas temporales, stock compartido y registro de ajustes.",
+          "whyItMatters": "Evitar vender más unidades de las disponibles en cualquier canal.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S05-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Quién puede agotar y reactivar productos",
+          "question": "Cualquier persona autorizada puede marcar agotado. Reactivar pizzas, ingredientes críticos y opciones requiere a Jaime o al responsable; lo agotado sigue visible sin poder añadirse. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Definir quién puede marcar agotado y quién puede reactivar cada tipo.",
+          "whyItMatters": "Permitir retirar rápido algo agotado, pero evitar reactivarlo por error.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S05-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Nada se sustituye ni vuelve a venderse sin confirmación humana",
+          "question": "El sistema no sustituye ingredientes por su cuenta y nada vuelve a la venta solo por una hora prevista de reposición; la reactivación la confirma una persona. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que ninguna sustitución ni reactivación ocurre sola.",
+          "whyItMatters": "Evitar sustituciones o reaperturas automáticas no confirmadas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S05-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Controlar productos y opciones con disponibilidad limitada",
+          "question": "Pizzas con límites diarios, opciones críticas controladas por usos aproximados y posibilidad de limitar productos a ciertas franjas. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar límites diarios, usos aproximados y disponibilidad por franja.",
+          "whyItMatters": "Controlar productos escasos sin exigir inventario exacto de todos los ingredientes.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S05-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Recuento de cierre mientras comprobamos la fiabilidad",
+          "question": "Al inicio habrá recuento de cierre, con reglas de arrastre o recuento y revisión de diferencias repetidas. Se simplificará cuando los registros sean fiables. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar recuento de cierre, arrastre/recuento y revisión de discrepancias.",
+          "whyItMatters": "Detectar diferencias entre ventas registradas y existencias reales durante el piloto.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S05-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Plan de recuentos, límites y avisos",
+          "question": "Indica productos a contar, responsables de apertura y cierre, pizzas con límite diario, ingredientes críticos, reglas de arrastre y umbrales de stock bajo.",
+          "context": "Lo que Jaime decide: Definir qué se cuenta, responsables, momentos, límites y avisos.",
+          "whyItMatters": "Convertir el control de stock en una rutina concreta.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S05-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S06",
+      "kind": "VALIDATION",
+      "title": "Sugerencias de productos",
+      "description": "Confirmar cómo se muestran las sugerencias, sus límites comerciales y las relaciones concretas que se utilizarán.",
+      "items": [
+        {
+          "id": "DVAL2-S06-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Sugerencias opcionales y limitadas",
+          "question": "Al añadir una pizza y al revisar el carrito pueden aparecer hasta tres sugerencias definidas por ti. Se pueden ignorar, nada se añade solo y solo se sugieren productos disponibles y compatibles. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar dónde, cuántas y bajo qué condiciones aparecen sugerencias.",
+          "whyItMatters": "Aumentar ventas sin forzar ni confundir al cliente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S06-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S06-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Reglas comerciales y de medición de las sugerencias",
+          "question": "No hay descuentos, precios dinámicos ni recomendaciones inventadas: solo relaciones definidas por ti. Se pueden desactivar y se miden de forma agregada, sin perfiles individuales. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar ausencia de descuentos/dinámica, relaciones manuales y medición agregada.",
+          "whyItMatters": "Mantener el control comercial y evitar personalización invasiva.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S06-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S06-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Mapa de sugerencias por pizza",
+          "question": "Para cada pizza, indica bebida, postre o extra sugerido y su prioridad; pizzas sin sugerencias y quién podrá mantener estas relaciones.",
+          "context": "Lo que Jaime decide: Aportar relaciones, prioridad, exclusiones y responsable.",
+          "whyItMatters": "Definir exactamente qué se sugerirá y quién lo mantendrá.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S06-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S07",
+      "kind": "VALIDATION",
+      "title": "Teléfono, mostrador, pago y entrega",
+      "description": "Confirmar que todos los canales comparten operación, cómo se cobra y entrega y cómo se corrigen errores.",
+      "items": [
+        {
+          "id": "DVAL2-S07-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Todos los canales usan la misma capacidad y cola",
+          "question": "Teléfono, mostrador y web comparten stock, capacidad y cola; reciben el siguiente hueco posible, cada pedido registra su canal y solo el responsable puede aceptar una excepción sobre capacidad, dejándola registrada. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar stock/capacidad/cola comunes, asignación de hueco, registro de canal y excepciones.",
+          "whyItMatters": "Evitar dobles reservas y decisiones distintas según el canal.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C09",
+          "kind": "SINGLE_CHOICE",
+          "title": "Permitir que otra persona recoja el pedido",
+          "question": "Un pedido puede recogerlo una persona distinta dando el nombre del cliente y el número de pedido. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar que otra persona recoge con nombre y número de pedido.",
+          "whyItMatters": "Permitir una recogida práctica sin perder control básico.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C09",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "¿Pedimos el teléfono en pedidos de mostrador?",
+          "question": "Para los pedidos en persona, ¿merece la pena pedir también el teléfono?",
+          "context": "Lo que Jaime decide: Elegir si se solicita siempre, opcionalmente o nunca.",
+          "whyItMatters": "Decidir si el móvil aporta valor en mostrador frente a la fricción de pedirlo.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Sí, pedirlo siempre",
+              "description": "Selecciono esta alternativa para la decisión: Sí, pedirlo siempre."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Solo si el cliente quiere dejarlo",
+              "description": "Selecciono esta alternativa para la decisión: Solo si el cliente quiere dejarlo."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No pedirlo en el mostrador",
+              "description": "Selecciono esta alternativa para la decisión: No pedirlo en el mostrador."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-05",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Quién registra teléfono y mostrador durante el servicio",
+          "question": "En horas punta, ¿quién atenderá el teléfono y registrará esos pedidos? ¿Cómo encaja con el trabajo de cocina?",
+          "context": "Lo que Jaime decide: Definir quién atiende y cómo se evita interferir con cocina.",
+          "whyItMatters": "Comprobar que registrar pedidos externos es viable en hora punta.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cobrar antes de entregar",
+          "question": "El cliente paga en el local; el personal registra efectivo o tarjeta; se marca pagado antes de entregar; una tarjeta fallida puede reintentarse o pasar a efectivo; sin pago no se entrega. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar momento, métodos, reintento y regla de no entrega sin pago.",
+          "whyItMatters": "Asegurar que entrega y cobro quedan coordinados.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cómo corregir un cobro o una entrega marcados por error",
+          "question": "Un método mal anotado se corrige con auditoría. Deshacer un \"pagado\" queda reservado a Jaime o responsable, y una entrega marcada por error puede volver a \"Listo\" conservando historial. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Definir correcciones permitidas y autoridad para revertir estados.",
+          "whyItMatters": "Corregir errores sin perder el historial de caja y entrega.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué se revisa antes de cerrar la caja",
+          "question": "Al cerrar se comparan caja esperada y real, se explican diferencias, se revisan pedidos, pagos e incidencias y se cierran sesiones. Las incidencias no se cierran solas. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar comparación, explicación, revisión y cierre de incidencias/sesiones.",
+          "whyItMatters": "Detectar descuadres y dejar el servicio cerrado de forma responsable.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Práctica actual de tickets y cierre de caja",
+          "question": "Describe cuándo se ofrece ticket, qué se conserva, cómo se investiga un descuadre, cuándo se escala y cómo es el cierre actual.",
+          "context": "Lo que Jaime decide: Aportar política actual de tickets, conservación, descuadres, escalado y cierre.",
+          "whyItMatters": "Alinear el sistema nuevo con la práctica real y las obligaciones del local.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S07-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "¿Puede entregarse alguna vez sin haber cobrado?",
+          "question": "¿Debe poder entregarse algún pedido sin haberse cobrado?",
+          "context": "Lo que Jaime decide: Elegir ninguna excepción, autorización responsable u otra política.",
+          "whyItMatters": "Definir de forma explícita si existe alguna excepción a la regla de cobro.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Sin excepciones: nunca se entrega sin pagar",
+              "description": "Selecciono esta alternativa para la decisión: Sin excepciones: nunca se entrega sin pagar."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Solo con autorización expresa del responsable",
+              "description": "Selecciono esta alternativa para la decisión: Solo con autorización expresa del responsable."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": {
+            "optionId": "OPT-01",
+            "rationale": "Esta es la alternativa recomendada en el material de validación revisado; Jaime conserva la decisión final."
+          },
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S07-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S08",
+      "kind": "VALIDATION",
+      "title": "Incidencias y autoridad durante el servicio",
+      "description": "Confirmar la cola de atención, sustituciones, equidad con clientes, autoridad y valores iniciales de operación.",
+      "items": [
+        {
+          "id": "DVAL2-S08-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Mantener visibles los problemas hasta resolverlos",
+          "question": "Pedidos y problemas pendientes van a una cola visible; incidencias abiertas siguen hasta revisión; todo queda anotado sin borrar y una incidencia mal resuelta puede reabrirse. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar cola visible, persistencia, historial y reapertura.",
+          "whyItMatters": "Evitar que pedidos problemáticos o incidencias desaparezcan de la operación.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Sustituir solo con alternativas aprobadas",
+          "question": "Si un producto aceptado no puede prepararse, solo se ofrecen alternativas definidas por ti, se registra la elección y se respeta el precio original. Las diferencias asumidas tienen un tope. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar alternativas preaprobadas, elección registrada, precio y tope.",
+          "whyItMatters": "Resolver faltas de producto sin improvisar ni perjudicar al cliente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Tabla de sustituciones y límite económico",
+          "question": "Aporta sustituciones producto a producto, reglas generales de categoría y precio, y el importe máximo por pedido que el responsable puede asumir sin consultarte.",
+          "context": "Lo que Jaime decide: Definir sustituciones y máximo asumible por pedido.",
+          "whyItMatters": "Dar al responsable margen claro sin consultar cada incidencia.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Los errores de Dopis no cuentan contra el cliente",
+          "question": "Un fallo de Dopis se registra como incidencia interna y no empeora el historial del cliente. Nadie queda bloqueado automáticamente; cualquier medida pasa por revisión humana. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar clasificación interna, revisión humana y ausencia de bloqueos automáticos.",
+          "whyItMatters": "No penalizar a un cliente por fallos internos de Dopis.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué hacer ante incidencias repetidas de un cliente",
+          "question": "Regla provisional: dos incidencias relevantes en 90 días llevarían pedidos futuros a revisión manual, nunca a bloqueo. ¿Qué hacemos?",
+          "context": "Lo que Jaime decide: Elegir regla provisional, modificarla o no automatizarla.",
+          "whyItMatters": "Gestionar patrones repetidos sin bloquear injustamente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Probarla tal cual durante el piloto",
+              "description": "Selecciono esta alternativa para la decisión: Probarla tal cual durante el piloto."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Cambiar el criterio (número o plazo)",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Sin regla automática por ahora",
+              "description": "Selecciono esta alternativa para la decisión: Sin regla automática por ahora."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-05",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "¿Formalizamos compensaciones en la primera versión?",
+          "question": "Hoy las soluciones se acuerdan caso a caso y se anotan. ¿Quieres un sistema formal de compensaciones en la primera versión?",
+          "context": "Lo que Jaime decide: Elegir compensación caso a caso o política definida.",
+          "whyItMatters": "Decidir si el MVP necesita una política formal o basta resolución manual.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Seguir sin compensaciones automáticas por ahora",
+              "description": "Selecciono esta alternativa para la decisión: Seguir sin compensaciones automáticas por ahora."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Definir una política de compensación para la primera versión",
+              "description": "Selecciono esta alternativa para la decisión: Definir una política de compensación para la primera versión."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Otra opción",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-04",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": {
+            "optionId": "OPT-01",
+            "rationale": "Esta es la alternativa recomendada en el material de validación revisado; Jaime conserva la decisión final."
+          },
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué hace el equipo cuando una incidencia supera su autoridad",
+          "question": "Si un problema supera lo autorizado y no estás, el personal aplica la medida segura, pausa solo lo afectado y lo deja pendiente de Jaime hasta que lo resuelvas. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar medida segura, pausa limitada y escalado a Jaime.",
+          "whyItMatters": "Evitar decisiones no autorizadas cuando Jaime no está disponible.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "Valores iniciales de tiempos operativos",
+          "question": "Valores iniciales: reserva de hueco 5 min; alternativa 10 min; franja 15 min; gracia no recogida 30 min; respuesta a retraso 10 min; desconexión de tablet 3 min antes de pausar. ¿Arrancamos así?",
+          "context": "Lo que Jaime decide: Validar seis valores de forma independiente.",
+          "whyItMatters": "Fijar valores iniciales que controlan tiempos y riesgos del servicio.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S08-C09",
+          "kind": "SINGLE_CHOICE",
+          "title": "Umbrales operativos pendientes",
+          "question": "Indica: capacidad por franja, porcentaje para revisión manual, retraso serio en cocina, tiempo sin confirmar antes de pausar automática, antelación mínima, retraso importante para cliente y ampliación máxima del margen de recogida.",
+          "context": "Lo que Jaime decide: Aportar siete valores pendientes y su unidad/criterio.",
+          "whyItMatters": "Completar los umbrales que todavía condicionan capacidad, retrasos y pausas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S08-C09",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S09",
+      "kind": "VALIDATION",
+      "title": "Personas, accesos y delegación",
+      "description": "Confirmar quién puede operar, administrar, consultar informes y asumir responsabilidades.",
+      "items": [
+        {
+          "id": "DVAL2-S09-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Abrir pedidos solo con un responsable identificado",
+          "question": "Los pedidos online no se abren sin Jaime o delegado autorizado. Se registran responsable, relevos, sesión común y cierre; la delegación puede ser estable o limitada y nunca se presume. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar presencia, registro, relevos, cierre y tipos de delegación.",
+          "whyItMatters": "Asegurar que siempre haya una persona responsable durante el servicio online.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Gestión de accesos y uso seguro de sesiones",
+          "question": "Solo Jaime crea, cambia o retira accesos. Las claves personales no se comparten; la sesión común no tiene funciones sensibles; las bajas se retiran antes del siguiente servicio y el panel nunca es público. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar autoridad exclusiva de Jaime y reglas de credenciales/sesión/panel.",
+          "whyItMatters": "Evitar accesos huérfanos, compartidos o expuestos.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Quién puede ver y exportar información",
+          "question": "Los informes semanales y exportaciones de pedidos, teléfonos o datos comerciales quedan limitados a Jaime y a quien autorice, con registro de accesos y exportaciones. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Definir acceso a informes/exportaciones y registro.",
+          "whyItMatters": "Controlar quién puede consultar o extraer información sensible.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué puede decidir el delegado y qué queda reservado a Jaime",
+          "question": "El delegado puede llevar operación, incidencias, pagos, cierres, informes y ajustes temporales. Accesos, políticas permanentes, asuntos legales y cambios permanentes quedan solo para Jaime. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Definir capacidades del delegado y reservas exclusivas de Jaime.",
+          "whyItMatters": "Delegar suficiente operación sin ceder decisiones reservadas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Qué información delicada puede aprobar el delegado",
+          "question": "Según lo hablado, el delegado también puede validar y publicar ingredientes, alérgenos, reglas dietéticas, precios y textos con documentación fiable y revisión responsable. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Decidir por categoría qué puede validar/publicar el delegado y bajo qué evidencia.",
+          "whyItMatters": "Determinar si la persona delegada puede aprobar información comercial y alimentaria sensible.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "Procedimiento de accesos y evolución de la sesión común",
+          "question": "Describe cómo dar altas y bajas, cada cuánto revisar accesos, cuándo volver a pedir clave en la tablet y cuándo sustituir la sesión común por identidades individuales.",
+          "context": "Lo que Jaime decide: Definir altas, bajas, revisiones, reautenticación y transición a identidades individuales.",
+          "whyItMatters": "Convertir la seguridad de acceso en un procedimiento mantenible.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Identidad, alcance y vigencia de la delegación",
+          "question": "Indica nombre del delegado, si la autorización es estable o limitada a turnos/fechas y confirma que conoce reglas, topes y medidas seguras.",
+          "context": "Lo que Jaime decide: Aportar persona, alcance temporal y confirmación de preparación.",
+          "whyItMatters": "Identificar de forma inequívoca la delegación real.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S09-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Autorizar servicio online bajo responsabilidad del delegado",
+          "question": "¿Autorizas que haya servicio online sin tu presencia, bajo responsabilidad del delegado confirmado y dentro de reglas y topes? No permite gestionar accesos ni cambiar políticas permanentes.",
+          "context": "Lo que Jaime decide: Autorizar o negar dentro de límites ya confirmados.",
+          "whyItMatters": "Autorizar explícitamente servicio online sin presencia de Jaime.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Autorizo dentro del límite indicado",
+              "description": "Concedo la autorización de negocio dentro de los límites descritos en la tarjeta."
+            },
+            {
+              "id": "OPT-02",
+              "label": "No autorizo todavía",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No autorizo",
+              "description": "No concedo esta autorización en el estado actual."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S09-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S10",
+      "kind": "VALIDATION",
+      "title": "Comunicación con el cliente y privacidad",
+      "description": "Confirmar SMS, seguimiento, uso de datos, acceso mínimo y condiciones previas al lanzamiento público.",
+      "items": [
+        {
+          "id": "DVAL2-S10-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cuándo recibe SMS el cliente y qué incluye",
+          "question": "Tras pedir, el cliente recibe un SMS con enlace privado. No hay SMS de aceptación; sí cuando está listo, rechazado o cancelado. Los mensajes no incluyen detalle completo y un fallo del primer SMS lleva a revisión manual. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar mensajes, enlace privado, contenido y tratamiento del fallo inicial.",
+          "whyItMatters": "Mantener al cliente informado sin enviar mensajes innecesarios o sensibles.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S10-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Explicar para qué pedimos nombre y teléfono",
+          "question": "Antes de nombre y teléfono se explica que sirven para gestionar el pedido y avisar. El teléfono no crea cuenta, perfil ni permiso comercial. Estas garantías se aplican desde el primer pedido real. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar explicación previa y límites de uso.",
+          "whyItMatters": "Recoger datos con una finalidad clara y sin convertirlos en marketing o perfil.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S10-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Proteger el teléfono del cliente y verificar llamadas",
+          "question": "El teléfono está oculto en cocina y solo se muestra al contactar. Si alguien llama, se confirma nombre o número de pedido y solo se informa de estado y hora estimada. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar ocultación, verificación mínima e información comunicable.",
+          "whyItMatters": "Reducir exposición de teléfonos y evitar revelar datos por llamadas no verificadas.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S10-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Quién atiende las solicitudes sobre datos personales",
+          "question": "Las solicitudes de acceso, corrección o borrado se derivan a Jaime mediante procedimiento. Se elimina identificación cuando corresponde y se conservan solo registros legítimos. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar derivación a Jaime, corrección/borrado y conservación legítima.",
+          "whyItMatters": "Asegurar que las solicitudes de datos llegan a una persona responsable y se ejecutan correctamente.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S10-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Conservación de datos y atención de derechos",
+          "question": "Antes del lanzamiento público hay que fijar conservación de pedidos, teléfonos, incidencias, caja, auditoría y SMS; verificación de identidad y registros que deben seguir identificables. ¿Qué puedes aportar ya?",
+          "context": "Lo que Jaime decide: Aportar decisiones o evidencias sobre plazos, verificación y registros.",
+          "whyItMatters": "Fijar conservación y respuesta antes de abrir al público.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S10-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Revisión obligatoria antes de abrir al público",
+          "question": "No se abre al público general hasta completar la revisión aplicable y aprobar textos públicos. El piloto controlado puede funcionar antes con las garantías mínimas desde el primer pedido. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar gate público y condiciones mínimas del piloto controlado.",
+          "whyItMatters": "Evitar apertura pública sin revisar obligaciones y textos aplicables.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S10-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S11",
+      "kind": "VALIDATION",
+      "title": "El piloto y cómo lo mediremos",
+      "description": "Confirmar la línea base, el arranque controlado, los criterios de pausa y la evaluación del piloto.",
+      "items": [
+        {
+          "id": "DVAL2-S11-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Medir dos semanas antes de fijar el objetivo",
+          "question": "Antes del piloto se registran dos semanas completas de pedidos por canal, franjas y llamadas para crear o cambiar pedidos. El objetivo de reducción se fija después con datos reales. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar dos semanas de línea base y fijación posterior del objetivo.",
+          "whyItMatters": "Medir la situación actual antes de prometer una mejora.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C02",
+          "kind": "SINGLE_CHOICE",
+          "title": "Plan de medición y criterio de ensayo superado",
+          "question": "Indica días y franjas, quién anotará datos, carga asumible, evidencia para dar el ensayo por superado y quién revisará esa evidencia y el informe semanal.",
+          "context": "Lo que Jaime decide: Definir días, franjas, responsable, carga, evidencia y revisor.",
+          "whyItMatters": "Hacer viable y verificable la recogida de datos previa.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C02",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C03",
+          "kind": "SINGLE_CHOICE",
+          "title": "Primer tramo real pequeño y preparado",
+          "question": "El primer tramo real dura aproximadamente una hora, en miércoles o jueves tranquilo, con pocos clientes habituales informados. Antes se realiza un ensayo completo de canales, avisos, retrasos, agotados, conexión, pago y cierre. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar duración, momento, clientes y ensayo previo.",
+          "whyItMatters": "Reducir riesgo en la primera operación real.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C03",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C08",
+          "kind": "SINGLE_CHOICE",
+          "title": "Activar la aceptación automática solo después de probarla",
+          "question": "Todos los pedidos web empiezan en revisión manual. La automática solo se activa tras demostrar fiabilidad y con criterios explícitos; volver atrás o ampliar horario también tiene criterios. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar inicio manual, criterios para automático, reversión y ampliación.",
+          "whyItMatters": "No activar automatización hasta demostrar que la operación la soporta.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C08",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C04",
+          "kind": "SINGLE_CHOICE",
+          "title": "Cuándo debe pausarse el piloto",
+          "question": "Se pausa ante pedido aceptado perdido o demasiado tarde, avisos repetidamente desatendidos o información incorrecta de alérgenos. Un retraso aislado manejable no obliga a parar. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Confirmar condiciones de pausa y tolerancias.",
+          "whyItMatters": "Parar ante fallos graves sin convertir cualquier retraso aislado en fracaso.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C04",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C05",
+          "kind": "SINGLE_CHOICE",
+          "title": "Informe semanal y evaluación final del piloto",
+          "question": "Informe semanal de canales, picos, incidencias, retrasos, puntualidad, ticket medio, ventas, combinaciones y excepciones. Tras cuatro semanas se evalúan fiabilidad, adopción, utilidad, puntualidad y carga antes de elegir la siguiente mejora. ¿Es correcto?",
+          "context": "Lo que Jaime decide: Validar contenido del informe y criterios de evaluación de cuatro semanas.",
+          "whyItMatters": "Dar seguimiento semanal y tomar una decisión informada tras el mes.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "De acuerdo con la propuesta",
+              "description": "Confirmo la propuesta tal como está escrita."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Quiero cambiarla",
+              "description": "Quiero modificar la propuesta; explicaré el cambio en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "Pendiente de decidir",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C05",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C06",
+          "kind": "SINGLE_CHOICE",
+          "title": "Clientes invitados y fecha candidata",
+          "question": "¿Qué clientes habituales invitarías al primer tramo y qué miércoles o jueves te encaja como fecha candidata?",
+          "context": "Lo que Jaime decide: Aportar clientes habituales y fecha candidata.",
+          "whyItMatters": "Concretar participantes y fecha del primer tramo.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Información aportada hoy",
+              "description": "La información queda aportada en el comentario o en la evidencia indicada."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Pendiente de aportar",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No aplica",
+              "description": "Esta solicitud no corresponde a la situación real del negocio."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C06",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        },
+        {
+          "id": "DVAL2-S11-C07",
+          "kind": "SINGLE_CHOICE",
+          "title": "Autorizar el inicio del piloto cuando todos los gates estén cumplidos",
+          "question": "¿Das tu conformidad de negocio para empezar el piloto cuando estén cumplidas carta, alérgenos, horarios, stock, ensayo, avisos, valores prudentes, sustituciones y privacidad mínima? Empieza en revisión manual y no abre al público.",
+          "context": "Lo que Jaime decide: Autorizar el piloto controlado, manual y no público.",
+          "whyItMatters": "Dar autorización condicionada solo cuando los prerrequisitos estén demostrados.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Autorizo dentro del límite indicado",
+              "description": "Concedo la autorización de negocio dentro de los límites descritos en la tarjeta."
+            },
+            {
+              "id": "OPT-02",
+              "label": "No autorizo todavía",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No autorizo",
+              "description": "No concedo esta autorización en el estado actual."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S11-C07",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "S12",
+      "kind": "VALIDATION",
+      "title": "Confirmación del conjunto",
+      "description": "Ratificar el modelo de negocio revisado sin autorizar implementación ni modificar automáticamente el repositorio.",
+      "items": [
+        {
+          "id": "DVAL2-S12-C01",
+          "kind": "SINGLE_CHOICE",
+          "title": "Ratificación final del modelo validado",
+          "question": "Has repasado cómo funcionará la primera versión de los pedidos online de Dopis. ¿El conjunto refleja el negocio que quieres poner en marcha?",
+          "context": "Lo que Jaime decide: Confirmar el conjunto, confirmar con cambios o dejarlo pendiente.",
+          "whyItMatters": "Ratificar que el conjunto validado representa el negocio deseado.",
+          "required": true,
+          "options": [
+            {
+              "id": "OPT-01",
+              "label": "Sí, refleja el negocio",
+              "description": "Confirmo que el conjunto representa el negocio que quiero poner en marcha."
+            },
+            {
+              "id": "OPT-02",
+              "label": "Sí, con cambios indicados",
+              "description": "Confirmo el conjunto únicamente con los cambios que detallo en el comentario."
+            },
+            {
+              "id": "OPT-03",
+              "label": "No puedo confirmarlo todavía",
+              "description": "No cierro esta cuestión todavía; indicaré qué falta, quién debe resolverla o cuándo se aportará."
+            }
+          ],
+          "recommendation": null,
+          "responseRules": {
+            "allowComment": true,
+            "allowNeedsDiscussion": true,
+            "needsDiscussionRequiresComment": true,
+            "maxCommentLength": 5000
+          },
+          "traceRefs": [
+            {
+              "targetType": "SOURCE_DISCOVERY_DELTA",
+              "targetId": "DOPIS-DISCOVERY-0.18",
+              "relation": "DERIVED_FROM"
+            },
+            {
+              "targetType": "BUSINESS_DECISION",
+              "targetId": "DVAL2-S12-C01",
+              "relation": "SEEKS_VALIDATION_OF"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "integrity": {
+    "canonicalization": "SVP-CANONICAL-JSON-V1",
+    "sha256": "9f1bdefd0e9b54e3e236423a08a6ff6b46a94e4025f79cd6f4db27d0a99594d4"
+  }
+}
