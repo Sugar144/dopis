@@ -16,8 +16,10 @@ Before any material mutation, resolve from the repository itself:
 - the exact active repository and worktree;
 - current branch and HEAD;
 - any applicable nested instructions;
-- the canonical current-state artifact (`docs/current/DOPIS_TECHNICAL_DISCOVERY.md`,
-  see `docs/README.md` for the full map);
+- the living technical discovery and canonical business authority
+  (`docs/current/DOPIS_TECHNICAL_DISCOVERY.md`), and the documentation/authority map
+  (`docs/README.md`), which identifies the applicable derived requirements, decisions,
+  reviews, and validators;
 - the task or packet that actually grants the authority being exercised.
 
 If any of these is unclear, stay read-only until it is resolved.
