@@ -1,0 +1,72 @@
+{
+  "artifact": "DOPIS_PRODUCT_EVIDENCE",
+  "version": 1,
+  "status": "source_evidence_only_not_canonical_product_truth",
+  "source_inventory_scope": "All pre-existing files in docs/product-sources; this generated artifact is excluded from the source inventory.",
+  "source_inventory": [
+    {"id":"bebidas_menu","file":"Carta_bebidas.pdf","media_type":"application/pdf","sha256":"741495bda9517b6450a84eb08ecbd3d3a3678eec321e58a3cdad67f400308880","pages":1},
+    {"id":"postres_menu","file":"Carta_postres.pdf","media_type":"application/pdf","sha256":"3aeba3f002ef72283319f5ad7ef5f66a85c2a64ef73089af49859392993269f0","pages":1},
+    {"id":"pizza_menu","file":"WhatsApp Image 2026-07-16 at 19.19.01.jpeg","media_type":"image/jpeg","sha256":"e62c9ef42c35a4db1bde4ac627bdcd6ff6e9d41bd297cfce9e00b118a0f8742e","image_dimensions":"1152x2048"},
+    {"id":"pizza_allergens","file":"alergenos_pizzas.jpeg","media_type":"image/jpeg","sha256":"6fcb2d01d10dd8ae97df7d1f18f4fd029bf36c8bf24e22217795e589d148d9eb","image_dimensions":"1536x2048"},
+    {"id":"dessert_allergens_page_1","file":"alergenos_postres_1.jpeg","media_type":"image/jpeg","sha256":"73d4ef6e683912e2b819f77d465309ab68c3b8e06ed0169302d0d098e68c8688","image_dimensions":"1536x2048"},
+    {"id":"dessert_allergens_page_2","file":"alergenos_postres_2.jpeg","media_type":"image/jpeg","sha256":"348da7136457afd938e1e0544c28b328e32e65adea5cf0e60c68e69aa150fe84","image_dimensions":"1536x2048"}
+  ],
+  "provenance_convention": "Every fact-bearing object has a provenance array. Source-language text is retained for product names, ingredients, and declarations.",
+  "facts": {
+    "pizzas": [
+      {"name":"Margarita Dopis","price_eur":9.5,"ingredients":["Base de tomate","Mozzarella","Parmesano","Albahaca"],"labels":["Vegetariano"],"provenance":["pizza_menu"]},
+      {"name":"4 Quesos","price_eur":11.5,"ingredients":["Base de tomate","Mozzarella","Parmesano","Pecorino","Roquefort"],"labels":["Vegetariano"],"provenance":["pizza_menu"]},
+      {"name":"Clásica Jamón","price_eur":11.9,"ingredients":["Base de tomate","Mozzarella","Parmesano","Jamón cocido","Champiñones"],"labels":["Carne"],"provenance":["pizza_menu"]},
+      {"name":"Atún","price_eur":11.5,"ingredients":["Base de tomate","Mozzarella","Parmesano","Atún","Cebolla","Aceitunas","Orégano"],"labels":["Pescado"],"provenance":["pizza_menu"]},
+      {"name":"Anchoas","price_eur":11.9,"ingredients":["Base de tomate","Mozzarella","Anchoas","Alcaparras","Ajo laminado","Orégano"],"labels":["Pescado"],"provenance":["pizza_menu"]},
+      {"name":"Verduras","price_eur":12.5,"ingredients":["Base de tomate","Parmesano","Mozzarella","Pimiento rojo","Berenjena","Queso de cabra","Miel"],"labels":["Vegetariano"],"provenance":["pizza_menu"]},
+      {"name":"Cabra y cebolla","price_eur":12.5,"ingredients":["Base blanca","Mozzarella","Parmesano","Queso de cabra","Cebolla caramelizada","Miel"],"labels":["Vegetariano"],"provenance":["pizza_menu"]},
+      {"name":"Menorquina","price_eur":12.5,"ingredients":["Base de tomate","Mozzarella","Sobrasada de menorca","Queso curado de mahón","Miel"],"labels":["Carne"],"provenance":["pizza_menu"]},
+      {"name":"Picante","price_eur":11.9,"ingredients":["Base de tomate","Mozzarella","Parmesano","Chorizo picante","Jalapeños","Cebolla"],"labels":["Picante","Carne"],"provenance":["pizza_menu"]},
+      {"name":"BBQ Pollo","price_eur":12.9,"ingredients":["Base de tomate","Mozzarella","Parmesano","Pollo","Bacon","Cebolla caramelizada","Salsa barbacoa"],"labels":["Carne"],"provenance":["pizza_menu"]},
+      {"name":"Butifarra","price_eur":12.9,"ingredients":["Base de tomate","Carne de butifarra","Parmesano","Pimiento rojo asado","Setas shitake","Aceite de romero"],"labels":["Carne"],"provenance":["pizza_menu"]},
+      {"name":"Ibérica","price_eur":14.5,"ingredients":["Base de tomate","Mozzarella","Parmesano","Jamón ibérico","Rúcula","Vinagre balsámico"],"labels":["Carne"],"provenance":["pizza_menu"]},
+      {"name":"Pistachos","price_eur":13.9,"ingredients":["Base de tomate","Mozzarella","Parmesano","Mortadela","Pesto","Virutas de pistacho","Tomate seco"],"labels":["Vegetariano","Frutos secos"],"provenance":["pizza_menu"]},
+      {"name":"Vegana","price_eur":14.5,"ingredients":["Base de tomate","Mozzarella Vegana","Heura","Cebolla caramelizada","Champiñones","Pimiento asado","Albahaca"],"labels":["Vegetariano"],"provenance":["pizza_menu"]}
+    ],
+    "beverages": [
+      {"name":"Agua","price_eur":1.0,"provenance":["bebidas_menu"]},{"name":"Agua grande","price_eur":2.0,"provenance":["bebidas_menu"]},{"name":"Zumo de manzana","price_eur":1.5,"provenance":["bebidas_menu"]},{"name":"Zumo de melocotón","price_eur":1.5,"provenance":["bebidas_menu"]},{"name":"Coca-Cola","price_eur":1.75,"provenance":["bebidas_menu"]},{"name":"Coca-Cola Zero","price_eur":1.75,"provenance":["bebidas_menu"]},{"name":"Nestea","price_eur":1.7,"provenance":["bebidas_menu"]},{"name":"Paulaner","price_eur":3.5,"provenance":["bebidas_menu"]},{"name":"Alhambra","price_eur":2.35,"provenance":["bebidas_menu"]},{"name":"1906","price_eur":1.85,"provenance":["bebidas_menu"]},{"name":"Heineken","price_eur":2.1,"provenance":["bebidas_menu"]},{"name":"7 Up","price_eur":1.75,"provenance":["bebidas_menu"]},{"name":"Foster","price_eur":1.85,"provenance":["bebidas_menu"]},{"name":"Moritz sin alcohol","price_eur":2.35,"provenance":["bebidas_menu"]},{"name":"Mahou Tostada sin alcohol","price_eur":2.35,"provenance":["bebidas_menu"]},{"name":"Gaseosa","price_eur":1.8,"provenance":["bebidas_menu"]},{"name":"Aquarius","price_eur":1.75,"provenance":["bebidas_menu"]},{"name":"Agua San Pellegrino","price_eur":2.1,"provenance":["bebidas_menu"]},{"name":"Fanta","price_eur":1.75,"provenance":["bebidas_menu"]}
+    ],
+    "menu_desserts": [
+      {"name":"Tarta de queso","price_eur":5.9,"provenance":["postres_menu"]},{"name":"Tarta de queso de pistacho","price_eur":6.9,"provenance":["postres_menu"]},{"name":"Tarta de queso de Nutella","price_eur":6.9,"provenance":["postres_menu"]},{"name":"Tarta Kinder","price_eur":6.9,"provenance":["postres_menu"]},{"name":"Tiramisú","price_eur":3.8,"provenance":["postres_menu"]}
+    ],
+    "pizza_allergen_declarations": {
+      "facility_statement":{"text":"Todos los productos de este establecimiento se elaboran en una cocina de dimensiones reducidas; no es posible garantizar la ausencia total de alérgenos en ninguno de los productos elaborados.","provenance":["pizza_allergens"]},
+      "cross_contact_risk_allergens":{"allergens":["Gluten","Pistacho","Nueces y otros frutos de cáscara","Leche y derivados lácteos","Pescado"],"provenance":["pizza_allergens"]},
+      "by_pizza":[
+        {"name":"Margarita","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Cuatro Quesos","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Clásica Jamón","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Atún","contains":["gluten","leche","pescado"],"possible_traces":["pistacho","frutos de cáscara"],"provenance":["pizza_allergens"]},
+        {"name":"Anchoas","contains":["gluten","leche","pescado"],"possible_traces":["pistacho","frutos de cáscara"],"provenance":["pizza_allergens"]},
+        {"name":"Verduras","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Cabra y Cebolla","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Menorquina","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Picante","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"BBQ Pollo","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Butifarra","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Ibérica","contains":["gluten","leche"],"possible_traces":["pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Pistachos","contains":["gluten","leche","pistacho"],"possible_traces":["otros frutos de cáscara","pescado"],"provenance":["pizza_allergens"]},
+        {"name":"Vegana","contains":["gluten"],"possible_traces":["leche","pistacho","frutos de cáscara","pescado"],"provenance":["pizza_allergens"]}
+      ]
+    },
+    "dessert_allergen_sheet_products": [
+      {"name":"Galletas con gotas de chocolate","ingredients":["Harina de repostería","mantequilla","huevos","gotas de chocolate"],"quantity":"24 uds. de ~90 g","allergens":{"contains":["Cereales con gluten","Huevos","Leche y derivados"],"does_not_contain":["Crustáceos","Pescado","Cacahuetes","Apio","Mostaza","Sésamo","Altramuces","Moluscos"],"may_contain_traces":["Frutos de cáscara"],"not_determined":["Soja","Sulfitos (>10 mg/kg)"]},"provenance":["dessert_allergens_page_1"]},
+      {"name":"New York Cheesecake","ingredients":["Galletas","mantequilla","queso crema","huevos","yemas","nata"],"allergens":{"contains":["Cereales con gluten","Huevos","Leche y derivados"],"does_not_contain":["Crustáceos","Pescado","Cacahuetes","Apio","Mostaza","Sésamo","Sulfitos (>10 mg/kg)","Altramuces","Moluscos"],"may_contain_traces":["Frutos de cáscara"],"not_determined":["Soja"]},"provenance":["dessert_allergens_page_1","dessert_allergens_page_2"]},
+      {"name":"Brownie clásico con nueces","ingredients":["Huevos","mantequilla","harina de trigo","cacao en polvo","100 g de nueces"],"allergens":{"contains":["Cereales con gluten","Huevos","Leche y derivados","Frutos de cáscara"],"does_not_contain":["Crustáceos","Pescado","Cacahuetes","Apio","Mostaza","Sésamo","Sulfitos (>10 mg/kg)","Altramuces","Moluscos"],"not_determined":["Soja"]},"provenance":["dessert_allergens_page_2"]}
+    ]
+  },
+  "ambiguities_unknowns": [
+    {"statement":"The pizza menu uses 'Margarita Dopis', '4 Quesos', and 'Cabra y cebolla', while the allergen sheet uses 'Margarita', 'Cuatro Quesos', and 'Cabra y Cebolla'. The corresponding names are likely related, but no identity mapping is asserted in this artifact.","provenance":["pizza_menu","pizza_allergens"]},
+    {"statement":"The priced dessert menu and dessert allergen sheets do not use the same product-name set. In particular, 'New York Cheesecake' is not explicitly identified as any priced menu cheesecake. No price or allergen data has been transferred between those sets.","provenance":["postres_menu","dessert_allergens_page_1","dessert_allergens_page_2"]},
+    {"statement":"The source documents establish no pizza size options; pizza prices are recorded without an inferred size.","provenance":["pizza_menu"]},
+    {"statement":"No allergen declarations for the beverages or the five priced menu desserts are established by the menu PDFs.","provenance":["bebidas_menu","postres_menu"]},
+    {"statement":"For the dessert allergen sheets, 'No determinado' is retained as unresolved pending supplier technical-sheet confirmation; it is not treated as absence.","provenance":["dessert_allergens_page_1","dessert_allergens_page_2"]},
+    {"statement":"No source evidence establishes allowed removals, extras, substitutions, customer modification rules, upselling pairings, or stock behaviour.","provenance":["bebidas_menu","postres_menu","pizza_menu","pizza_allergens","dessert_allergens_page_1","dessert_allergens_page_2"]}
+  ]
+}
