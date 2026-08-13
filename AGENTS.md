@@ -29,6 +29,19 @@ Do not infer one from the shape of another — e.g. a nested directory that look
 related to Dopis may be a separate Git repository; check before treating it as part
 of this one, and never modify a repository other than this one from inside this one.
 
+## External governance binding
+
+Dopis adopts the immutable GOV-GEN revision identified by `framework-lock.json`.
+Before material governed work, acquire that exact framework with
+`scripts/acquire-framework.py` and apply its
+`framework/core/project-operating-contract.md` together with this project-local
+`AGENTS.md`. The Project Owner's authority and the closest project-local
+specialization remain applicable under the framework precedence rules.
+
+Failure to resolve, acquire, or validate the locked framework is a read-only
+boundary for work that depends on it. Never copy or override framework-owned
+normative surfaces inside Dopis.
+
 ## Authority
 
 ```text

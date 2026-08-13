@@ -1,0 +1,13 @@
+{
+  "schema_version": "1.0.0",
+  "framework": {
+    "repository": "Sugar144/general-governance",
+    "version": "0.1.0-rc.1",
+    "commit_sha": "d2f84cdb933f0738003d6de9696f44226c734065",
+    "release_manifest_sha256": "4ff7871bae53502134d2b2f20be8c1a954a75874bf0103ff66634a010e556f9f"
+  },
+  "compatibility": {
+    "framework_contract": "1.0.0",
+    "consumer_lock_schema": "1.0.0"
+  }
+}
