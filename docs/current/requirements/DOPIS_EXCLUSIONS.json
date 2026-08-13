@@ -2,12 +2,12 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "baseline_version": "0.5",
-  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "baseline_version": "0.6",
+  "status": "AUDITED_OWNER_APPROVED",
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
-    "version": "0.18"
+    "version": "0.19"
   },
   "notice": "Explicit first-MVP exclusions taken from canonical discovery. Each entry carries forbidden_terms so a validator can detect a requirement that would silently reintroduce excluded scope. A term may appear only in a requirement listed under enforced_by, which is the requirement that states the exclusion itself.",
   "promotion_rule": "An exclusion may be lifted only through an authorised scope change recorded in the canonical discovery. A derived requirements artifact must never promote excluded scope on its own authority.",

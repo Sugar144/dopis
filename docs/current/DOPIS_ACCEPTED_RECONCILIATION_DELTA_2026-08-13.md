@@ -1,6 +1,6 @@
 # Dopis Accepted Reconciliation Delta — 2026-08-13
 
-**Status:** `CONSOLIDATED_CANDIDATE_PENDING_OWNER_DISPOSITION_OR_MERGE`
+**Status:** `CONSOLIDATED_AND_ACCEPTED`
 **Applies to:** first operational MVP
 **Base canonical discovery:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md` v0.18
 **Base derived requirements:** v0.5
@@ -11,7 +11,7 @@
 
 This artifact records accepted post-v0.18 business decisions derived from DOPIS-VAL-007, DOPIS-VAL-008, and explicit Project Owner dispositions.
 
-Its accepted changes are consolidated into discovery v0.19 and requirements baseline v0.6. This provenance record supports the candidate pending Owner disposition or merge; it does not itself claim acceptance of the generated baseline.
+Its accepted changes are consolidated into discovery v0.19 and Owner-approved requirements baseline v0.6. This provenance record is consolidated and accepted; PR #3 was merged into `main`.
 
 This delta does not grant implementation authority.
 

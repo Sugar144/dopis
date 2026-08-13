@@ -10,7 +10,7 @@ Consolidation does **not** grant implementation authority.
 
 Derived from the canonical discovery. `BASELINED` never means implementation authority.
 
-Current generated baseline: version `0.6`, derived from discovery v0.19.
+Current generated baseline: version `0.6`, Owner-approved and derived from discovery v0.19.
 
 - `current/DOPIS_MVP_REQUIREMENTS.md`: governed human-readable baseline.
 - `current/requirements/DOPIS_MVP_REQUIREMENTS.json`: normative requirement records.

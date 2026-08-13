@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "status": "AUDITED_OWNER_APPROVED",
   "implementation_authority": "NOT_GRANTED",
   "notice": "This artifact declares the traceability contract. It deliberately does not restate the links themselves, because a hand-maintained copy of a link set becomes false the moment either side changes. Every relationship below is derived by scripts/validate_specification.py from the artifact named in derived_from, and every orphan expectation is recomputed and compared on each run. A stale expectation fails the run rather than passing silently.",
   "baseline": {

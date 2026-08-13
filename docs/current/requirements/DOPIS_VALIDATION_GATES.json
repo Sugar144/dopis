@@ -3,7 +3,7 @@
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
   "baseline_version": "0.6",
-  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "status": "AUDITED_OWNER_APPROVED",
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",

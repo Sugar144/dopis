@@ -1,7 +1,7 @@
 # Dopis MVP Requirements Baseline
 
 **Milestone:** `MILESTONE-SPEC-001`
-**Status:** `AUDITED_PENDING_OWNER_APPROVAL`
+**Status:** `AUDITED_OWNER_APPROVED`
 **Baseline version:** `0.6`
 **Date:** `2026-08-13`
 **Business source:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.19`
