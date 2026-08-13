@@ -6,9 +6,9 @@
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "discovery": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
-    "discovery_version": "0.18",
+    "discovery_version": "0.19",
     "requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-    "requirements_version": "0.5"
+    "requirements_version": "0.6"
   },
   "notice": "Epics are business or operational capabilities, never technical layers. Every requirement has exactly one primary epic, which owns it. A supporting mapping records a deliberate cross-cutting concern and never duplicates the obligation: the requirement is specified once, in its primary epic. Validation gates are derived from the member requirements by scripts/validate_specification.py and are deliberately not declared here, because a hand-written gate list cannot be kept true.",
   "authority_note": "This map implies no implementation order, estimate, delivery commitment, or authority. Readiness additionally requires everything listed in readiness_requires.",
@@ -17,7 +17,7 @@
       "id": "EPIC-ORDERING",
       "title": "Ordering and Pickup",
       "goal": "A customer can place a pickup order through any channel and receive a feasible pickup commitment that Dopis then protects.",
-      "primary": ["FR-ORDER-001", "FR-ORDER-002", "DATA-ORDER-001", "BR-ORDER-013", "DATA-ORDER-003", "BR-ORDER-001", "BR-ORDER-010", "FR-ORDER-003", "FR-ORDER-012", "BR-ORDER-002", "BR-ORDER-005", "FR-ORDER-011", "BR-ORDER-006", "FR-ORDER-004", "FR-ORDER-009", "BR-ORDER-007", "FR-ORDER-005", "BR-ORDER-003", "BR-ORDER-009", "BR-ORDER-004", "FR-ORDER-006", "FR-ORDER-007", "NFR-ORDER-001", "DATA-ORDER-002", "BR-ORDER-011", "FR-ORDER-008", "FR-ORDER-010", "BR-ORDER-012", "OPS-ORDER-001", "FR-ORDER-013", "FR-ORDER-015", "BR-ORDER-008", "FR-ORDER-014"],
+      "primary": ["FR-ORDER-001", "FR-ORDER-002", "DATA-ORDER-001", "BR-ORDER-013", "DATA-ORDER-003", "BR-ORDER-001", "BR-ORDER-010", "FR-ORDER-003", "FR-ORDER-012", "BR-ORDER-002", "BR-ORDER-005", "FR-ORDER-011", "BR-ORDER-006", "FR-ORDER-004", "FR-ORDER-009", "BR-ORDER-007", "FR-ORDER-005", "FR-ORDER-016", "BR-ORDER-003", "BR-ORDER-009", "BR-ORDER-004", "FR-ORDER-006", "FR-ORDER-007", "NFR-ORDER-001", "DATA-ORDER-002", "BR-ORDER-011", "FR-ORDER-008", "FR-ORDER-010", "BR-ORDER-012", "OPS-ORDER-001", "FR-ORDER-013", "FR-ORDER-015", "BR-ORDER-008", "FR-ORDER-014"],
       "supporting": ["BR-CAPACITY-001", "FR-CAPACITY-003", "OPS-HOURS-002", "FR-STOCK-001", "SEC-TRACKING-002"],
       "supporting_rationale": "Order admission is only meaningful against the shared capacity, hours, and stock rules owned by other epics, and the two customer tracking actions are bounded by the communications epic."
     },
@@ -25,7 +25,7 @@
       "id": "EPIC-KITCHEN-OPERATIONS",
       "title": "Kitchen Operations",
       "goal": "The kitchen reliably receives, acknowledges, prepares, and progresses every accepted order on a real tablet under real service conditions.",
-      "primary": ["FR-KITCHEN-001", "FR-KITCHEN-002", "FR-KITCHEN-012", "FR-KITCHEN-003", "NFR-KITCHEN-001", "FR-KITCHEN-011", "OPS-KITCHEN-001", "OPS-KITCHEN-004", "NFR-KITCHEN-002", "BR-KITCHEN-001", "NFR-KITCHEN-004", "OPS-KITCHEN-003", "FR-KITCHEN-004", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "OPS-KITCHEN-005", "NFR-KITCHEN-003", "FR-KITCHEN-005", "FR-KITCHEN-013", "FR-KITCHEN-006", "FR-KITCHEN-007", "FR-KITCHEN-008", "FR-KITCHEN-009", "FR-KITCHEN-010", "BR-SCOPE-004"],
+      "primary": ["FR-KITCHEN-001", "FR-KITCHEN-002", "FR-KITCHEN-012", "FR-KITCHEN-003", "NFR-KITCHEN-001", "FR-KITCHEN-011", "OPS-KITCHEN-001", "OPS-KITCHEN-004", "NFR-KITCHEN-002", "BR-KITCHEN-001", "NFR-KITCHEN-004", "OPS-KITCHEN-003", "FR-KITCHEN-004", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "OPS-KITCHEN-005", "NFR-KITCHEN-003", "FR-KITCHEN-005", "FR-KITCHEN-013", "FR-KITCHEN-006", "FR-KITCHEN-007", "FR-KITCHEN-008", "FR-KITCHEN-009", "FR-KITCHEN-010"],
       "supporting": ["FR-INCIDENT-001", "FR-ORDER-006", "PRIV-DATA-002", "PRIV-DATA-005"],
       "supporting_rationale": "The exception queue and the least-necessary-visibility rules are exercised inside the kitchen panel but are owned by the incidents and privacy epics."
     },
@@ -81,7 +81,7 @@
       "id": "EPIC-PAYMENT-HANDOVER",
       "title": "Payment, Handover, and Shift Close",
       "goal": "Payment at the premises, handover, and cash reconciliation are separate, correctable, and auditable events with an accountable close.",
-      "primary": ["BR-PAYMENT-001", "FR-PAYMENT-001", "BR-PAYMENT-002", "OPS-PAYMENT-001", "AUDIT-PAYMENT-001", "SEC-PAYMENT-002", "FR-PAYMENT-002", "AUDIT-PAYMENT-002", "OPS-SHIFT-001", "OPS-SHIFT-002", "SEC-PAYMENT-001"],
+      "primary": ["BR-PAYMENT-001", "FR-PAYMENT-001", "FR-PAYMENT-003", "BR-PAYMENT-002", "OPS-PAYMENT-001", "AUDIT-PAYMENT-001", "SEC-PAYMENT-002", "FR-PAYMENT-002", "FR-RECEIPT-001", "AUDIT-PAYMENT-002", "OPS-SHIFT-001", "OPS-SHIFT-002", "SEC-PAYMENT-001"],
       "supporting": ["FR-ORDER-013", "FR-ORDER-014", "BR-ORDER-008", "DATA-GOVERNANCE-001"],
       "supporting_rationale": "Non-collection, third-party collection, and the pending-decision record all terminate at the handover and shift-close boundary."
     },
@@ -99,7 +99,7 @@
       "goal": "Service runs only under an accountable responsible person, with bounded access, honest attribution, and owner-controlled permissions, and never without Jaime before delegation is formally confirmed.",
       "primary": ["FR-ACCESS-001", "DATA-ACCESS-001", "OPS-DELEGATION-001", "SEC-ACCESS-001", "SEC-ACCESS-002", "SEC-ACCESS-003", "BR-ACCESS-001", "AUDIT-ACCESS-001", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001"],
       "supporting": ["FR-KITCHEN-001", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "SEC-CATALOG-001", "OPS-SHIFT-001", "OPS-SHIFT-002", "AUDIT-ADMIN-001", "BR-CAPACITY-003"],
-      "supporting_rationale": "Authentication, mobile-backup limits, opening, close, and the reservation of permanent policy changes to Jaime are all expressions of the same authority model."
+      "supporting_rationale": "Authentication, responsive-device attribution, opening, close, and the reservation of permanent policy changes to Jaime are all expressions of the same authority model."
     },
     {
       "id": "EPIC-PRIVACY",
@@ -107,7 +107,7 @@
       "goal": "Operational customer data is collected for a stated purpose, seen only where necessary, kept separate from marketing, and retained under approved rules.",
       "primary": ["PRIV-DATA-001", "BR-PRIV-001", "BR-PRIV-002", "PRIV-DATA-002", "PRIV-DATA-003", "PRIV-DATA-004", "PRIV-DATA-005", "PRIV-DATA-006", "PRIV-COMMS-001", "PRIV-RETENTION-001", "BR-LAUNCH-001"],
       "supporting": ["DATA-ORDER-001", "BR-ORDER-013", "DATA-ORDER-003", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001", "SEC-TRACKING-001", "SEC-TRACKING-003", "SEC-PAYMENT-001", "OPS-PILOT-001", "OPS-SHIFT-002"],
-      "supporting_rationale": "Data minimisation, the undecided in-person telephone rule, disclosure control, tracking-session lifetime, and the pilot minimum-controls obligation are privacy concerns owned by the epics that implement them."
+      "supporting_rationale": "Data minimisation, conditional in-person contact collection, disclosure control, tracking-session lifetime, and the pilot minimum-controls obligation are privacy concerns owned by the epics that implement them."
     },
     {
       "id": "EPIC-PILOT",

@@ -2,12 +2,12 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "baseline_version": "0.5",
+  "baseline_version": "0.6",
   "status": "AUDITED_PENDING_OWNER_APPROVAL",
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
-    "version": "0.18",
+    "version": "0.19",
     "canonical_register": "15"
   },
   "notice": "Gates whose origin is CANONICAL appear verbatim in the discovery validation register (section 15). Gates whose origin is DERIVED do not appear there; they are declared here explicitly, with the open canonical question that justifies them, so that no derived gate can be mistaken for stakeholder-registered scope.",
@@ -157,11 +157,11 @@
     },
     {
       "id": "JV-ACCESS",
-      "title": "Active access, revocation procedure, shared kitchen session, and mobile-backup limits",
+      "title": "Active access, revocation procedure, shared kitchen session, and honest attribution",
       "milestone": "WITHOUT_JAIME",
       "origin": "CANONICAL",
       "source_sections": ["15", "11.3", "11.7"],
-      "resolution_criteria": "Jaime defines the onboarding, revocation, and access-review procedure, confirms the shared kitchen session boundaries, and approves the mobile-backup permission limits and report or export authority.",
+      "resolution_criteria": "Jaime defines the onboarding, revocation, and access-review procedure, confirms shared-session boundaries, and approves honest attribution and report or export authority.",
       "open_questions": ["what exact onboarding, revocation, and access-review procedure will Jaime use", "when must the shared kitchen session be replaced by individual operational identities", "whether staff use individual identities or shared operational access", "session lifetime and re-authentication behaviour"]
     },
     {
@@ -194,23 +194,23 @@
     },
     {
       "id": "JV-MANUAL-CHANNELS",
-      "title": "Manual order-entry ownership and in-person telephone-number necessity",
+      "title": "Manual order-entry ownership and in-person contact handling",
       "milestone": "PILOT",
       "origin": "DERIVED",
       "source_sections": ["15", "7.4A"],
-      "derivation_rationale": "Section 7.4A states manual order entry and channel parity as a firm rule, but leaves two bounded questions explicitly pending Jaime: who normally enters telephone and in-person orders, and whether every in-person order genuinely requires a telephone number. Section 15 lists both under 'Manual channels, payment, and handover' without assigning them a JV identifier. This gate names those two questions only; it does not reopen channel parity itself.",
-      "resolution_criteria": "Jaime confirms who normally enters telephone and in-person orders during peak service, and whether every in-person order requires a telephone number given operational burden and data-minimisation.",
-      "open_questions": ["who normally enters telephone and in-person orders", "whether every in-person order genuinely requires a telephone number", "how manual, telephone, and in-person orders are entered during peak service"]
+      "derivation_rationale": "The accepted reconciliation closes telephone-entry ownership and conditional in-person contact collection. This gate now retains only procedural evidence for manual entry at peak service.",
+      "resolution_criteria": "Dopis documents and validates the fast manual-entry procedure used by whichever authorised worker is available during peak service.",
+      "open_questions": ["how manual, telephone, and in-person orders are entered during peak service"]
     },
     {
       "id": "JV-PAYMENT-PROCEDURE",
-      "title": "Receipt practice, correction permissions beyond the accepted baseline, and cash-discrepancy escalation",
+      "title": "Receipt/fiscal practice, correction permissions, cash discrepancy escalation, and real-device evidence",
       "milestone": "PILOT",
       "origin": "DERIVED",
       "source_sections": ["15", "6.6", "7.5"],
       "derivation_rationale": "Sections 3.1, 6.6, and 7.5 accept the payment and handover model itself: staff record the method actually used, payment and handover are separate events, corrections are auditable, and shift close compares expected and actual cash. Section 15 leaves only procedural detail open under 'Manual channels, payment, and handover'. This gate names that residual procedure so the accepted obligations are not misreported as blocked.",
-      "resolution_criteria": "Jaime confirms receipt issue and retention practice, the detailed correction permissions beyond the accepted baseline, how cash discrepancies are investigated and escalated, and whether any exceptional unpaid handover is permitted and who authorises it.",
-      "open_questions": ["exact receipt issue and retention practice", "detailed permissions for payment and handover corrections beyond the accepted baseline", "how cash discrepancies are investigated and when escalation is required", "whether any exceptional unpaid handover is allowed and who authorises it", "current cash-register, receipt, and end-of-shift procedures"]
+      "resolution_criteria": "Dopis validates receipt issue and retention practice, detailed correction permissions, cash-discrepancy escalation, Epson TM-m30III compatibility and real-device printing, and Ingenico APOS A8 payment-result handling. Fiscal conclusions remain subject to applicable compliance review; no unpaid handover is permitted.",
+      "open_questions": ["exact receipt issue and retention practice", "detailed permissions for payment and handover corrections beyond the accepted baseline", "how cash discrepancies are investigated and when escalation is required", "current cash-register, receipt, and end-of-shift procedures", "applicable fiscal or receipt-record obligations and compliant issuance path", "Epson TM-m30III compatibility and real-device printing evidence", "Ingenico APOS A8 real-device payment integration evidence"]
     },
     {
       "id": "JV-INCIDENT-FAIRNESS",
@@ -218,9 +218,19 @@
       "milestone": "PILOT",
       "origin": "DERIVED",
       "source_sections": ["15", "3.2", "11.5"],
-      "derivation_rationale": "Section 3.2 records the provisional two-incidents-in-90-days manual-review rule and the treatment of invalid telephone numbers as explicitly pending fairness and privacy validation, and section 11.5 states that the 90-day window is not a retention policy. Section 15 lists these under 'Customers and privacy' without a JV identifier. Because the underlying rule can unfairly affect real customers, it is named here rather than left implicit.",
-      "resolution_criteria": "Jaime and the compliance review confirm which operational incidents may affect manual review, whether the provisional two-incidents-in-90-days rule is appropriate, how incorrect incidents are corrected and communicated, and how invalid telephone numbers are treated without unfairly penalising customers.",
-      "open_questions": ["whether the provisional two-incidents-in-90-days rule is operationally appropriate", "which operational incidents may affect manual review", "how are incorrect incidents corrected and communicated", "how should invalid telephone numbers be treated without unfairly penalising customers"]
+      "derivation_rationale": "The accepted reconciliation replaces the automatic two-incidents-in-90-days rule with visible staff-led incident handling; privacy, retention, and correction controls remain bounded validation work.",
+      "resolution_criteria": "Dopis validates which incident details are visible for staff-led handling, how incorrect incidents are corrected and communicated, and how invalid telephone numbers are treated without unfairly penalising customers.",
+      "open_questions": ["which incident details may be visible for staff-led handling", "how are incorrect incidents corrected and communicated", "how should invalid telephone numbers be treated without unfairly penalising customers"]
+    },
+    {
+      "id": "JV-RECEIPT-COMPLIANCE",
+      "title": "Applicable fiscal or receipt-record obligations and compliant issuance path",
+      "milestone": "PILOT",
+      "origin": "DERIVED",
+      "source_sections": ["20", "18A"],
+      "derivation_rationale": "Receipt/ticket issuance is accepted MVP scope, while the applicable fiscal or receipt-record obligations and compliant issuance path remain unresolved compliance evidence. This gate separates that question from printer hardware and ordinary payment procedure.",
+      "resolution_criteria": "Dopis establishes applicable fiscal or receipt-record obligations and evidence for a compliant receipt issuance path before real receipt/fiscal issuance is treated as ready.",
+      "open_questions": ["applicable fiscal or receipt-record obligations and compliant issuance path"]
     },
     {
       "id": "JV-DISCOVERY-CLOSE",

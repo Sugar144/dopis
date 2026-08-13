@@ -93,28 +93,12 @@
       "enforced_by": ["BR-SCOPE-002"]
     },
     {
-      "id": "EXC-PRINTER",
-      "title": "Ticket printer",
-      "detail": "A ticket printer is outside the initial MVP scope and is reconsidered only if real operational testing shows tablet and mobile alerts are insufficient. The digital panel remains the source of truth.",
-      "source_sections": ["8", "3.2"],
-      "forbidden_terms": ["ticket printer", "print ticket", "printed order ticket"],
-      "enforced_by": ["BR-SCOPE-004"]
-    },
-    {
       "id": "EXC-MULTILINGUAL-ADMIN",
       "title": "Multilingual administration",
       "detail": "Bilingual scope covers public customer content only. The administration interface is not multilingual in the first MVP.",
       "source_sections": ["2.2", "10.1B"],
       "forbidden_terms": ["multilingual administration", "bilingual administration interface"],
       "enforced_by": ["BR-SCOPE-006"]
-    },
-    {
-      "id": "EXC-ADVANCE-ORDERS",
-      "title": "Multi-day advance orders",
-      "detail": "Initial launch accepts same-day orders only. A configurable multi-day advance-order horizon remains a future capability.",
-      "source_sections": ["3.2", "13.4"],
-      "forbidden_terms": ["multi-day advance", "advance-order horizon"],
-      "enforced_by": ["BR-ORDER-010"]
     },
     {
       "id": "EXC-ANALYTICS-MARGIN",

@@ -2,11 +2,15 @@
 
 ## Current authority
 
-- `current/DOPIS_TECHNICAL_DISCOVERY.md`: living technical discovery and canonical business authority. It has priority over every derived artifact below.
+Canonical business truth is `current/DOPIS_TECHNICAL_DISCOVERY.md` version `0.19`. The accepted reconciliation delta is retained as source evidence; its accepted changes are consolidated into the living discovery and derived registries.
+
+Consolidation does **not** grant implementation authority.
 
 ## Requirements baseline
 
 Derived from the canonical discovery. `BASELINED` never means implementation authority.
+
+Current generated baseline: version `0.6`, derived from discovery v0.19.
 
 - `current/DOPIS_MVP_REQUIREMENTS.md`: governed human-readable baseline.
 - `current/requirements/DOPIS_MVP_REQUIREMENTS.json`: normative requirement records.
