@@ -2414,7 +2414,7 @@ Still open:
 
 ### Manual channels, payment, and handover
 
-- who normally enters telephone and in-person orders;
+- how manual, telephone, and in-person orders are entered during peak service;
 - when a responsible operator may override calculated capacity;
 - exact receipt issue and retention practice;
 - detailed permissions for payment and handover corrections beyond the accepted baseline;
@@ -2454,13 +2454,13 @@ Still open:
 - When must the shared kitchen session be replaced by individual operational identities?
 - How is the tablet physically protected outside service hours?
 - Which operational incidents may affect manual review?
-- How long should incident data be retained beyond the provisional 90-day risk window?
+- How long should identified incident data be retained?
 - How are incorrect incidents corrected and communicated?
 - How should invalid telephone numbers be treated without unfairly penalising customers?
 
 ### Pending external validation — Jaime
 
-The detailed validation register will be created as a structured artifact for the stakeholder-validation workflow.
+The existing structured validation-gate registry records the stakeholder-validation workflow.
 
 #### Required before the first real pilot order
 
@@ -2855,18 +2855,6 @@ The following remain outside first-MVP discovery closure:
 Implementation authority remains `NOT GRANTED`.
 ---
 
-## 20. Consolidated VAL-007/008 MVP baseline
-
-This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` and the associated Owner reconciliation map. It supersedes only prior statements in this document that conflict with the accepted post-validation state; unaffected discovery remains in force.
-
-- Future enabled-date pickup ordering is first-MVP scope. The horizon, capacity values, delay thresholds, stock-count timing and low-stock thresholds are configuration or calibration, not hard-coded architecture.
-- One responsive authenticated staff application serves suitable tablets, mobile phones, laptops, and other browsers. Staff-mediated telephone changes and cancellations revalidate the affected order rules; general customer self-service editing remains deferred.
-- Dopis is the operational POS for its orders: it owns totals, payment method and state, corrections, payment history, cash close, receipt lifecycle, and unpaid-handover prevention. Cash and card remain in-person methods; online prepayment remains deferred.
-- Receipt/ticket issuance is MVP scope. Epson TM-m30III local-network TCP compatibility and real-device printing are validation evidence, not a business-scope gate.
-- The identified terminal is Ingenico APOS A8 / CaixaBank / Comercia Global Payments. Merchant-specific Comercia activation, credentials, and terminal pairing remain external provisioning. The generic payment domain is not blocked; the manual-total fallback is accepted.
-- Relevant incidents are visible for staff-led handling without automatic repeat-incident thresholds, automatic refusal, or online prepayment. Fiscal/receipt compliance, privacy retention, and real-device evidence remain bounded gates.
-- The MVP scorecard captures the accepted channel, call, delay, incident, payment, cash-close, operational-workload, and aggregate upselling measures. No numeric outcome target is invented before pilot evidence.
-
 ## 19. Change log
 
 ### 0.18 — 2026-07-25
@@ -3108,3 +3096,15 @@ This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` an
 - Distinguished product availability, sellable-unit stock, and ingredient inventory.
 - Separated operational data from future loyalty and marketing purposes.
 - Added staged roadmap and discovery backlog.
+
+## 20. Consolidated VAL-007/008 MVP baseline
+
+This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` and the associated Owner reconciliation map. It supersedes only prior statements in this document that conflict with the accepted post-validation state; unaffected discovery remains in force.
+
+- Future enabled-date pickup ordering is first-MVP scope. The horizon, capacity values, delay thresholds, stock-count timing and low-stock thresholds are configuration or calibration, not hard-coded architecture.
+- One responsive authenticated staff application serves suitable tablets, mobile phones, laptops, and other browsers. Staff-mediated telephone changes and cancellations revalidate the affected order rules; general customer self-service editing remains deferred.
+- Dopis is the operational POS for its orders: it owns totals, payment method and state, corrections, payment history, cash close, receipt lifecycle, and unpaid-handover prevention. Cash and card remain in-person methods; online prepayment remains deferred.
+- Receipt/ticket issuance is MVP scope. Epson TM-m30III local-network TCP compatibility and real-device printing are validation evidence, not a business-scope gate.
+- The identified terminal is Ingenico APOS A8 / CaixaBank / Comercia Global Payments. Merchant-specific Comercia activation, credentials, and terminal pairing remain external provisioning. The generic payment domain is not blocked; the manual-total fallback is accepted.
+- Relevant incidents are visible for staff-led handling without automatic repeat-incident thresholds, automatic refusal, or online prepayment. Fiscal/receipt compliance, privacy retention, and real-device evidence remain bounded gates.
+- The MVP scorecard captures the accepted channel, call, delay, incident, payment, cash-close, operational-workload, and aggregate upselling measures. No numeric outcome target is invented before pilot evidence.
