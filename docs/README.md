@@ -20,7 +20,7 @@ Current generated baseline: version `0.6`, derived from discovery v0.19.
 - `traceability/DOPIS_TRACEABILITY_MATRIX.json`: traceability contract and orphan expectations.
 - `reviews/`: independent audit reports for specification milestones.
 
-Validate with `python scripts/validate_specification.py` and `python scripts/test_validate_specification.py` after the baseline is regenerated.
+Validate with `python scripts/validate_specification.py` and `python scripts/test_validate_specification.py`.
 
 ## Historical documents
 

@@ -17,7 +17,7 @@ This map identifies the minimum derived-baseline transformations required to con
 | `DATA-ORDER-003` | Resolve the universal in-person telephone requirement: telephone/contact is not mandatory when the customer waits on premises; require a contact route only when operationally necessary, such as leaving and returning later. |
 | `BR-PAYMENT-002` | Close the unpaid-handover question: successful payment is required before handover; no invited/unpaid-order exception in MVP1. |
 | `BR-INCIDENT-002` | Remove the provisional automatic two-incidents-in-90-days rule as an implementation obligation. MVP1 may visibly flag relevant incidents for manual staff handling; it must not require online prepayment or automatic refusal. |
-| `BR-SCOPE-004` | Remove the printer exclusion. The digital operational panel remains source of operational truth, but customer receipt/ticket issuance is now an MVP capability. |
+| `FR-RECEIPT-001` | Add a functional receipt/ticket capability distinct from the former `BR-SCOPE-004` exclusion. The digital operational panel remains source of operational truth. |
 | `OPS-KITCHEN-003` | Update rationale so fallback does not depend on the previous printer exclusion. |
 | `PRIV-DATA-002` | Replace references to separate tablet/mobile-backup surfaces with the responsive staff operational application. |
 | `SEC-TRACKING-002` | Retain narrow tracking actions and explicitly defer general customer order editing/cancellation. |
@@ -37,7 +37,7 @@ The consolidated requirements should introduce independently verifiable obligati
 4. **Responsive staff operation** — the same protected staff application works across kitchen tablet, counter tablet, mobile, and laptop-sized devices without changing business authority by device.
 5. **Operational POS ownership** — Dopis owns sale total, payment state/method, payment correction history, cash reconciliation, and receipt lifecycle for Dopis orders.
 6. **Cash collection** — Dopis records cash payment and supports collected-amount/change calculation before confirmation.
-7. **Card-terminal handoff** — Dopis supports a provider-neutral card-terminal boundary; BBVA automatic amount/result integration is preferred when hardware supports it, with manual-final-amount fallback permitted for MVP1.
+7. **Card-terminal handoff** — Dopis supports a provider-neutral card-terminal boundary for Ingenico APOS A8 / CaixaBank / Comercia Global Payments; automatic amount/result integration is conditional on Comercia provisioning, with manual-final-amount fallback permitted for MVP1.
 8. **Receipt issuance** — Dopis can issue/print the customer receipt/ticket through a printer adapter; current-printer reuse is conditional on hardware verification.
 9. **Problem-customer flagging** — relevant payment/non-collection incidents can be surfaced to staff for manual in-person handling without automatic online prepayment or automatic customer refusal.
 10. **Operational measurement event capture** — capture the minimum domain events needed to derive the accepted pilot scorecard rather than creating separate mandatory analytics for every candidate metric.
@@ -76,7 +76,7 @@ Promote the VAL-007 rules: telephone orders are handled by whichever authorised 
 
 ### `JV-PAYMENT-PROCEDURE`
 
-Close the invited/unpaid-order question: no handover without payment. Preserve receipt/cash-close procedural validation and treat BBVA/printer compatibility as technical evidence rather than reopening business scope.
+Close the invited/unpaid-order question: no handover without payment. Preserve receipt/cash-close procedural validation and treat APOS A8/printer compatibility as technical evidence rather than reopening business scope.
 
 ### `JV-INCIDENT-FAIRNESS`
 
@@ -110,10 +110,10 @@ Extend the existing compliance review to the now-in-scope receipt/fiscal-record 
 
 These do not require another Jaime decision unless the discovered hardware capability forces a material product trade-off:
 
-- `BBVA_TERMINAL_COMPATIBILITY`: exact terminal model and ECR/POS integration capability;
-- `RECEIPT_PRINTER_COMPATIBILITY`: exact printer model and direct control interface.
+- `COMERCIA_APOS_A8_COMPATIBILITY`: Ingenico APOS A8 ECR/POS integration capability after Comercia merchant provisioning;
+- `RECEIPT_PRINTER_COMPATIBILITY`: Epson TM-m30III compatibility/control and real-device printing over the observed local-network TCP transport.
 
-If automatic BBVA integration is unavailable, the accepted MVP fallback is manual entry of only the final amount into the BBVA terminal plus payment-result confirmation in Dopis.
+If automatic APOS A8 integration is unavailable, the accepted MVP fallback is manual entry of only the final amount into APOS A8 plus payment-result confirmation in Dopis.
 
 If the existing printer is incompatible, replacing it with a compatible receipt printer does not change product scope.
 

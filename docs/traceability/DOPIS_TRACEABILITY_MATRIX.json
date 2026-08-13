@@ -11,7 +11,7 @@
       "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
       "version": "0.19",
       "status": "CANONICAL",
-      "section_reference_rule": "A requirement business_source entry must match a numbered section heading present in the canonical discovery. Section identifiers are used rather than line numbers because line numbers change on every canonical edit while section identifiers are stable across versions 0.1 to 0.18."
+      "section_reference_rule": "A requirement business_source entry must match a numbered section heading present in the canonical discovery. Section identifiers are used rather than line numbers because line numbers change on every canonical edit while section identifiers are stable across versions 0.1 to 0.19."
     },
     "requirements": {
       "artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
@@ -184,10 +184,10 @@
   },
   "derived_counts": {
     "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",
-    "requirements": 216,
+    "requirements": 218,
     "epics": 13,
-    "gates_defined": 20,
-    "gates_referenced": 18,
+    "gates_defined": 21,
+    "gates_referenced": 19,
     "exclusions": 15,
     "blocked_requirements": 3
   },

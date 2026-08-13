@@ -2298,15 +2298,13 @@ Still open:
 - whether and when a later release may automatically distribute large orders across consecutive pickup windows;
 - the exact minimum lead-time calculation and calibration;
 - how staff should handle an expired alternative proposal when direct customer contact has already occurred;
-- whether the provisional two-incidents-in-90-days rule is operationally appropriate;
-- the full retention period and correction process for operational incidents;
+- the full retention period, visibility, and correction process for operational incidents;
 - the exact grace-period and pickup-extension settings after validation with Jaime.
 - the exact threshold for an important delay and a material estimate revision;
 - whether the initial ten-minute customer delay-response window is operationally appropriate;
 - whether and when repeated estimate changes require additional SMS messages;
 - the final resolution policy when the customer rejects a delay after preparation has started;
-- whether compensation belongs in the MVP at all;
-- if promoted, compensation types, limits, expiry, revocation, redemption, and evidence requirements.
+- formal compensation policy remains deferred outside MVP scope.
 
 ### Tablet and notifications
 
@@ -2315,9 +2313,8 @@ Resolved direction:
 - audible alert, persistent visual highlighting, automatic updates, and connection status are required;
 - new orders require explicit acknowledgement;
 - repeated alerts and a safety pause protect against unattended orders;
-- a mobile device provides limited operational backup;
-- the initial launch does not require a printer;
-- a printer may be promoted only after real operational testing;
+- one responsive staff application provides alternate-device operation;
+- receipt/ticket issuance is MVP scope through a compatible printer;
 - the digital panel remains the source of truth.
 
 Still open:
@@ -2411,19 +2408,17 @@ Still open:
 - launch featured products;
 - first temporary products and active dates;
 - available launch photography;
-- whether ticket-printer reliability is required after rehearsal;
+- Epson TM-m30III compatibility/control and real-device printing evidence;
 - formal compensation policy;
 - cost data required for future margin reporting.
 
 ### Manual channels, payment, and handover
 
 - who normally enters telephone and in-person orders;
-- whether every in-person order genuinely requires a telephone number;
 - when a responsible operator may override calculated capacity;
 - exact receipt issue and retention practice;
 - detailed permissions for payment and handover corrections beyond the accepted baseline;
 - how cash discrepancies are investigated and when escalation is required;
-- whether any exceptional unpaid handover is allowed and who authorises it;
 - how an erroneous handover is corrected;
 - which channel metrics Jaime needs to evaluate whether the web reduces calls;
 - current cash-register, receipt, and end-of-shift procedures;
@@ -2479,13 +2474,14 @@ The detailed validation register will be created as a structured artifact for th
 - `JV-PILOT`: rehearsal pass, launch timing, participant group, observer ownership, manual review, pause, and rollback controls;
 - `JV-THRESHOLDS`: one approved table of conservative initial operating values;
 - `JV-SHIFT-AUTHORITY`: initial substitution rules, price-difference limit, and safe incident measures.
+- `JV-RECEIPT-COMPLIANCE`: applicable fiscal or receipt-record obligations and compliant issuance path.
 
 The pilot may begin with Jaime as the only responsible person present.
 
 #### Required before operating without Jaime
 
 - `JV-DELEGATION`: nominal delegate, authorisation duration or shift scope, operating knowledge, and accepted limits;
-- `JV-ACCESS`: active access, revocation procedure, shared kitchen session, and mobile-backup limits.
+- `JV-ACCESS`: active access, revocation procedure, shared kitchen session, and honest attribution.
 
 #### Required before public launch
 
@@ -2597,14 +2593,14 @@ Remaining:
 - confirm operating hours and date exceptions;
 - calibrate production-point rules;
 - validate stock-counting burden, critical-item allowances, daily limits, carry-over, perishables, replenishment, and reconciliation with telephone or walk-in sales;
-- validate manual order-entry roles, in-person telephone collection, payment correction, handover, optional receipts, cash discrepancies, and cash-close procedures;
+- validate manual order-entry procedure, payment correction, handover, receipt/fiscal issuance, cash discrepancies, and cash-close procedures;
 - define privacy notice, retention, anonymisation, data-request handling, operational access, session closure, and staff-account deactivation through the applicable compliance review;
 - validate the two-week baseline, weekly report, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
 - validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, concrete upselling relationships, compatibility, permissions, and pilot thresholds;
 - maintain the closed discovery baseline and the explicit first-MVP exclusions while completing milestone-specific validations;
 - validate tablet placement, alert audibility, responsive alternate-device operation, and printer compatibility;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
-- validate the delegated responsible person, authorisation scope, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
+- validate the delegated responsible person, authorisation scope, Jaime-only access management, report/export authority, shared kitchen attribution, and revocation procedure;
 - validate delegated exceptions, explicit and fallback substitution rules, absorbed-price limit, safe isolation measures, escalation, incident reopening, and Jaime's review channel;
 - validate the bounded operational threshold register;
 - complete the applicable compliance review, define retention periods, and escalate unresolved material legal questions when necessary;
@@ -2613,7 +2609,7 @@ Remaining:
 - decide SSE versus WebSockets;
 - define SMS abstraction, retry behaviour, repeated-delay messaging, and customer delay-response handling;
 - define incident retention, correction, and fairness controls;
-- decide whether compensation belongs in the MVP and define exact MVP catalog administration;
+- keep compensation automation deferred and define approved catalog administration evidence;
 - freeze the operational MVP;
 - create architecture decision records;
 - define API and database contracts.
@@ -2691,32 +2687,14 @@ After explicit implementation authority:
 
 ## 17. Current recommendation and authorised next sequence
 
-Do not begin backend business implementation yet.
+Business discovery, the reconciliation delta, and requirements baseline v0.6 are consolidated. Do not begin product implementation: implementation authority remains `NOT_GRANTED`.
 
-The repository audit, documentation custody, frontend migration, and GitHub Pages validation are complete. The next work is no longer repository reorganisation.
+Recommended bounded next sequence:
 
-Recommended sequence:
-
-1. Install this reconciled version as the canonical document.
-2. Mark first-MVP business discovery formally closed and stop broad interview rounds.
-3. Prepare a bounded Jaime validation package separated into:
-   - first real pilot blockers;
-   - operating-without-Jaime blockers;
-   - public-launch blockers;
-   - pilot calibrations.
-4. Complete the internal official-source compliance review, define retention and rights procedures, and escalate externally only unresolved material issues.
-5. Create and review ADRs for:
-   - monorepo architecture;
-   - provisional FastAPI selection;
-   - weighted pickup-capacity windows;
-   - secure guest tracking;
-   - transactional stock and capacity holds.
-6. Transcribe product-source material into a draft structured catalog.
-7. Validate the catalog, modifiers, prices, allergens, and operating hours with Jaime.
-8. Draft the MVP requirements baseline.
-9. Draft the API contract and database schema.
-10. Draft a bounded backend-scaffold plan.
-11. Grant separate implementation authority only after those artifacts are reviewed.
+1. Resolve only the registered pilot, compliance, calibration, and external-provisioning evidence.
+2. Establish the compliant receipt/fiscal issuance path; validate Epson TM-m30III compatibility and real-device printing independently.
+3. Complete Comercia merchant provisioning only for optional APOS A8 integration; retain the accepted manual-total fallback.
+4. Prepare reviewed use cases, acceptance criteria, architecture contracts, and a separately authorised implementation packet only after the remaining readiness conditions are met.
 
 ### 17.1 Cross-chat synchronisation protocol
 
@@ -2819,6 +2797,7 @@ Before the first real order:
 - substitution rules and absorbed-price limit are approved;
 - simulated and real data are separated;
 - minimum privacy, access, security, and rights-request controls are active;
+- applicable receipt/fiscal issuance evidence is established;
 - Jaime or an authorised responsible person is present.
 
 ### Operating-without-Jaime blockers
@@ -2849,7 +2828,7 @@ The following may remain provisional at pilot start and be revised from evidence
 - opening and closing workload limit;
 - automatic-acceptance evidence threshold;
 - upselling success thresholds;
-- printer necessity.
+- receipt-printer compatibility and real-device printing evidence.
 
 ### Coherence result
 
@@ -2876,8 +2855,6 @@ The following remain outside first-MVP discovery closure:
 Implementation authority remains `NOT GRANTED`.
 ---
 
-## 19. Change log
-
 ## 20. Consolidated VAL-007/008 MVP baseline
 
 This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` and the associated Owner reconciliation map. It supersedes only prior statements in this document that conflict with the accepted post-validation state; unaffected discovery remains in force.
@@ -2889,6 +2866,8 @@ This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` an
 - The identified terminal is Ingenico APOS A8 / CaixaBank / Comercia Global Payments. Merchant-specific Comercia activation, credentials, and terminal pairing remain external provisioning. The generic payment domain is not blocked; the manual-total fallback is accepted.
 - Relevant incidents are visible for staff-led handling without automatic repeat-incident thresholds, automatic refusal, or online prepayment. Fiscal/receipt compliance, privacy retention, and real-device evidence remain bounded gates.
 - The MVP scorecard captures the accepted channel, call, delay, incident, payment, cash-close, operational-workload, and aggregate upselling measures. No numeric outcome target is invented before pilot evidence.
+
+## 19. Change log
 
 ### 0.18 — 2026-07-25
 

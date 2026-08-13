@@ -223,6 +223,16 @@
       "open_questions": ["which incident details may be visible for staff-led handling", "how are incorrect incidents corrected and communicated", "how should invalid telephone numbers be treated without unfairly penalising customers"]
     },
     {
+      "id": "JV-RECEIPT-COMPLIANCE",
+      "title": "Applicable fiscal or receipt-record obligations and compliant issuance path",
+      "milestone": "PILOT",
+      "origin": "DERIVED",
+      "source_sections": ["20", "18A"],
+      "derivation_rationale": "Receipt/ticket issuance is accepted MVP scope, while the applicable fiscal or receipt-record obligations and compliant issuance path remain unresolved compliance evidence. This gate separates that question from printer hardware and ordinary payment procedure.",
+      "resolution_criteria": "Dopis establishes applicable fiscal or receipt-record obligations and evidence for a compliant receipt issuance path before real receipt/fiscal issuance is treated as ready.",
+      "open_questions": ["applicable fiscal or receipt-record obligations and compliant issuance path"]
+    },
+    {
       "id": "JV-DISCOVERY-CLOSE",
       "title": "First-MVP business discovery closure",
       "milestone": "CLOSED",

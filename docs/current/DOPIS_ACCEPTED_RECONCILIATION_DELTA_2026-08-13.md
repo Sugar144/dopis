@@ -1,6 +1,6 @@
 # Dopis Accepted Reconciliation Delta — 2026-08-13
 
-**Status:** `ACCEPTED_OWNER_DELTA_PENDING_CONSOLIDATION`
+**Status:** `CONSOLIDATED_CANDIDATE_PENDING_OWNER_DISPOSITION_OR_MERGE`
 **Applies to:** first operational MVP
 **Base canonical discovery:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md` v0.18
 **Base derived requirements:** v0.5
@@ -11,9 +11,9 @@
 
 This artifact records accepted post-v0.18 business decisions derived from DOPIS-VAL-007, DOPIS-VAL-008, and explicit Project Owner dispositions.
 
-Until the canonical discovery and derived requirement registries are regenerated, this delta takes precedence over conflicting statements in v0.18 and requirements baseline v0.5. Unaffected v0.18 obligations remain in force.
+Its accepted changes are consolidated into discovery v0.19 and requirements baseline v0.6. This provenance record supports the candidate pending Owner disposition or merge; it does not itself claim acceptance of the generated baseline.
 
-This delta does not grant implementation authority. The derived requirements baseline remains stale wherever it conflicts with this artifact and must not be used as implementation-ready truth until consolidation and validation are complete.
+This delta does not grant implementation authority.
 
 ## 2. Evidence
 
@@ -168,7 +168,7 @@ These are bounded technical, compliance, evidence, or calibration gates. They do
 ### Hardware / integration
 
 - Ingenico APOS A8 ECR / POS-controlled amount and result integration capability, subject to Comercia merchant provisioning;
-- exact existing receipt-printer model and supported connection/control interface.
+- Epson TM-m30III compatibility/control and real-device printing evidence; it is connected through the local Wi-Fi/network and observed print transport is TCP.
 
 ### Fiscal / compliance
 
@@ -202,7 +202,7 @@ The following remain outside MVP1 unless a later controlled change promotes them
 
 ## 10. Consolidation requirement
 
-Before implementation authority can be granted, regenerate and validate the affected canonical/derived surfaces so they agree with this accepted delta, including at minimum:
+Before implementation authority can be granted, the consolidated canonical/derived surfaces must remain validated and any separately required readiness evidence must be resolved, including:
 
 - `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`;
 - `docs/current/DOPIS_MVP_REQUIREMENTS.md`;

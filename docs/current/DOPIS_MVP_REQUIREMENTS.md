@@ -12,7 +12,7 @@
      each value from the registries and fails if this document disagrees. -->
 
     REGISTRY-VERSION: 0.6
-    REGISTRY-TOTAL: 216
+    REGISTRY-TOTAL: 218
     REGISTRY-EPICS: 13
 
 ## 1. Purpose and authority
