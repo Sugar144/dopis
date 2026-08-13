@@ -2,7 +2,7 @@
   "schema_version": "2.0",
   "format": "JSON",
   "milestone": "MILESTONE-SPEC-001",
-  "status": "AUDITED_PENDING_OWNER_APPROVAL",
+  "status": "AUDITED_OWNER_APPROVED",
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "discovery": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
