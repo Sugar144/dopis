@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0-direct-pilot",
+  "response": {
+    "id": "DOPIS-RESP-20260813T115934Z-7fa96c61",
+    "cycleId": "DOPIS-VAL-008",
+    "cycleVersion": 1,
+    "cycleSha256": "e5b169594b5f6f42b9d87f36255adf781707d5b156aadc92dad07f093806837f",
+    "status": "SUBMITTED",
+    "stakeholderRef": "jaime",
+    "startedAt": "2026-08-12T19:27:44.376354Z",
+    "submittedAt": "2026-08-13T11:59:34.160385Z",
+    "captureMode": "DOPIS_DIRECT_VALIDATION_PILOT"
+  },
+  "answers": [
+    {"itemId":"DVAL8-DEC-01","selectedOptionId":"OPTION-04","needsDiscussion":false,"comment":"Poder gestionarlo todo desde el móvil "},
+    {"itemId":"DVAL8-DEC-02","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"No se entregan pedidos sin cobrar "},
+    {"itemId":"DVAL8-DEC-03","selectedOptionId":"OPTION-02","needsDiscussion":false,"comment":"Si un cliente deja un pedido colgado poder márcalo para que no pueda hacerlo sin el pago "},
+    {"itemId":"DVAL8-EVID-01","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Si hay algún festivo que abrimos poder habilitar los pedidos "},
+    {"itemId":"DVAL8-EVID-02","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Una tablet en la cocina con sonido, si se puede sincronizar con la tablet de la caja para poder tener los pedidos en las dos "},
+    {"itemId":"DVAL8-EVID-03","selectedOptionId":"OPTION-02","needsDiscussion":false,"comment":"Máximo 8/10 pizzas cada media horo pudiendo poner alguna más si fuéramos bien de tiempo "},
+    {"itemId":"DVAL8-EVID-04","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Avisar si se va retrasar 10 minutos el pedido, "},
+    {"itemId":"DVAL8-EVID-14","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Cualquiera del equipo  puede cancelarlo "},
+    {"itemId":"DVAL8-EVID-05","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Poder dejar un margen de tiempo para pedidos nuevos por algún problema en la cocina "},
+    {"itemId":"DVAL8-EVID-06","selectedOptionId":"OPTION-02","needsDiscussion":false,"comment":"Recuento de bebida postres y pizzas disponibles "},
+    {"itemId":"DVAL8-EVID-07","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"No falta efectivo nunca, el cierre lo hacemos cualquiera del equipo, que quede registrado quien lo hace "},
+    {"itemId":"DVAL8-EVID-08","selectedOptionId":"OPTION-01","needsDiscussion":false,"comment":"Cuándo es una alergia por frutos secos decimos que no podemos garantizarlo por la ubicación de los ingredientes y el tamaño de la cocina, al igual que las pizzas sin gluten "},
+    {"itemId":"DVAL8-EVID-11-01","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"En la carta nueva habrá extras y quitar ingredientes no es un problema "},
+    {"itemId":"DVAL8-EVID-11-02","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual que la anterior "},
+    {"itemId":"DVAL8-EVID-11-03","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-04","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-05","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-06","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-07","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-08","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-09","selectedOptionId":"OPTION-04","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-10","selectedOptionId":"OPTION-04","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-11","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-12","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-13","selectedOptionId":"OPTION-03","needsDiscussion":false,"comment":"Igual"},
+    {"itemId":"DVAL8-EVID-11-14","selectedOptionId":"OPTION-05","needsDiscussion":false,"comment":"Opción de poder cambiar la mozzarella vegana por mozzarella normal y parmesano,"},
+    {"itemId":"DVAL8-EVID-12","selectedOptionId":"OPTION-02","needsDiscussion":false,"comment":"En caso de haber hecho algún pedido y quieran modificar la hora de recogida o alguna pizza, añadir otra pizza, bebida o postre tendrán que llamar y nosotros podremos modificarlo "},
+    {"itemId":"DVAL8-EVID-13","selectedOptionId":"OPTION-05","needsDiscussion":false,"comment":"No hay mucha variedad de postres o bebidas , yo sugeriría suplementos en general "}
+  ],
+  "summary": {
+    "totalValidationItems": 28,
+    "answeredItems": 28,
+    "needsDiscussionItems": 0,
+    "unansweredRequiredItems": 0
+  }
+}
