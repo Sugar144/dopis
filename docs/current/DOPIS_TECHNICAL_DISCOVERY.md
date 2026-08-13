@@ -1,8 +1,8 @@
 # Dopis — Technical Discovery and MVP Backend Specification
 
-**Document status:** DRAFT — discovery in progress
-**Version:** 0.18
-**Date:** 2026-07-25
+**Document status:** CANONICAL — consolidated post-validation MVP baseline
+**Version:** 0.19
+**Date:** 2026-08-13
 **Implementation authority:** NOT GRANTED
 **Purpose:** Canonical living technical discovery document for the Dopis MVP, reconciling business discovery with verified repository and architecture state.
 
@@ -29,7 +29,7 @@ This document records:
 - unresolved decisions;
 - authorised sequencing.
 
-Backend implementation authority has not yet been granted.
+Business discovery is closed. Implementation authority remains `NOT_GRANTED`.
 
 ---
 
@@ -45,7 +45,7 @@ The first operational MVP should allow:
    - name;
    - telephone number.
 4. The customer to pay at the premises when collecting the order.
-5. Kitchen staff to receive the order in a protected web panel displayed on a tablet.
+5. Staff use one authenticated responsive web application on suitable kitchen or counter tablets, mobile phones, laptops, and other browser devices.
 6. Staff to update the order status.
 7. Products and orders to be persisted in a relational database.
 8. The system to be structured so online payment can be added without redesigning the order domain.
@@ -69,7 +69,7 @@ The following are not part of the first operational MVP unless later promoted:
 - full business analytics;
 - advanced SEO work;
 - multilingual administration;
-- customer self-service cancellation.
+- general customer self-service editing or cancellation.
 
 These items remain relevant roadmap candidates and must not be made unnecessarily difficult by the MVP architecture.
 
@@ -162,7 +162,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Pickup windows use an initial duration of 15 minutes.
 - Product and modifier production-point values are technically configured and calibrated; Jaime controls operational window capacity rather than editing the workload model directly.
 - Orders exceeding a configurable percentage of a pickup window's capacity must enter manual review, even if nominal capacity remains. The threshold requires validation with real kitchen operation.
-- Initial launch accepts same-day orders only. A configurable multi-day advance-order horizon remains a future capability.
+- Customers may place pickup orders for future enabled service dates and enabled pickup windows within a configurable bounded horizon, including while the premises are currently closed. A closed or holiday date is unavailable unless staff configure an exceptional opening. Future orders do not reserve ingredient stock automatically.
 - An order whose production load cannot safely fit within a single pickup window must enter manual review in the MVP.
 - Sellable-unit stock is provisionally reserved during checkout and committed only when the order is confirmed. Expired or abandoned holds release stock.
 - Stock used by an order under manual review is held for ten minutes; expiry releases stock and follows the defined order-expiry outcome.
@@ -175,12 +175,12 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Cancellation after preparation begins does not automatically restore consumed stock; unused future capacity is released.
 - A configurable non-collection grace period begins at the end of the confirmed pickup window; the initial working value is 30 minutes.
 - Staff attempt to contact the customer before manually marking an order as `NO_SHOW`.
-- Operational incidents may route later orders to manual review rather than automatically blocking the customer. The current working threshold is two relevant incidents within 90 days, pending privacy and operational validation.
-- An invalid telephone number is recorded as a distinct incident and may contribute to manual review, subject to fairness and privacy review.
+- Relevant non-collection or payment incidents may be visibly flagged for staff-led in-person handling. No automatic repeat-incident threshold, automatic refusal, or online prepayment is part of the MVP.
+- An invalid telephone number is an operational incident whose correction and retention remain subject to privacy procedure; it does not automatically penalise the customer.
 - Operational loss is initially recorded as an occurrence without calculating a monetary amount.
 - A failure to deliver the initial tracking SMS routes the order to manual review rather than automatic rejection.
 - A material pickup-estimate change updates the private tracking page and sends an SMS; an agreed pickup extension updates the tracking page without requiring another SMS.
-- The initial operational fallback uses a tablet plus a limited mobile backup. A ticket printer remains conditional on real operational testing.
+- The operational fallback uses the responsive staff application on a suitable alternate device. Receipt/ticket printing remains subject to printer compatibility and real-device validation.
 - Scheduled orders enter the active queue according to calculated workload and available capacity; the first warning appears at the recommended preparation-start time.
 - Staff may revise an estimate more than once. Every material revision appears on the private tracking page, while additional SMS messages are decided case by case.
 - For an important delay, the customer may reject the revised pickup time through tracking within an initial ten-minute response window. Silence does not count as acceptance and routes the order to manual review.
@@ -255,7 +255,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Operational burden combines opening time, closing time, correction count, and Jaime's assessment.
 - Product-margin reporting remains outside the MVP until cost data are sufficiently validated.
 - Initial SMS scope includes private tracking access, ready notification, rejection, and cancellation.
-- A ticket printer is outside the initial scope and is reconsidered only if tablet and mobile backup prove insufficient during operational testing.
+- Receipt/ticket issuance is in scope through a compatible printer; printer compatibility and real-device validation remain open evidence.
 - Until Jaime validates a compensation policy, staff may record the agreed resolution inside the incident without coupons, codes, automated rules, or promised future benefits.
 - Initial public content is available in Spanish and Catalan.
 - The first visit uses the browser language when supported, with a visible language selector and Spanish as fallback.
@@ -303,7 +303,7 @@ These items remain relevant roadmap candidates and must not be made unnecessaril
 - Availability and stock changes retain actor and timestamp.
 - Price, text, and sensitive-configuration changes retain previous value, new value, actor, and timestamp.
 - Routine commercial changes do not require a written justification, but accidental corrections remain auditable.
-- The mobile backup supports order management, status changes, and urgent availability changes, but not prices, commercial content, access management, or full administration.
+- The responsive staff application supports order management, status changes, and urgent availability changes across suitable devices; capability boundaries follow staff authority rather than device type.
 - The responsible shift lead is explicitly identified at opening; a responsibility change records the new person and handover time.
 - The responsible shift lead may correct payments, resolve incidents, confirm close, and authorise explicitly permitted operational exceptions.
 - Unattended critical alerts escalate to the responsible shift lead.
@@ -673,6 +673,10 @@ Initial active payment direction:
 - the order must be paid before handover;
 - card failure may be retried or changed to cash;
 - inability to complete payment prevents handover and creates an operational incident.
+
+The current receipt printer is an Epson TM-m30III connected through the local Wi-Fi/network; observed print transport is TCP. Dopis issues a customer receipt/ticket through a receipt-printer adapter. Printer compatibility and real-device printing remain validation evidence. Sensitive device identifiers are not retained.
+
+The current payment terminal is an Ingenico APOS A8 provided by CaixaBank / Comercia Global Payments. Dopis supports a provider-neutral payment-terminal adapter in principle, but merchant-specific Comercia activation, staging/production credentials, and terminal pairing/configuration remain external provisioning evidence. This does not block the generic MVP payment domain. Until provisioning and real-device integration are validated, Dopis calculates the total, staff enter only the total in APOS A8, and staff record the observed payment result in Dopis. Dopis stores no card data, merchant identifiers, credentials, or sensitive device identifiers.
 
 Orders retain:
 
@@ -1055,7 +1059,9 @@ Shared rules:
 
 Telephone order entry must be optimised for staff speed while still requiring explicit product, modifier, pickup, name, and telephone data.
 
-In-person order entry follows the same domain flow. Requiring a telephone number for every in-person order remains a working decision pending Jaime's validation of operational burden and privacy necessity.
+In-person order entry follows the same domain flow. A telephone number is required only when an operational contact route is necessary, for example when the customer leaves and returns later; it is not mandatory when the customer waits on premises.
+
+Telephone orders are entered by whichever authorised worker is available. Customers request changes or cancellation by telephone; authorised staff apply the change or cancellation after revalidating price, modifiers, allergen consequences, stock, capacity, pickup feasibility, and preparation state as applicable.
 
 Manual orders receive the next feasible pickup opportunity. They do not silently displace already confirmed orders.
 
@@ -1234,8 +1240,8 @@ Additional working requirements from business discovery:
 - if the tablet loses connection, the panel retains the last visible data as clearly stale and prevents state-changing actions;
 - after an initial three-minute disconnection, new online orders pause;
 - recovery requires staff review and explicit `Resume`;
-- a mobile backup may view orders, change operational states, and apply urgent availability changes;
-- the mobile backup must not edit prices, commercial content, access permissions, or expose full administration;
+- the responsive staff application may view orders, change operational states, and apply urgent availability changes from suitable devices;
+- device type does not determine business authority, and material actions preserve honest attribution;
 - staff complete a readiness checklist, explicitly identify Jaime or the currently authorised delegate, and select `Open orders`;
 - opening is blocked if neither authorised responsible person is present;
 - a common kitchen operational session may be used during the first MVP only after the responsible person is registered;
@@ -1246,11 +1252,11 @@ Additional working requirements from business discovery:
 - customer name and pickup time have greater visual prominence than the order identifier;
 - telephone numbers remain hidden in operational queues;
 - an explicit `Contact customer` action reveals the telephone number only when operationally needed;
-- the same telephone-visibility rule applies to tablet and mobile backup;
+- the same telephone-visibility rule applies across responsive staff devices;
 - previous incidents appear as a minimal summary, with detail available only when operationally necessary;
 - no essential action or information may depend on hover.
 
-The digital panel remains the source of truth. A ticket printer is outside the initial MVP scope and is reconsidered only if operational tests show that tablet and mobile alerts are insufficient. If later introduced, reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
+The digital panel remains the source of truth. Customer receipt/ticket issuance is an MVP capability through a compatible printer. Reprints must be marked `COPY`, telephone numbers are omitted by default, and print failure must not silently leave automatic acceptance running.
 
 At shift end, the current responsible person reviews open incidents, payments, and pending Jaime decisions before confirming close. Incidents do not close automatically. A responsibility change during service records the new responsible person and handover time. Jaime reviews pending decisions before the next service opens.
 
@@ -1710,7 +1716,7 @@ Operational access follows least-necessary visibility:
 
 - telephone numbers remain hidden in kitchen queues;
 - an explicit `Contact customer` action reveals the number when needed;
-- tablet and mobile backup follow the same rule;
+- all responsive staff devices follow the same rule;
 - staff may search by telephone when a customer calls;
 - before disclosing information, staff also confirm the customer name or order identifier;
 - telephone support initially discloses only order status and estimated pickup time;
@@ -2152,7 +2158,7 @@ Confirmed weekly baseline:
 - Earliest pizza pickup is 19:15.
 - Initial latest pickup is 21:45 on Wednesday and Thursday.
 - Initial latest pickup is 22:45 on Friday, Saturday, and Sunday.
-- Initial launch accepts same-day orders only.
+- Pickup ordering supports enabled future service dates and windows within a configurable horizon.
 
 The system must configure separately:
 
@@ -2189,7 +2195,7 @@ Online orders open only after staff complete the readiness checklist and explici
 | Panel accessible without real backend authorisation | Exposure or manipulation of orders | Implement functional staff authentication from the first operational backend |
 | Tablet misses an order | Lost revenue and customer dissatisfaction | Sound, live updates, connection indicator, manual refresh, operational fallback |
 | Tablet alert is inaudible in a noisy kitchen | Order remains unseen | Persistent highlight, explicit acknowledgement, repeated alert, safety pause, real-device testing |
-| Panel loses connectivity | Staff act on stale information or unseen orders arrive | Stale indicator, blocked writes, mobile backup, timed pause, manual resume |
+| Panel loses connectivity | Staff act on stale information or unseen orders arrive | Stale indicator, blocked writes, alternate responsive device, timed pause, manual resume |
 | Telephone-based incidents unfairly affect future orders | Privacy and fairness harm | Correction trail, limited working risk window, manual review, no automatic block |
 | Shared access is mistaken for individual attribution | Misleading audit history | Record the shared kitchen session and current responsible person accurately |
 | Permission hierarchy exceeds the real two-person operation | Unnecessary complexity and configuration errors | Use principal, delegated, and bounded operational access rather than a broad hierarchy |
@@ -2322,7 +2328,7 @@ Still open:
 - session lifetime and re-authentication behaviour;
 - screen wake and kiosk-mode behaviour;
 - the simultaneous tablet, mobile, network, and backend failure procedure;
-- the test criteria that would promote a ticket printer.
+- Epson TM-m30III compatibility and real-device printing evidence.
 
 ### Catalog and inventory
 
@@ -2497,7 +2503,7 @@ External professional review is conditional rather than universally mandatory. I
 - acceptable opening and closing workload;
 - evidence for enabling `AUTO_ACCEPT`;
 - upselling conversion and checkout impact;
-- need for a ticket printer;
+- receipt-printer compatibility and real-device printing evidence;
 - longer-term stock reconciliation simplification.
 
 #### Closed integration gates
@@ -2596,7 +2602,7 @@ Remaining:
 - validate the two-week baseline, weekly report, four-week pilot scorecard, controlled rollout, manual-to-automatic promotion, rollback, pause, and expansion criteria with Jaime;
 - validate bilingual content ownership, launch copy, product presentation, featured and temporary products, photography, concrete upselling relationships, compatibility, permissions, and pilot thresholds;
 - maintain the closed discovery baseline and the explicit first-MVP exclusions while completing milestone-specific validations;
-- validate tablet placement, alert audibility, mobile backup, and printer-reconsideration criteria;
+- validate tablet placement, alert audibility, responsive alternate-device operation, and printer compatibility;
 - close modifier pricing, kitchen-note boundaries, gluten cross-contact wording, supplier evidence, catalog approval, and the complete allergen matrix with Jaime;
 - validate the delegated responsible person, authorisation scope, Jaime-only access management, report/export authority, shared kitchen attribution, mobile-backup permissions, and revocation procedure;
 - validate delegated exceptions, explicit and fallback substitution rules, absorbed-price limit, safe isolation measures, escalation, incident reopening, and Jaime's review channel;
@@ -2871,6 +2877,18 @@ Implementation authority remains `NOT GRANTED`.
 ---
 
 ## 19. Change log
+
+## 20. Consolidated VAL-007/008 MVP baseline
+
+This version incorporates `DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md` and the associated Owner reconciliation map. It supersedes only prior statements in this document that conflict with the accepted post-validation state; unaffected discovery remains in force.
+
+- Future enabled-date pickup ordering is first-MVP scope. The horizon, capacity values, delay thresholds, stock-count timing and low-stock thresholds are configuration or calibration, not hard-coded architecture.
+- One responsive authenticated staff application serves suitable tablets, mobile phones, laptops, and other browsers. Staff-mediated telephone changes and cancellations revalidate the affected order rules; general customer self-service editing remains deferred.
+- Dopis is the operational POS for its orders: it owns totals, payment method and state, corrections, payment history, cash close, receipt lifecycle, and unpaid-handover prevention. Cash and card remain in-person methods; online prepayment remains deferred.
+- Receipt/ticket issuance is MVP scope. Epson TM-m30III local-network TCP compatibility and real-device printing are validation evidence, not a business-scope gate.
+- The identified terminal is Ingenico APOS A8 / CaixaBank / Comercia Global Payments. Merchant-specific Comercia activation, credentials, and terminal pairing remain external provisioning. The generic payment domain is not blocked; the manual-total fallback is accepted.
+- Relevant incidents are visible for staff-led handling without automatic repeat-incident thresholds, automatic refusal, or online prepayment. Fiscal/receipt compliance, privacy retention, and real-device evidence remain bounded gates.
+- The MVP scorecard captures the accepted channel, call, delay, incident, payment, cash-close, operational-workload, and aggregate upselling measures. No numeric outcome target is invented before pilot evidence.
 
 ### 0.18 — 2026-07-25
 

@@ -6,9 +6,9 @@
   "implementation_authority": "NOT_GRANTED",
   "source": {
     "discovery": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
-    "discovery_version": "0.18",
+    "discovery_version": "0.19",
     "requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-    "requirements_version": "0.5"
+    "requirements_version": "0.6"
   },
   "notice": "Epics are business or operational capabilities, never technical layers. Every requirement has exactly one primary epic, which owns it. A supporting mapping records a deliberate cross-cutting concern and never duplicates the obligation: the requirement is specified once, in its primary epic. Validation gates are derived from the member requirements by scripts/validate_specification.py and are deliberately not declared here, because a hand-written gate list cannot be kept true.",
   "authority_note": "This map implies no implementation order, estimate, delivery commitment, or authority. Readiness additionally requires everything listed in readiness_requires.",
@@ -99,7 +99,7 @@
       "goal": "Service runs only under an accountable responsible person, with bounded access, honest attribution, and owner-controlled permissions, and never without Jaime before delegation is formally confirmed.",
       "primary": ["FR-ACCESS-001", "DATA-ACCESS-001", "OPS-DELEGATION-001", "SEC-ACCESS-001", "SEC-ACCESS-002", "SEC-ACCESS-003", "BR-ACCESS-001", "AUDIT-ACCESS-001", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001"],
       "supporting": ["FR-KITCHEN-001", "SEC-KITCHEN-001", "OPS-KITCHEN-002", "SEC-CATALOG-001", "OPS-SHIFT-001", "OPS-SHIFT-002", "AUDIT-ADMIN-001", "BR-CAPACITY-003"],
-      "supporting_rationale": "Authentication, mobile-backup limits, opening, close, and the reservation of permanent policy changes to Jaime are all expressions of the same authority model."
+      "supporting_rationale": "Authentication, responsive-device attribution, opening, close, and the reservation of permanent policy changes to Jaime are all expressions of the same authority model."
     },
     {
       "id": "EPIC-PRIVACY",
@@ -107,7 +107,7 @@
       "goal": "Operational customer data is collected for a stated purpose, seen only where necessary, kept separate from marketing, and retained under approved rules.",
       "primary": ["PRIV-DATA-001", "BR-PRIV-001", "BR-PRIV-002", "PRIV-DATA-002", "PRIV-DATA-003", "PRIV-DATA-004", "PRIV-DATA-005", "PRIV-DATA-006", "PRIV-COMMS-001", "PRIV-RETENTION-001", "BR-LAUNCH-001"],
       "supporting": ["DATA-ORDER-001", "BR-ORDER-013", "DATA-ORDER-003", "SEC-CUSTOMER-001", "SEC-REPORT-001", "AUDIT-REPORT-001", "SEC-TRACKING-001", "SEC-TRACKING-003", "SEC-PAYMENT-001", "OPS-PILOT-001", "OPS-SHIFT-002"],
-      "supporting_rationale": "Data minimisation, the undecided in-person telephone rule, disclosure control, tracking-session lifetime, and the pilot minimum-controls obligation are privacy concerns owned by the epics that implement them."
+      "supporting_rationale": "Data minimisation, conditional in-person contact collection, disclosure control, tracking-session lifetime, and the pilot minimum-controls obligation are privacy concerns owned by the epics that implement them."
     },
     {
       "id": "EPIC-PILOT",

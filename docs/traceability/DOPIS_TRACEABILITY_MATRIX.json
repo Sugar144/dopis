@@ -7,23 +7,23 @@
   "notice": "This artifact declares the traceability contract. It deliberately does not restate the links themselves, because a hand-maintained copy of a link set becomes false the moment either side changes. Every relationship below is derived by scripts/validate_specification.py from the artifact named in derived_from, and every orphan expectation is recomputed and compared on each run. A stale expectation fails the run rather than passing silently.",
   "baseline": {
     "discovery": {
-      "id": "SRC-DISCOVERY-018",
+      "id": "SRC-DISCOVERY-019",
       "artifact": "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
-      "version": "0.18",
+      "version": "0.19",
       "status": "CANONICAL",
       "section_reference_rule": "A requirement business_source entry must match a numbered section heading present in the canonical discovery. Section identifiers are used rather than line numbers because line numbers change on every canonical edit while section identifiers are stable across versions 0.1 to 0.18."
     },
     "requirements": {
       "artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
-      "version": "0.5"
+      "version": "0.6"
     },
     "validation_gates": {
       "artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
-      "version": "0.5"
+      "version": "0.6"
     },
     "exclusions": {
       "artifact": "docs/current/requirements/DOPIS_EXCLUSIONS.json",
-      "version": "0.5"
+      "version": "0.6"
     },
     "epics": {
       "artifact": "docs/backlog/DOPIS_EPICS.json",
@@ -31,7 +31,7 @@
     },
     "human_readable_baseline": {
       "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
-      "version": "0.5"
+      "version": "0.6"
     }
   },
   "node_types": [
@@ -188,8 +188,8 @@
     "epics": 13,
     "gates_defined": 20,
     "gates_referenced": 18,
-    "exclusions": 17,
-    "blocked_requirements": 5
+    "exclusions": 15,
+    "blocked_requirements": 3
   },
   "future_nodes": {
     "use_cases": [],

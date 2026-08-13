@@ -2,16 +2,16 @@
 
 **Milestone:** `MILESTONE-SPEC-001`
 **Status:** `AUDITED_PENDING_OWNER_APPROVAL`
-**Baseline version:** `0.5`
-**Date:** `2026-07-25`
-**Business source:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.18`
+**Baseline version:** `0.6`
+**Date:** `2026-08-13`
+**Business source:** `docs/current/DOPIS_TECHNICAL_DISCOVERY.md`, version `0.19`
 **Business discovery status:** `CLOSED_PENDING_VALIDATION_AND_IMPLEMENTATION_PLANNING`
 **Implementation authority:** `NOT GRANTED`
 
 <!-- Machine-checked agreement markers. scripts/validate_specification.py recomputes
      each value from the registries and fails if this document disagrees. -->
 
-    REGISTRY-VERSION: 0.5
+    REGISTRY-VERSION: 0.6
     REGISTRY-TOTAL: 216
     REGISTRY-EPICS: 13
 
@@ -19,9 +19,9 @@
 
 This baseline translates the closed first-MVP business discovery into uniquely identified requirements. It does not authorise implementation, define the API or database, or resolve any unresolved stakeholder decision.
 
-Canonical discovery has priority over this document. Where the two conflict, the affected scope stops and returns to explicit business validation rather than being reconciled silently.
+Canonical discovery has priority over this document. Version `0.6` consolidates the accepted VAL-007/008 Owner reconciliation: future enabled-date pickup orders, responsive staff operation, staff-mediated changes/cancellations, conditional in-person contact collection, operational POS/payment/cash-close/receipt scope, manual incident handling, calibrated capacity and delay, stock, bounded upselling, and the MVP scorecard. It replaces stale v0.5 contradictions rather than layering a delta over them.
 
-Version `0.3` is the result of an independent requirements audit of version `0.2`. Version `0.4` applies the Project Owner's review of version `0.3`: the corrected `BLOCK` semantics, the gluten and telephone-scope corrections, and the re-audit of every blocked record. Version `0.5` closes a remaining metadata-contract defect by requiring a justification for every `BLOCK` link rather than one per blocked record. The findings, evidence, and disposition for all three rounds are recorded in `docs/reviews/MILESTONE_SPEC_001_AUDIT.md`, whose sections 17 and 18 are the Owner-review addenda.
+Version `0.6` applies `docs/current/DOPIS_ACCEPTED_RECONCILIATION_DELTA_2026-08-13.md`, `docs/reviews/DOPIS_VAL_007_008_OWNER_RECONCILIATION_MAP.md`, and accepted VAL-007/008 evidence. Implementation authority remains `NOT_GRANTED`.
 
 ## 2. Authoritative artifacts
 
@@ -87,7 +87,7 @@ Version `0.2` referenced `JV-MANUAL-ORDERS` and `JV-PAYMENT` as if they were cur
 
 **Omissions now specified.** The operational threshold register that every `JV-THRESHOLDS` link resolves through, the pending-Jaime decision record, substitution rules and the absorbed price-difference limit, the non-collection process, transactional capacity and stock commitment, the provisional checkout hold, tracking-SMS delivery failure routing, alternative-slot expiry, approximate critical-ingredient allowances, queue ordering by recommended preparation time, telephone-support disclosure limits, card-data storage prohibition, and the upselling incompatibility warning.
 
-**Exclusions.** Compensation, half-and-half pizzas, the ticket printer, multi-day advance orders, commercial automation, coffee, and multilingual administration are now recorded, each with a requirement that enforces it and machine-checkable forbidden terms.
+**Exclusions.** Compensation, half-and-half pizzas, commercial automation, coffee, and multilingual administration remain recorded. Advance orders and receipt/ticket printing are accepted MVP capabilities, not exclusions.
 
 ## 5A. Owner-review corrections in version `0.4`
 
@@ -117,7 +117,7 @@ The singular field is replaced by `block_justifications`, an ordered array carry
 
 Recorded in `docs/current/requirements/DOPIS_EXCLUSIONS.json` with the canonical section supporting each one. The validator fails if a forbidden term appears in any requirement other than the one that states the exclusion.
 
-Online payment including Apple Pay and Google Pay; customer accounts, loyalty, birthday benefits, and marketing campaigns; delivery and table reservations; coffee; customer self-service cancellation; gram-level recipe inventory; automatic substitution and automatic reactivation; discounts, dynamic pricing, automatic promotions, and inferred or random recommendations; compensation capabilities; half-and-half pizzas; the ticket printer; multilingual administration; multi-day advance orders; advanced analytics and product-margin reporting; advanced SEO; production hosting and public-domain readiness; an extensive permission hierarchy.
+Online payment including Apple Pay and Google Pay; customer accounts, loyalty, birthday benefits, and marketing campaigns; delivery and table reservations; coffee; general customer self-service cancellation; gram-level recipe inventory; automatic substitution and automatic reactivation; discounts, dynamic pricing, automatic promotions, and inferred or random recommendations; compensation capabilities; half-and-half pizzas; multilingual administration; advanced analytics and product-margin reporting; advanced SEO; production hosting and public-domain readiness; an extensive permission hierarchy.
 
 ## 7. Epic map
 

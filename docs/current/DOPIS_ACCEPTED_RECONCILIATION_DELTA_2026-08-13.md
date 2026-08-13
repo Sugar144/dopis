@@ -101,13 +101,13 @@ Dopis owns:
 Accepted in-person payment methods are:
 
 - `CASH`;
-- `CARD` through the existing BBVA card terminal.
+- `CARD` through the existing Ingenico APOS A8 terminal supplied by CaixaBank / Comercia Global Payments.
 
 Customers do not choose the payment method during web ordering. Staff record the method actually collected.
 
 For cash payment, Dopis records the collected amount and may calculate change before payment confirmation.
 
-For card payment, the preferred target is automatic amount/result integration between Dopis and the BBVA terminal. Until terminal capability is verified, the compatible MVP fallback is: Dopis calculates the final amount, staff enter only that amount in the BBVA terminal, and staff confirm the observed payment result in Dopis.
+For card payment, the preferred target is automatic amount/result integration between Dopis and the Ingenico APOS A8 terminal. Until terminal capability and Comercia provisioning are verified, the compatible MVP fallback is: Dopis calculates the final amount, staff enter only that amount in APOS A8, and staff confirm the observed payment result in Dopis.
 
 The previous first-MVP exclusion of a ticket printer is superseded. Dopis should issue the customer receipt/ticket through a compatible printer. Direct reuse of the existing printer is preferred but is subject to hardware verification; replacement with a compatible printer is allowed without changing the business/domain model.
 
@@ -167,7 +167,7 @@ These are bounded technical, compliance, evidence, or calibration gates. They do
 
 ### Hardware / integration
 
-- exact BBVA terminal model and whether it supports ECR / POS-controlled amount and result integration;
+- Ingenico APOS A8 ECR / POS-controlled amount and result integration capability, subject to Comercia merchant provisioning;
 - exact existing receipt-printer model and supported connection/control interface.
 
 ### Fiscal / compliance
