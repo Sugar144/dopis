@@ -13,6 +13,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install GOV-GEN validator dependencies
+        run: python -m pip install pyyaml jsonschema
+
       - name: Acquire locked GOV-GEN framework
         run: |
           FRAMEWORK_ROOT="$(python3 scripts/acquire-framework.py)"
@@ -20,12 +27,12 @@ jobs:
 
       - name: Validate GOV-GEN consumer conformance
         run: >
-          python3 "$GOV_GEN_FRAMEWORK_ROOT/tools/validate_consumer.py"
+          python "$GOV_GEN_FRAMEWORK_ROOT/tools/validate_consumer.py"
           --consumer .
           --framework "$GOV_GEN_FRAMEWORK_ROOT"
           --lock framework-lock.json
 
       - name: Validate Dopis specifications
         run: |
-          python3 scripts/validate_specification.py
-          python3 scripts/test_validate_specification.py
+          python scripts/validate_specification.py
+          python scripts/test_validate_specification.py

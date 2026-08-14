@@ -1,0 +1,17 @@
+configuration:
+  correction_example:
+    base_run_id: DOPIS-RUN-001
+    first_correction_id: DOPIS-RUN-001-R1
+
+  paths:
+    formal_run_prompt_snapshots: docs/governance/runs/<run>/prompt/
+    learning_readme: docs/governance/learning/README.md
+
+  identity_allocator:
+    namespace: dopis.governance
+    state_path: docs/governance/identity/allocation-state.json
+    ledger_path: docs/governance/identity/allocation-ledger.jsonl
+
+  prompt_identity:
+    namespace: DOPIS-PROMPT
+    sequence_width: 3
