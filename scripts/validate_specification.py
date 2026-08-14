@@ -33,6 +33,8 @@ TRACE_PATH = ROOT / "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json"
 BASELINE_MD_PATH = ROOT / "docs/current/DOPIS_MVP_REQUIREMENTS.md"
 USE_CASE_CONTRACT_PATH = ROOT / "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json"
 USE_CASE_MODEL_PATH = ROOT / "docs/planning/DOPIS_USE_CASE_MODEL.json"
+STORY_CONTRACT_PATH = ROOT / "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json"
+STORIES_PATH = ROOT / "docs/backlog/DOPIS_STORIES.json"
 
 CLASS_PREFIXES = ("FR", "BR", "DATA", "SEC", "PRIV", "NFR", "AUDIT", "PILOT", "OPS")
 REQ_ID_RE = re.compile(
@@ -863,6 +865,193 @@ def check_use_case_model(model: dict, requirement_ids: set[str], vocabulary: dic
     return orphans, problems, sorted(use_case_ids)
 
 
+def check_story_contract(contract: dict) -> tuple[list[str], dict]:
+    """Check the supported story contract envelope and return its vocabulary."""
+    problems: list[str] = []
+    expected = {
+        "schema_version": "1.0",
+        "implementation_authority": "NOT_GRANTED",
+        "backlog_artifact": "docs/backlog/DOPIS_STORIES.json",
+        "use_case_model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
+        "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+    }
+    for field, value in expected.items():
+        if contract.get(field) != value:
+            problems.append(f"story contract {field} must be {value!r}")
+    identifiers = contract.get("identifiers") if isinstance(contract.get("identifiers"), dict) else {}
+    patterns: dict[str, str] = {}
+    for name, placeholder in (("story", "STORY_ID"), ("acceptance_criterion", "STORY_ID")):
+        definition = identifiers.get(name)
+        pattern = definition.get("pattern") if isinstance(definition, dict) else None
+        if not isinstance(pattern, str) or not pattern:
+            problems.append(f"story contract {name} identifier pattern is invalid")
+            continue
+        try:
+            re.compile(pattern.replace("{story_id}", placeholder))
+        except re.error:
+            problems.append(f"story contract {name} identifier pattern is invalid")
+            continue
+        patterns[name] = pattern
+    stories = contract.get("stories") if isinstance(contract.get("stories"), dict) else {}
+    criteria = contract.get("acceptance_criteria") if isinstance(contract.get("acceptance_criteria"), dict) else {}
+    story_fields = stories.get("required_fields")
+    criterion_fields = criteria.get("required_fields")
+    roles = stories.get("requirement_link_roles")
+    if not isinstance(story_fields, list) or not all(isinstance(value, str) and value for value in story_fields):
+        problems.append("story contract required story fields are invalid")
+        story_fields = []
+    if not isinstance(criterion_fields, list) or not all(isinstance(value, str) and value for value in criterion_fields):
+        problems.append("story contract required acceptance-criterion fields are invalid")
+        criterion_fields = []
+    if not isinstance(roles, list) or not all(isinstance(value, str) and value for value in roles):
+        problems.append("story contract requirement link roles are invalid")
+        roles = []
+    relations = contract.get("traceability", {}).get("relations") if isinstance(contract.get("traceability"), dict) else None
+    if not isinstance(relations, list) or not all(isinstance(value, dict) for value in relations):
+        problems.append("story contract traceability relations are invalid")
+        relations = []
+    relation_fields = {"link_role", "relation", "from", "to", "derived_from"}
+    if any(set(relation) - relation_fields or ("link_role" in relation and relation["link_role"] not in roles) for relation in relations):
+        problems.append("story contract traceability relation uses an undeclared requirement-link role")
+    behavior_roles = {
+        relation.get("link_role") for relation in relations
+        if relation.get("from") == "STORY" and relation.get("to") == "REQUIREMENT"
+        and relation.get("relation") == "REFINES"
+    }
+    return problems, {"patterns": patterns, "story_fields": story_fields, "criterion_fields": criterion_fields, "roles": roles, "behavior_roles": behavior_roles, "relations": relations}
+
+
+def check_stories(backlog: dict, model: dict, requirement_ids: set[str], vocabulary: dict) -> tuple[dict[str, list[str]], list[str], list[str], list[str]]:
+    """Validate the empty-or-populated product backlog against its contract."""
+    problems: list[str] = []
+    orphans = {
+        "invalid_or_duplicate_story_ids": [], "unknown_story_parent_use_cases": [],
+        "story_scenarios_outside_parent_use_case": [], "story_actors_outside_parent_use_case": [],
+        "story_requirements_outside_parent_use_case": [], "stories_without_behavior_requirements": [],
+        "stories_without_acceptance_criteria": [], "unknown_story_dependencies": [],
+        "story_dependency_cycles": [], "invalid_or_duplicate_acceptance_criterion_ids": [],
+        "acceptance_criterion_requirements_outside_parent_story": [],
+    }
+    expected = {"schema_version": "1.0", "implementation_authority": "NOT_GRANTED", "contract": "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json", "use_case_model": "docs/planning/DOPIS_USE_CASE_MODEL.json", "accepted_requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json"}
+    for field, value in expected.items():
+        if backlog.get(field) != value:
+            problems.append(f"story backlog {field} must be {value!r}")
+    stories = backlog.get("stories")
+    if not isinstance(stories, list):
+        problems.append("story backlog stories must be a list")
+        stories = []
+    use_cases = {use_case.get("id"): use_case for use_case in model.get("use_cases", []) if isinstance(use_case, dict)}
+    story_ids: list[str] = []
+    criterion_ids: list[str] = []
+    seen_stories: set[str] = set()
+    seen_criteria: set[str] = set()
+    dependencies: dict[str, list[str]] = {}
+    for index, story in enumerate(stories):
+        label = f"story at index {index}"
+        if not isinstance(story, dict):
+            problems.append(f"{label} is not an object")
+            continue
+        missing = [field for field in vocabulary["story_fields"] if field not in story]
+        if missing:
+            problems.append(f"{label} missing fields: {missing}")
+            continue
+        sid = story["id"]
+        if not isinstance(sid, str) or not re.fullmatch(vocabulary["patterns"].get("story", r"(?!)"), sid) or sid in seen_stories:
+            orphans["invalid_or_duplicate_story_ids"].append(str(sid))
+            continue
+        seen_stories.add(sid)
+        story_ids.append(sid)
+        for field in ("title", "actor_id", "actor_goal", "value_outcome", "parent_use_case_id"):
+            if not isinstance(story[field], str) or not story[field].strip():
+                problems.append(f"{sid}: {field} must be a non-empty string")
+        parent = use_cases.get(story["parent_use_case_id"])
+        if parent is None:
+            orphans["unknown_story_parent_use_cases"].append(f"{sid}->{story['parent_use_case_id']}")
+            parent_actors, parent_scenarios, parent_links = set(), set(), set()
+        else:
+            parent_actors = {link.get("actor_id") for link in parent.get("actor_links", []) if isinstance(link, dict)}
+            parent_scenarios = {scenario.get("id") for scenario in parent.get("scenarios", []) if isinstance(scenario, dict)}
+            parent_links = {(link.get("requirement_id"), link.get("role")) for link in parent.get("requirement_links", []) if isinstance(link, dict)}
+        if story["actor_id"] not in parent_actors:
+            orphans["story_actors_outside_parent_use_case"].append(f"{sid}->{story['actor_id']}")
+        scenario_ids = story["parent_scenario_ids"]
+        if not isinstance(scenario_ids, list) or not scenario_ids or not all(isinstance(value, str) for value in scenario_ids):
+            problems.append(f"{sid}: parent_scenario_ids must be a non-empty list of strings")
+        else:
+            for scenario_id in scenario_ids:
+                if scenario_id not in parent_scenarios:
+                    orphans["story_scenarios_outside_parent_use_case"].append(f"{sid}->{scenario_id}")
+        links = story["requirement_links"]
+        if not isinstance(links, list) or not links:
+            problems.append(f"{sid}: requirement_links must be a non-empty list")
+            links = []
+        story_requirements: set[str] = set()
+        behavior_links = 0
+        for link in links:
+            if not isinstance(link, dict) or set(link) != {"requirement_id", "role"}:
+                problems.append(f"{sid}: invalid requirement link {link!r}")
+                continue
+            rid, role = link["requirement_id"], link["role"]
+            if rid in story_requirements:
+                problems.append(f"{sid}: duplicate requirement link {rid}")
+            story_requirements.add(rid)
+            if role not in vocabulary["roles"]:
+                problems.append(f"{sid}: invalid requirement link role {role!r}")
+            if role in vocabulary["behavior_roles"]:
+                behavior_links += 1
+            if rid not in requirement_ids or (rid, role) not in parent_links:
+                orphans["story_requirements_outside_parent_use_case"].append(f"{sid}->{rid}:{role}")
+        if behavior_links == 0:
+            orphans["stories_without_behavior_requirements"].append(sid)
+        declared_dependencies = story["dependencies"]
+        if not isinstance(declared_dependencies, list) or not all(isinstance(value, str) for value in declared_dependencies):
+            problems.append(f"{sid}: dependencies must be a list of strings")
+            declared_dependencies = []
+        dependencies[sid] = declared_dependencies
+        criteria = story["acceptance_criteria"]
+        if not isinstance(criteria, list) or not criteria:
+            orphans["stories_without_acceptance_criteria"].append(sid)
+            criteria = []
+        for criterion in criteria:
+            if not isinstance(criterion, dict):
+                problems.append(f"{sid}: acceptance criterion is not an object")
+                continue
+            missing = [field for field in vocabulary["criterion_fields"] if field not in criterion]
+            if missing:
+                problems.append(f"{sid}: acceptance criterion missing fields: {missing}")
+                continue
+            cid = criterion["id"]
+            pattern = vocabulary["patterns"].get("acceptance_criterion", r"(?!)").replace("{story_id}", re.escape(sid))
+            if not isinstance(cid, str) or not re.fullmatch(pattern, cid) or cid in seen_criteria:
+                orphans["invalid_or_duplicate_acceptance_criterion_ids"].append(str(cid))
+                continue
+            seen_criteria.add(cid)
+            criterion_ids.append(cid)
+            for field in ("title", "context", "event"):
+                if not isinstance(criterion[field], str) or not criterion[field].strip():
+                    problems.append(f"{cid}: {field} must be a non-empty string")
+            outcomes = criterion["expected_outcomes"]
+            if not isinstance(outcomes, list) or not outcomes or not all(isinstance(value, str) and value.strip() for value in outcomes):
+                problems.append(f"{cid}: expected_outcomes must be a non-empty list of strings")
+            refs = criterion["requirement_ids"]
+            if not isinstance(refs, list) or not refs or not all(isinstance(value, str) for value in refs):
+                problems.append(f"{cid}: requirement_ids must be a non-empty list of strings")
+                continue
+            for rid in refs:
+                if rid not in requirement_ids or rid not in story_requirements:
+                    orphans["acceptance_criterion_requirements_outside_parent_story"].append(f"{cid}->{rid}")
+    for sid, targets in dependencies.items():
+        for target in targets:
+            if target == sid or target not in seen_stories:
+                orphans["unknown_story_dependencies"].append(f"{sid}->{target}")
+    cycle = find_cycle(dependencies)
+    if cycle:
+        orphans["story_dependency_cycles"].append(" -> ".join(cycle))
+    for key in orphans:
+        orphans[key] = sorted(set(orphans[key]))
+    return orphans, problems, sorted(story_ids), sorted(criterion_ids)
+
+
 def main() -> int:
     problems: list[str] = []
 
@@ -874,9 +1063,13 @@ def main() -> int:
     trace = load_json(TRACE_PATH)
     use_case_contract = load_json(USE_CASE_CONTRACT_PATH)
     use_case_model = load_json(USE_CASE_MODEL_PATH)
+    story_contract = load_json(STORY_CONTRACT_PATH)
+    stories = load_json(STORIES_PATH)
 
     contract_problems, use_case_vocabulary = check_use_case_contract(use_case_contract)
     problems += contract_problems
+    story_contract_problems, story_vocabulary = check_story_contract(story_contract)
+    problems += story_contract_problems
 
     gate_by_id, gate_problems = check_gates(gates_doc)
     problems += gate_problems
@@ -926,6 +1119,10 @@ def main() -> int:
         use_case_model, set(by_id), use_case_vocabulary
     )
     problems += use_case_problems
+    story_orphans, story_problems, story_ids, acceptance_criterion_ids = check_stories(
+        stories, use_case_model, set(by_id), story_vocabulary
+    )
+    problems += story_problems
 
     relation_fields = ("relation", "from", "to", "derived_from")
     expected_relations = [
@@ -945,6 +1142,22 @@ def main() -> int:
             "use-case contract traceability relations do not match traceability matrix"
         )
 
+    story_expected_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in story_vocabulary["relations"]
+    ]
+    story_matched_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in declared_relations
+        if relation.get("derived_from") in {
+            expected["derived_from"] for expected in story_expected_relations
+        }
+    ]
+    if story_matched_relations != story_expected_relations:
+        problems.append(
+            "story contract traceability relations do not match traceability matrix"
+        )
+
     computed = {
         **req_orphans,
         **{k: v for k, v in epic_orphans.items() if k != "epic_supporting_duplicates_primary"},
@@ -957,6 +1170,7 @@ def main() -> int:
         "tests_without_acceptance_targets": [],
         "stale_superseded_links": [],
         **use_case_orphans,
+        **story_orphans,
     }
     if epic_orphans["epic_supporting_duplicates_primary"]:
         problems.append(
@@ -970,8 +1184,19 @@ def main() -> int:
             "future_nodes.use_cases must exactly match the use-case model ids: "
             f"declared={future_nodes.get('use_cases')!r}, computed={use_case_ids!r}"
         )
+    if future_nodes.get("stories") != story_ids:
+        problems.append(
+            "future_nodes.stories must exactly match the story backlog ids: "
+            f"declared={future_nodes.get('stories')!r}, computed={story_ids!r}"
+        )
+    if future_nodes.get("acceptance_criteria") != acceptance_criterion_ids:
+        problems.append(
+            "future_nodes.acceptance_criteria must exactly match the story backlog "
+            f"acceptance-criterion ids: declared={future_nodes.get('acceptance_criteria')!r}, "
+            f"computed={acceptance_criterion_ids!r}"
+        )
     for name, nodes in sorted(future_nodes.items()):
-        if name == "use_cases":
+        if name in {"use_cases", "stories", "acceptance_criteria"}:
             continue
         if nodes:
             problems.append(
@@ -1019,6 +1244,8 @@ def main() -> int:
         (TRACE_PATH, trace),
         (USE_CASE_CONTRACT_PATH, use_case_contract),
         (USE_CASE_MODEL_PATH, use_case_model),
+        (STORY_CONTRACT_PATH, story_contract),
+        (STORIES_PATH, stories),
     ):
         authority = doc.get("implementation_authority")
         if authority != "NOT_GRANTED":

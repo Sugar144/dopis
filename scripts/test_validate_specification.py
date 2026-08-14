@@ -34,7 +34,9 @@ ARTIFACTS = [
     "docs/backlog/DOPIS_EPICS.json",
     "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json",
     "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json",
+    "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json",
     "docs/planning/DOPIS_USE_CASE_MODEL.json",
+    "docs/backlog/DOPIS_STORIES.json",
     VALIDATOR,
 ]
 
@@ -43,6 +45,7 @@ GATES = "docs/current/requirements/DOPIS_VALIDATION_GATES.json"
 EPICS = "docs/backlog/DOPIS_EPICS.json"
 TRACE = "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json"
 USE_CASE_MODEL = "docs/planning/DOPIS_USE_CASE_MODEL.json"
+STORIES = "docs/backlog/DOPIS_STORIES.json"
 BASELINE_MD = "docs/current/DOPIS_MVP_REQUIREMENTS.md"
 
 
@@ -101,6 +104,35 @@ def populate_valid_use_case_model(tree: Path) -> None:
     write_json(tree, USE_CASE_MODEL, model)
     trace = read_json(tree, TRACE)
     trace["future_nodes"]["use_cases"] = ["UC-ORDERING-001"]
+    write_json(tree, TRACE, trace)
+
+
+def populate_valid_story_backlog(tree: Path) -> None:
+    """Create one disposable story and criterion using real model references."""
+    backlog = read_json(tree, STORIES)
+    backlog["stories"] = [{
+        "id": "ST-CATALOG-001",
+        "title": "Browse menu information",
+        "actor_id": "ACT-CUSTOMER",
+        "actor_goal": "Review available menu information.",
+        "value_outcome": "The customer can make an informed menu choice.",
+        "parent_use_case_id": "UC-CATALOG-001",
+        "parent_scenario_ids": ["UC-CATALOG-001-S001"],
+        "requirement_links": [{"requirement_id": "FR-ORDER-001", "role": "BEHAVIOR"}],
+        "dependencies": [],
+        "acceptance_criteria": [{
+            "id": "ST-CATALOG-001-AC001",
+            "title": "Menu information is observable",
+            "context": "A customer is browsing the published menu.",
+            "event": "The customer reviews an available item.",
+            "expected_outcomes": ["The item information is observable to the customer."],
+            "requirement_ids": ["FR-ORDER-001"],
+        }],
+    }]
+    write_json(tree, STORIES, backlog)
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["stories"] = ["ST-CATALOG-001"]
+    trace["future_nodes"]["acceptance_criteria"] = ["ST-CATALOG-001-AC001"]
     write_json(tree, TRACE, trace)
 
 
@@ -437,6 +469,93 @@ def mutate_matrix_use_case_relation(tree: Path) -> None:
     write_json(tree, TRACE, trace)
 
 
+def _story(tree: Path) -> dict:
+    return read_json(tree, STORIES)["stories"][0]
+
+
+def mutate_unknown_story_parent_use_case(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["parent_use_case_id"] = "UC-NOWHERE-001"
+    write_json(tree, STORIES, data)
+
+
+def mutate_story_scenario_outside_parent(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["parent_scenario_ids"] = ["UC-ORDER-001-S001"]
+    write_json(tree, STORIES, data)
+
+
+def mutate_story_actor_outside_parent(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["actor_id"] = "ACT-STAFF-MEMBER"
+    write_json(tree, STORIES, data)
+
+
+def mutate_story_requirement_role_drift(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["requirement_links"][0]["role"] = "CONSTRAINT"
+    write_json(tree, STORIES, data)
+
+
+def mutate_story_without_behavior_requirement(tree: Path) -> None:
+    mutate_story_requirement_role_drift(tree)
+
+
+def mutate_story_without_acceptance_criterion(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["acceptance_criteria"] = []
+    write_json(tree, STORIES, data)
+
+
+def mutate_criterion_requirement_outside_story(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["acceptance_criteria"][0]["requirement_ids"] = ["FR-ORDER-002"]
+    write_json(tree, STORIES, data)
+
+
+def mutate_unknown_story_dependency(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["dependencies"] = ["ST-NOWHERE-001"]
+    write_json(tree, STORIES, data)
+
+
+def mutate_cyclic_story_dependency(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    first = data["stories"][0]
+    second = json.loads(json.dumps(first))
+    second["id"] = "ST-CATALOG-002"
+    second["acceptance_criteria"][0]["id"] = "ST-CATALOG-002-AC001"
+    first["dependencies"] = [second["id"]]
+    second["dependencies"] = [first["id"]]
+    data["stories"].append(second)
+    write_json(tree, STORIES, data)
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["stories"].append(second["id"])
+    trace["future_nodes"]["acceptance_criteria"].append(second["acceptance_criteria"][0]["id"])
+    write_json(tree, TRACE, trace)
+
+
+def mutate_stale_story_index(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["stories"] = []
+    write_json(tree, TRACE, trace)
+
+
+def mutate_stale_criterion_index(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["acceptance_criteria"] = []
+    write_json(tree, TRACE, trace)
+
+
+def mutate_matrix_story_relation(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    for relation in trace["derived_relations"]:
+        if relation.get("derived_from") == "stories[].parent_use_case_id":
+            relation["relation"] = "CONSTRAINS"
+            break
+    write_json(tree, TRACE, trace)
+
+
 CASES = [
     ("duplicate requirement id", mutate_duplicate_id, "duplicate requirement id"),
     ("unknown gate reference", mutate_unknown_gate, "unknown_gate_references"),
@@ -507,6 +626,33 @@ USE_CASE_CASES = [
      "use-case contract traceability relations do not match traceability matrix"),
 ]
 
+STORY_CASES = [
+    ("unknown story parent use case", mutate_unknown_story_parent_use_case,
+     "unknown_story_parent_use_cases"),
+    ("story scenario outside parent use case", mutate_story_scenario_outside_parent,
+     "story_scenarios_outside_parent_use_case"),
+    ("story actor outside parent use case", mutate_story_actor_outside_parent,
+     "story_actors_outside_parent_use_case"),
+    ("story requirement role drift", mutate_story_requirement_role_drift,
+     "story_requirements_outside_parent_use_case"),
+    ("story without a BEHAVIOR requirement", mutate_story_without_behavior_requirement,
+     "stories_without_behavior_requirements"),
+    ("story without acceptance criteria", mutate_story_without_acceptance_criterion,
+     "stories_without_acceptance_criteria"),
+    ("criterion requirement outside parent story", mutate_criterion_requirement_outside_story,
+     "acceptance_criterion_requirements_outside_parent_story"),
+    ("unknown story dependency", mutate_unknown_story_dependency,
+     "unknown_story_dependencies"),
+    ("cyclic story dependency", mutate_cyclic_story_dependency,
+     "story_dependency_cycles"),
+    ("stale story future-node index", mutate_stale_story_index,
+     "future_nodes.stories must exactly match"),
+    ("stale acceptance-criterion future-node index", mutate_stale_criterion_index,
+     "future_nodes.acceptance_criteria must exactly match"),
+    ("story contract and matrix relation drift", mutate_matrix_story_relation,
+     "story contract traceability relations do not match traceability matrix"),
+]
+
 
 def main() -> int:
     failures: list[str] = []
@@ -523,7 +669,7 @@ def main() -> int:
                 f"{result.stderr}"
             )
         else:
-            print("ok   control: real empty PLAN-001A model passes")
+            print("ok   control: real empty PLAN-002A story backlog passes")
 
         populated = base / "populated-model"
         build_tree(populated)
@@ -537,9 +683,40 @@ def main() -> int:
         else:
             print("ok   populated model: valid disposable model passes")
 
+        populated_story = base / "populated-story"
+        build_tree(populated_story)
+        populate_valid_story_backlog(populated_story)
+        result = run(populated_story)
+        if result.returncode != 0:
+            failures.append(
+                "populated story: valid disposable story and product acceptance "
+                f"criterion fixture must pass, got exit {result.returncode}\n{result.stderr}"
+            )
+        else:
+            print("ok   populated story: valid disposable story backlog passes")
+
         for index, (name, mutate, expected) in enumerate(CASES):
             tree = base / f"case{index:02d}"
             build_tree(tree)
+            mutate(tree)
+            result = run(tree)
+            if result.returncode == 0:
+                failures.append(f"{name}: validator passed a defective fixture")
+                print(f"FAIL {name}: validator passed a defective fixture")
+                continue
+            output = result.stdout + result.stderr
+            if expected not in output:
+                failures.append(
+                    f"{name}: rejected, but no message matching {expected!r}\n{output}"
+                )
+                print(f"FAIL {name}: rejected without a recognisable message")
+                continue
+            print(f"ok   {name}: rejected with a message naming {expected!r}")
+
+        for index, (name, mutate, expected) in enumerate(STORY_CASES):
+            tree = base / f"story{index:02d}"
+            build_tree(tree)
+            populate_valid_story_backlog(tree)
             mutate(tree)
             result = run(tree)
             if result.returncode == 0:
@@ -576,11 +753,11 @@ def main() -> int:
 
     print()
     if failures:
-        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {len(CASES) + len(USE_CASE_CASES) + 2} cases", file=sys.stderr)
+        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {len(CASES) + len(USE_CASE_CASES) + len(STORY_CASES) + 3} cases", file=sys.stderr)
         for failure in failures:
             print(f"  - {failure}", file=sys.stderr)
         return 1
-    print(f"PASS: {len(CASES) + len(USE_CASE_CASES)} defect fixtures rejected, two control fixtures accepted")
+    print(f"PASS: {len(CASES) + len(USE_CASE_CASES) + len(STORY_CASES)} defect fixtures rejected, three control fixtures accepted")
     print("      no fixture state written to the repository")
     return 0
 
