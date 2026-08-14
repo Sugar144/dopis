@@ -48,6 +48,14 @@
     "stories": {
       "artifact": "docs/backlog/DOPIS_STORIES.json",
       "version": "1.0"
+    },
+    "vertical_slice_traceability_contract": {
+      "artifact": "docs/traceability/DOPIS_VERTICAL_SLICE_TRACEABILITY_CONTRACT.json",
+      "version": "1.0"
+    },
+    "vertical_slices": {
+      "artifact": "docs/planning/DOPIS_VERTICAL_SLICES.json",
+      "version": "1.0"
     }
   },
   "node_types": [
@@ -59,6 +67,7 @@
     "USE_CASE",
     "STORY",
     "ACCEPTANCE_CRITERION",
+    "VERTICAL_SLICE",
     "ARCHITECTURE_DECISION",
     "CONTRACT",
     "TASK",
@@ -192,6 +201,20 @@
       "to": "REQUIREMENT",
       "derived_from": "stories[].acceptance_criteria[].requirement_ids",
       "checked": "Every acceptance-criterion requirement resolves and is linked by its parent story."
+    },
+    {
+      "relation": "COVERS",
+      "from": "VERTICAL_SLICE",
+      "to": "STORY",
+      "derived_from": "slices[].story_ids",
+      "checked": "Every accepted story is covered by exactly one vertical slice; every referenced story id resolves."
+    },
+    {
+      "relation": "DEPENDS_ON",
+      "from": "VERTICAL_SLICE",
+      "to": "VERTICAL_SLICE",
+      "derived_from": "slices[].dependencies",
+      "checked": "Every dependency resolves, is not self-referential, forms no cycle, and every cross-slice story dependency induces a direct slice dependency."
     }
   ],
   "coverage_rules": {
@@ -270,7 +293,21 @@
     "unknown_story_dependencies": [],
     "story_dependency_cycles": [],
     "invalid_or_duplicate_acceptance_criterion_ids": [],
-    "acceptance_criterion_requirements_outside_parent_story": []
+    "acceptance_criterion_requirements_outside_parent_story": [],
+    "invalid_or_duplicate_vertical_slice_ids": [],
+    "unknown_slice_story_references": [],
+    "stories_assigned_to_multiple_slices": [],
+    "uncovered_accepted_stories": [],
+    "slice_actor_union_drift": [],
+    "unknown_slice_dependencies": [],
+    "slice_dependency_cycles": [],
+    "missing_induced_slice_dependencies": [],
+    "slice_readiness_gate_union_drift": [],
+    "unknown_slice_technical_baseline_references": [],
+    "non_deferred_ids_in_deferred_baseline_refs": [],
+    "recommended_order_missing_slices": [],
+    "recommended_order_duplicate_slices": [],
+    "recommended_order_dependency_violations": []
   },
   "derived_counts": {
     "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",
@@ -362,6 +399,24 @@
       "ST-SHIFT-001-AC001",
       "ST-STOCK-001-AC001",
       "ST-UPSELL-001-AC001"
+    ],
+    "vertical_slices": [
+      "VS-ACCESS-SERVICE-001",
+      "VS-ACCESS-STAFF-001",
+      "VS-ASSISTED-ORDER-001",
+      "VS-CAPACITY-001",
+      "VS-CATALOG-ADMIN-001",
+      "VS-COLLECTION-001",
+      "VS-INCIDENTS-001",
+      "VS-KITCHEN-001",
+      "VS-ORDER-ADMISSION-001",
+      "VS-ORDERING-001",
+      "VS-PILOT-001",
+      "VS-REPORTING-001",
+      "VS-SAFETY-001",
+      "VS-SHIFT-CLOSE-001",
+      "VS-STOCK-001",
+      "VS-TRACKING-001"
     ],
     "architecture_decisions": [],
     "contracts": [],

@@ -1,0 +1,65 @@
+{
+  "schema_version": "1.0",
+  "format": "JSON",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "purpose": "Defines the minimum machine-checkable traceability contract for the first-MVP vertical-slice delivery-planning model. It groups the accepted product-story backlog into observable, independently demonstrable outcomes. It does not create, reinterpret, or resolve any story, requirement, validation gate, or technical-baseline decision, and it grants no implementation, ADR, technical-acceptance, test, task, or execution-packet authority.",
+  "backlog_artifact": "docs/backlog/DOPIS_STORIES.json",
+  "story_acceptance_traceability_contract": "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json",
+  "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+  "validation_gates_artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
+  "technical_baseline_artifact": "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json",
+  "model_artifact": "docs/planning/DOPIS_VERTICAL_SLICES.json",
+  "identifiers": {
+    "vertical_slice": {
+      "format": "VS-<DOMAIN>-NNN",
+      "pattern": "^VS-[A-Z][A-Z0-9-]*-[0-9]{3}$"
+    }
+  },
+  "vertical_slices": {
+    "required_fields": [
+      "id",
+      "title",
+      "observable_outcome",
+      "actor_ids",
+      "story_ids",
+      "dependencies",
+      "acceptance_boundary",
+      "readiness_gate_ids",
+      "technical_baseline_refs",
+      "deferred_baseline_decision_refs"
+    ],
+    "rules": [
+      "A vertical slice is a bounded delivery-planning grouping of one or more accepted product stories sharing one coherent observable product/operational outcome; it is not a new requirement, story, use case, or implementation task.",
+      "Every vertical slice has at least one member story, and every member story id resolves to an id in the accepted story backlog.",
+      "Every accepted story in the backlog is assigned to exactly one vertical slice; there is no secondary or supporting membership.",
+      "actor_ids equals the exact sorted unique union of actor_id values from the slice's member stories.",
+      "dependencies resolve to other declared vertical-slice ids, are not self-referential, and form no cycle across the full slice set.",
+      "Every cross-slice STORY DEPENDS_ON STORY relationship declared in the story backlog induces a direct dependency between the two stories' containing slices; a slice dependency whose two member stories carry no such relationship must additionally carry a non-empty, source-backed rationale distinguishable from an induced dependency.",
+      "readiness_gate_ids equals the exact sorted unique union of validation-gate ids referenced (with any effect) by the requirement_links of the slice's member stories, resolved through docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json validation_links; this is traceability metadata only and does not by itself flatten, resolve, or reinterpret the source requirement's BLOCK/CALIBRATE/VALIDATE status.",
+      "Every technical_baseline_refs id resolves to a decision id declared in docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json.",
+      "Every deferred_baseline_decision_refs id resolves to a decision id declared in docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json whose classification is DEFERRED.",
+      "No vertical-slice field may grant implementation authority or state an API, database schema, class, event topic, test case, task, file layout, or implementation algorithm.",
+      "recommended_delivery_order contains every declared vertical-slice id exactly once and is a topological order consistent with every declared hard dependency; it is planning guidance only and grants no implementation authority, release commitment, estimate, or schedule."
+    ]
+  },
+  "traceability": {
+    "relations": [
+      {
+        "relation": "COVERS",
+        "from": "VERTICAL_SLICE",
+        "to": "STORY",
+        "derived_from": "slices[].story_ids"
+      },
+      {
+        "relation": "DEPENDS_ON",
+        "from": "VERTICAL_SLICE",
+        "to": "VERTICAL_SLICE",
+        "derived_from": "slices[].dependencies"
+      }
+    ],
+    "future_node_indexes": {
+      "vertical_slices": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.vertical_slices is an exact validator-recomputed index of vertical-slice ids declared in DOPIS_VERTICAL_SLICES.json."
+    }
+  }
+}

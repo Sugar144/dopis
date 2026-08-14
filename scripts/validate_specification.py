@@ -35,6 +35,9 @@ USE_CASE_CONTRACT_PATH = ROOT / "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_C
 USE_CASE_MODEL_PATH = ROOT / "docs/planning/DOPIS_USE_CASE_MODEL.json"
 STORY_CONTRACT_PATH = ROOT / "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json"
 STORIES_PATH = ROOT / "docs/backlog/DOPIS_STORIES.json"
+TECHNICAL_BASELINE_PATH = ROOT / "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json"
+VS_CONTRACT_PATH = ROOT / "docs/traceability/DOPIS_VERTICAL_SLICE_TRACEABILITY_CONTRACT.json"
+VS_MODEL_PATH = ROOT / "docs/planning/DOPIS_VERTICAL_SLICES.json"
 
 CLASS_PREFIXES = ("FR", "BR", "DATA", "SEC", "PRIV", "NFR", "AUDIT", "PILOT", "OPS")
 REQ_ID_RE = re.compile(
@@ -43,6 +46,8 @@ REQ_ID_RE = re.compile(
 EPIC_ID_RE = re.compile(r"^EPIC-[A-Z][A-Z-]*$")
 GATE_ID_RE = re.compile(r"^JV-[A-Z][A-Z0-9-]*$")
 EXCLUSION_ID_RE = re.compile(r"^EXC-[A-Z][A-Z0-9-]*$")
+VS_ID_RE = re.compile(r"^VS-[A-Z][A-Z0-9-]*-[0-9]{3}$")
+TB_ID_RE = re.compile(r"^TB-[A-Z][A-Z0-9-]*$")
 
 # Matches "## 1. Title", "### 2.1 Title", "## 10A. Title", "### 7.4A Title".
 HEADING_RE = re.compile(r"^#{1,6}\s+(\d+[A-Z]?(?:\.\d+[A-Z]?)*)\.?(?:\s|$)")
@@ -1054,6 +1059,276 @@ def check_stories(backlog: dict, model: dict, requirement_ids: set[str], vocabul
     return orphans, problems, sorted(story_ids), sorted(criterion_ids)
 
 
+def check_technical_baseline(doc: dict) -> tuple[set[str], set[str], list[str]]:
+    """Return (all decision ids, DEFERRED decision ids, problems)."""
+    problems: list[str] = []
+    decisions = doc.get("decisions")
+    if not isinstance(decisions, list) or not decisions:
+        raise Failure(["minimum technical baseline contains no decisions list"])
+    all_ids: set[str] = set()
+    deferred_ids: set[str] = set()
+    for decision in decisions:
+        did = decision.get("id", "")
+        if not TB_ID_RE.fullmatch(str(did)):
+            problems.append(f"invalid technical-baseline decision id: {did!r}")
+            continue
+        if did in all_ids:
+            problems.append(f"duplicate technical-baseline decision id: {did}")
+            continue
+        all_ids.add(did)
+        if decision.get("classification") == "DEFERRED":
+            deferred_ids.add(did)
+    return all_ids, deferred_ids, problems
+
+
+def check_vertical_slice_contract(contract: dict) -> tuple[list[str], dict]:
+    """Check the supported vertical-slice contract envelope and return its vocabulary."""
+    problems: list[str] = []
+    expected = {
+        "schema_version": "1.0",
+        "implementation_authority": "NOT_GRANTED",
+        "backlog_artifact": "docs/backlog/DOPIS_STORIES.json",
+        "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+        "validation_gates_artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
+        "technical_baseline_artifact": "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json",
+        "model_artifact": "docs/planning/DOPIS_VERTICAL_SLICES.json",
+    }
+    for field, value in expected.items():
+        if contract.get(field) != value:
+            problems.append(f"vertical-slice contract {field} must be {value!r}")
+    identifiers = contract.get("identifiers") if isinstance(contract.get("identifiers"), dict) else {}
+    definition = identifiers.get("vertical_slice")
+    pattern = definition.get("pattern") if isinstance(definition, dict) else None
+    if not isinstance(pattern, str) or not pattern:
+        problems.append("vertical-slice contract identifier pattern is invalid")
+        pattern = None
+    else:
+        try:
+            re.compile(pattern)
+        except re.error:
+            problems.append("vertical-slice contract identifier pattern is invalid")
+            pattern = None
+    slices = contract.get("vertical_slices") if isinstance(contract.get("vertical_slices"), dict) else {}
+    required_fields = slices.get("required_fields")
+    if not isinstance(required_fields, list) or not all(
+        isinstance(value, str) and value for value in required_fields
+    ):
+        problems.append("vertical-slice contract required slice fields are invalid")
+        required_fields = []
+    relations = (
+        contract.get("traceability", {}).get("relations")
+        if isinstance(contract.get("traceability"), dict)
+        else None
+    )
+    if not isinstance(relations, list) or not all(isinstance(value, dict) for value in relations):
+        problems.append("vertical-slice contract traceability relations are invalid")
+        relations = []
+    return problems, {"pattern": pattern, "required_fields": required_fields, "relations": relations}
+
+
+def check_vertical_slices(
+    model: dict,
+    story_ids: set[str],
+    story_backlog: dict,
+    story_gates: dict[str, set[str]],
+    tb_ids: set[str],
+    tb_deferred_ids: set[str],
+    vocabulary: dict,
+) -> tuple[dict[str, list[str]], list[str], list[str]]:
+    """Validate the vertical-slice delivery-planning model against its contract."""
+    problems: list[str] = []
+    orphans = {
+        "invalid_or_duplicate_vertical_slice_ids": [],
+        "unknown_slice_story_references": [],
+        "stories_assigned_to_multiple_slices": [],
+        "uncovered_accepted_stories": [],
+        "slice_actor_union_drift": [],
+        "unknown_slice_dependencies": [],
+        "slice_dependency_cycles": [],
+        "missing_induced_slice_dependencies": [],
+        "slice_readiness_gate_union_drift": [],
+        "unknown_slice_technical_baseline_references": [],
+        "non_deferred_ids_in_deferred_baseline_refs": [],
+        "recommended_order_missing_slices": [],
+        "recommended_order_duplicate_slices": [],
+        "recommended_order_dependency_violations": [],
+    }
+    expected = {
+        "schema_version": "1.0",
+        "implementation_authority": "NOT_GRANTED",
+        "contract": "docs/traceability/DOPIS_VERTICAL_SLICE_TRACEABILITY_CONTRACT.json",
+        "backlog_artifact": "docs/backlog/DOPIS_STORIES.json",
+        "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+        "validation_gates_artifact": "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
+        "technical_baseline_artifact": "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json",
+    }
+    for field, value in expected.items():
+        if model.get(field) != value:
+            problems.append(f"vertical-slice model {field} must be {value!r}")
+
+    stories_by_id = {
+        story.get("id"): story
+        for story in story_backlog.get("stories", [])
+        if isinstance(story, dict)
+    }
+    story_dependencies: dict[str, list[str]] = {
+        sid: [d for d in story.get("dependencies", []) if isinstance(d, str)]
+        for sid, story in stories_by_id.items()
+    }
+
+    slices = model.get("slices")
+    if not isinstance(slices, list):
+        problems.append("vertical-slice model slices must be a list")
+        slices = []
+
+    pattern = vocabulary.get("pattern") or r"(?!)"
+    required_fields = vocabulary.get("required_fields") or []
+
+    slice_ids: list[str] = []
+    seen_slice_ids: set[str] = set()
+    slice_of_story: dict[str, str] = {}
+    story_membership_count: dict[str, int] = {}
+    declared_dependencies: dict[str, list[str]] = {}
+    slice_by_id: dict[str, dict] = {}
+
+    for index, slice_ in enumerate(slices):
+        label = f"slice at index {index}"
+        if not isinstance(slice_, dict):
+            problems.append(f"{label} is not an object")
+            continue
+        missing = [field for field in required_fields if field not in slice_]
+        if missing:
+            problems.append(f"{label} missing fields: {missing}")
+            continue
+        vid = slice_["id"]
+        if not isinstance(vid, str) or not re.fullmatch(pattern, vid) or vid in seen_slice_ids:
+            orphans["invalid_or_duplicate_vertical_slice_ids"].append(str(vid))
+            continue
+        seen_slice_ids.add(vid)
+        slice_ids.append(vid)
+        slice_by_id[vid] = slice_
+
+        for field in ("title", "observable_outcome", "acceptance_boundary"):
+            if not isinstance(slice_[field], str) or not slice_[field].strip():
+                problems.append(f"{vid}: {field} must be a non-empty string")
+
+        member_story_ids = slice_["story_ids"]
+        if not isinstance(member_story_ids, list) or not member_story_ids or not all(
+            isinstance(value, str) for value in member_story_ids
+        ):
+            problems.append(f"{vid}: story_ids must be a non-empty list of strings")
+            member_story_ids = []
+        member_actor_ids: set[str] = set()
+        for sid in member_story_ids:
+            story_membership_count[sid] = story_membership_count.get(sid, 0) + 1
+            slice_of_story.setdefault(sid, vid)
+            if sid not in story_ids:
+                orphans["unknown_slice_story_references"].append(f"{vid}->{sid}")
+                continue
+            member_actor_ids.add(stories_by_id[sid]["actor_id"])
+
+        actor_ids = slice_["actor_ids"]
+        if not isinstance(actor_ids, list) or not all(isinstance(value, str) for value in actor_ids):
+            problems.append(f"{vid}: actor_ids must be a list of strings")
+        elif sorted(set(actor_ids)) != sorted(member_actor_ids):
+            orphans["slice_actor_union_drift"].append(
+                f"{vid}: declared={sorted(set(actor_ids))} computed={sorted(member_actor_ids)}"
+            )
+
+        readiness_gate_ids = slice_["readiness_gate_ids"]
+        computed_gates: set[str] = set()
+        for sid in member_story_ids:
+            computed_gates |= story_gates.get(sid, set())
+        if not isinstance(readiness_gate_ids, list) or not all(
+            isinstance(value, str) for value in readiness_gate_ids
+        ):
+            problems.append(f"{vid}: readiness_gate_ids must be a list of strings")
+        elif sorted(set(readiness_gate_ids)) != sorted(computed_gates):
+            orphans["slice_readiness_gate_union_drift"].append(
+                f"{vid}: declared={sorted(set(readiness_gate_ids))} computed={sorted(computed_gates)}"
+            )
+
+        tb_refs = slice_["technical_baseline_refs"]
+        if not isinstance(tb_refs, list) or not all(isinstance(value, str) for value in tb_refs):
+            problems.append(f"{vid}: technical_baseline_refs must be a list of strings")
+            tb_refs = []
+        for tid in tb_refs:
+            if tid not in tb_ids:
+                orphans["unknown_slice_technical_baseline_references"].append(f"{vid}->{tid}")
+
+        deferred_refs = slice_["deferred_baseline_decision_refs"]
+        if not isinstance(deferred_refs, list) or not all(
+            isinstance(value, str) for value in deferred_refs
+        ):
+            problems.append(f"{vid}: deferred_baseline_decision_refs must be a list of strings")
+            deferred_refs = []
+        for tid in deferred_refs:
+            if tid not in tb_deferred_ids:
+                orphans["non_deferred_ids_in_deferred_baseline_refs"].append(f"{vid}->{tid}")
+
+        deps = slice_["dependencies"]
+        if not isinstance(deps, list) or not all(isinstance(value, str) for value in deps):
+            problems.append(f"{vid}: dependencies must be a list of strings")
+            deps = []
+        declared_dependencies[vid] = deps
+
+    for sid, count in story_membership_count.items():
+        if count > 1:
+            orphans["stories_assigned_to_multiple_slices"].append(sid)
+    for sid in sorted(story_ids - set(slice_of_story)):
+        orphans["uncovered_accepted_stories"].append(sid)
+
+    for vid, deps in declared_dependencies.items():
+        for dep in deps:
+            if dep == vid or dep not in seen_slice_ids:
+                orphans["unknown_slice_dependencies"].append(f"{vid}->{dep}")
+
+    dependency_graph = {
+        vid: [d for d in deps if d in seen_slice_ids and d != vid]
+        for vid, deps in declared_dependencies.items()
+    }
+    cycle = find_cycle(dependency_graph)
+    if cycle:
+        orphans["slice_dependency_cycles"].append(" -> ".join(cycle))
+
+    for sid, story_deps in story_dependencies.items():
+        origin_slice = slice_of_story.get(sid)
+        if origin_slice is None:
+            continue
+        for dep_sid in story_deps:
+            target_slice = slice_of_story.get(dep_sid)
+            if target_slice is None or target_slice == origin_slice:
+                continue
+            if target_slice not in declared_dependencies.get(origin_slice, []):
+                orphans["missing_induced_slice_dependencies"].append(
+                    f"{origin_slice}->{target_slice} (induced by {sid}->{dep_sid})"
+                )
+
+    order = model.get("recommended_delivery_order")
+    if not isinstance(order, list) or not all(isinstance(value, str) for value in order):
+        problems.append("vertical-slice model recommended_delivery_order must be a list of strings")
+        order = []
+    missing_from_order = sorted(seen_slice_ids - set(order))
+    if missing_from_order:
+        orphans["recommended_order_missing_slices"] = missing_from_order
+    seen_order: set[str] = set()
+    for vid in order:
+        if vid in seen_order:
+            orphans["recommended_order_duplicate_slices"].append(vid)
+        seen_order.add(vid)
+    position = {vid: i for i, vid in enumerate(order) if vid in seen_slice_ids}
+    for vid, deps in declared_dependencies.items():
+        for dep in deps:
+            if dep not in position or vid not in position:
+                continue
+            if position[dep] >= position[vid]:
+                orphans["recommended_order_dependency_violations"].append(f"{vid}->{dep}")
+
+    for key in orphans:
+        orphans[key] = sorted(set(orphans[key]))
+    return orphans, problems, sorted(slice_ids)
+
+
 def main() -> int:
     problems: list[str] = []
 
@@ -1067,11 +1342,19 @@ def main() -> int:
     use_case_model = load_json(USE_CASE_MODEL_PATH)
     story_contract = load_json(STORY_CONTRACT_PATH)
     stories = load_json(STORIES_PATH)
+    technical_baseline_doc = load_json(TECHNICAL_BASELINE_PATH)
+    vs_contract = load_json(VS_CONTRACT_PATH)
+    vs_model = load_json(VS_MODEL_PATH)
 
     contract_problems, use_case_vocabulary = check_use_case_contract(use_case_contract)
     problems += contract_problems
     story_contract_problems, story_vocabulary = check_story_contract(story_contract)
     problems += story_contract_problems
+    vs_contract_problems, vs_vocabulary = check_vertical_slice_contract(vs_contract)
+    problems += vs_contract_problems
+
+    tb_ids, tb_deferred_ids, tb_problems = check_technical_baseline(technical_baseline_doc)
+    problems += tb_problems
 
     gate_by_id, gate_problems = check_gates(gates_doc)
     problems += gate_problems
@@ -1126,6 +1409,25 @@ def main() -> int:
     )
     problems += story_problems
 
+    story_gates: dict[str, set[str]] = {}
+    for story in stories.get("stories", []):
+        if not isinstance(story, dict) or not isinstance(story.get("id"), str):
+            continue
+        gates: set[str] = set()
+        for link in story.get("requirement_links", []):
+            if not isinstance(link, dict):
+                continue
+            req = by_id.get(link.get("requirement_id"))
+            if not req:
+                continue
+            gates |= {gate for _, gate in req["validation_links"]}
+        story_gates[story["id"]] = gates
+
+    vs_orphans, vs_problems, vs_ids = check_vertical_slices(
+        vs_model, set(story_ids), stories, story_gates, tb_ids, tb_deferred_ids, vs_vocabulary
+    )
+    problems += vs_problems
+
     relation_fields = ("relation", "from", "to", "derived_from")
     expected_relations = [
         {field: relation.get(field) for field in relation_fields}
@@ -1160,6 +1462,22 @@ def main() -> int:
             "story contract traceability relations do not match traceability matrix"
         )
 
+    vs_expected_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in vs_vocabulary["relations"]
+    ]
+    vs_matched_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in declared_relations
+        if relation.get("derived_from") in {
+            expected["derived_from"] for expected in vs_expected_relations
+        }
+    ]
+    if vs_matched_relations != vs_expected_relations:
+        problems.append(
+            "vertical-slice contract traceability relations do not match traceability matrix"
+        )
+
     computed = {
         **req_orphans,
         **{k: v for k, v in epic_orphans.items() if k != "epic_supporting_duplicates_primary"},
@@ -1172,6 +1490,7 @@ def main() -> int:
         "stale_superseded_links": [],
         **use_case_orphans,
         **story_orphans,
+        **vs_orphans,
     }
     if epic_orphans["epic_supporting_duplicates_primary"]:
         problems.append(
@@ -1196,8 +1515,13 @@ def main() -> int:
             f"acceptance-criterion ids: declared={future_nodes.get('acceptance_criteria')!r}, "
             f"computed={acceptance_criterion_ids!r}"
         )
+    if future_nodes.get("vertical_slices") != vs_ids:
+        problems.append(
+            "future_nodes.vertical_slices must exactly match the vertical-slice model ids: "
+            f"declared={future_nodes.get('vertical_slices')!r}, computed={vs_ids!r}"
+        )
     for name, nodes in sorted(future_nodes.items()):
-        if name in {"use_cases", "stories", "acceptance_criteria"}:
+        if name in {"use_cases", "stories", "acceptance_criteria", "vertical_slices"}:
             continue
         if nodes:
             problems.append(
@@ -1247,6 +1571,8 @@ def main() -> int:
         (USE_CASE_MODEL_PATH, use_case_model),
         (STORY_CONTRACT_PATH, story_contract),
         (STORIES_PATH, stories),
+        (VS_CONTRACT_PATH, vs_contract),
+        (VS_MODEL_PATH, vs_model),
     ):
         authority = doc.get("implementation_authority")
         if authority != "NOT_GRANTED":
