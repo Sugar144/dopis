@@ -102,8 +102,13 @@ def populate_valid_use_case_model(tree: Path) -> None:
         }],
     }]
     write_json(tree, USE_CASE_MODEL, model)
+    backlog = read_json(tree, STORIES)
+    backlog["stories"] = []
+    write_json(tree, STORIES, backlog)
     trace = read_json(tree, TRACE)
     trace["future_nodes"]["use_cases"] = ["UC-ORDERING-001"]
+    trace["future_nodes"]["stories"] = []
+    trace["future_nodes"]["acceptance_criteria"] = []
     write_json(tree, TRACE, trace)
 
 
@@ -677,7 +682,7 @@ def main() -> int:
                 f"{result.stderr}"
             )
         else:
-            print("ok   control: real empty PLAN-002A story backlog passes")
+            print("ok   control: current real specification artifacts pass")
 
         populated = base / "populated-model"
         build_tree(populated)
