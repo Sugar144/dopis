@@ -214,7 +214,7 @@
       "from": "VERTICAL_SLICE",
       "to": "VERTICAL_SLICE",
       "derived_from": "slices[].dependencies",
-      "checked": "Every dependency resolves, is not self-referential, forms no cycle, and every cross-slice story dependency induces a direct slice dependency."
+      "checked": "Every dependency resolves, is not self-referential, forms no cycle, and every cross-slice story dependency induces a direct slice dependency; a declared dependency not induced by a cross-slice story dependency additionally requires a validator-checked dependency_rationale entry with a non-empty rationale and source_refs that resolve only to requirement, use-case, story, or acceptance-criterion ids."
     }
   ],
   "coverage_rules": {

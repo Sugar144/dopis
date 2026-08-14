@@ -1472,7 +1472,6 @@ def main() -> int:
         | set(use_case_ids)
         | set(story_ids)
         | set(acceptance_criterion_ids)
-        | set(tb_ids)
     )
     vs_orphans, vs_problems, vs_ids = check_vertical_slices(
         vs_model,

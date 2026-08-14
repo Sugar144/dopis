@@ -850,6 +850,21 @@ def mutate_vs_invalid_dependency_rationale_entry(tree: Path) -> None:
     write_json(tree, VS_MODEL, model)
 
 
+def mutate_vs_dependency_rationale_technical_baseline_source(tree: Path) -> None:
+    """Cite a resolvable TB-* decision id, a namespace the contract does not permit.
+
+    TB-STATE-001 is a real, resolvable technical-baseline decision id. The
+    contract limits dependency_rationale.source_refs to requirement,
+    use-case, story, or acceptance-criterion ids, so a resolvable TB-* id
+    must still be rejected even though it exists in the repository.
+    """
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"]["VS-CATALOG-001"]["source_refs"] = ["TB-STATE-001"]
+    write_json(tree, VS_MODEL, model)
+
+
 VS_CASES = [
     ("unknown story reference in a slice", mutate_vs_unknown_story_reference,
      "unknown_slice_story_references"),
@@ -884,6 +899,9 @@ VS_CASES = [
      mutate_vs_dependency_rationale_for_undeclared_dependency,
      "dependency_rationale_for_undeclared_dependency"),
     ("dependency_rationale entry missing source_refs", mutate_vs_invalid_dependency_rationale_entry,
+     "invalid_dependency_rationale_entries"),
+    ("dependency_rationale source_refs citing a technical-baseline id",
+     mutate_vs_dependency_rationale_technical_baseline_source,
      "invalid_dependency_rationale_entries"),
 ]
 
