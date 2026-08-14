@@ -41,8 +41,6 @@ REQ_ID_RE = re.compile(
 EPIC_ID_RE = re.compile(r"^EPIC-[A-Z][A-Z-]*$")
 GATE_ID_RE = re.compile(r"^JV-[A-Z][A-Z0-9-]*$")
 EXCLUSION_ID_RE = re.compile(r"^EXC-[A-Z][A-Z0-9-]*$")
-ACTOR_ID_RE = re.compile(r"^ACT-[A-Z][A-Z0-9-]*$")
-USE_CASE_ID_RE = re.compile(r"^UC-[A-Z][A-Z0-9-]*-[0-9]{3}$")
 
 # Matches "## 1. Title", "### 2.1 Title", "## 10A. Title", "### 7.4A Title".
 HEADING_RE = re.compile(r"^#{1,6}\s+(\d+[A-Z]?(?:\.\d+[A-Z]?)*)\.?(?:\s|$)")
@@ -109,18 +107,6 @@ REQUIRED_BLOCK_JUSTIFICATION_FIELDS = (
     "gate",
     "canonical_open_question",
     "explanation",
-)
-REQUIRED_ACTOR_FIELDS = ("id", "title", "kind")
-REQUIRED_USE_CASE_FIELDS = (
-    "id",
-    "title",
-    "goal",
-    "trigger",
-    "actor_links",
-    "preconditions",
-    "success_outcome",
-    "requirement_links",
-    "scenarios",
 )
 
 
@@ -640,11 +626,11 @@ def check_markdown(
     return sorted(set(disagreements))
 
 
-def check_use_case_contract(contract: dict) -> list[str]:
-    """Check the small, fixed contract needed to interpret the model."""
+def check_use_case_contract(contract: dict) -> tuple[list[str], dict]:
+    """Check the supported contract envelope and return its model vocabulary."""
     problems: list[str] = []
     expected = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "implementation_authority": "NOT_GRANTED",
         "model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
         "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
@@ -652,30 +638,72 @@ def check_use_case_contract(contract: dict) -> list[str]:
     for field, value in expected.items():
         if contract.get(field) != value:
             problems.append(f"use-case contract {field} must be {value!r}")
-    if contract.get("identifiers") != {
-        "actor": "ACT-<STABLE-NAME>",
-        "use_case": "UC-<DOMAIN>-NNN",
-        "scenario": "<USE-CASE-ID>-SNNN",
-    }:
-        problems.append("use-case contract identifiers do not declare the required patterns")
+    identifiers = contract.get("identifiers")
+    if not isinstance(identifiers, dict):
+        problems.append("use-case contract identifiers must be an object")
+        identifiers = {}
+    patterns: dict[str, str] = {}
+    for name in ("actor", "use_case", "scenario"):
+        definition = identifiers.get(name)
+        pattern = definition.get("pattern") if isinstance(definition, dict) else None
+        if not isinstance(pattern, str) or not pattern:
+            problems.append(f"use-case contract {name} identifier pattern is invalid")
+            continue
+        try:
+            re.compile(pattern.replace("{use_case_id}", "USE_CASE_ID"))
+        except re.error:
+            problems.append(f"use-case contract {name} identifier pattern is invalid")
+            continue
+        patterns[name] = pattern
     actors = contract.get("actors", {})
-    if actors.get("allowed_kinds") != ["HUMAN_ROLE", "EXTERNAL_SYSTEM"]:
+    actor_kinds = actors.get("allowed_kinds") if isinstance(actors, dict) else None
+    actor_fields = actors.get("required_fields") if isinstance(actors, dict) else None
+    if not isinstance(actor_kinds, list) or not all(isinstance(value, str) and value for value in actor_kinds):
         problems.append("use-case contract actor kinds are invalid")
-    if actors.get("required_fields") != list(REQUIRED_ACTOR_FIELDS):
+        actor_kinds = []
+    if not isinstance(actor_fields, list) or not all(isinstance(value, str) and value for value in actor_fields):
         problems.append("use-case contract actor fields are invalid")
+        actor_fields = []
     use_cases = contract.get("use_cases", {})
-    if use_cases.get("required_fields") != list(REQUIRED_USE_CASE_FIELDS):
+    if not isinstance(use_cases, dict):
+        problems.append("use-case contract use_cases must be an object")
+        use_cases = {}
+    use_case_fields = use_cases.get("required_fields")
+    if not isinstance(use_case_fields, list) or not all(isinstance(value, str) and value for value in use_case_fields):
         problems.append("use-case contract use-case fields are invalid")
-    if use_cases.get("actor_link_roles") != ["PRIMARY", "SUPPORTING"]:
+        use_case_fields = []
+    actor_roles = use_cases.get("actor_link_roles", {})
+    if not isinstance(actor_roles, dict) or not isinstance(actor_roles.get("allowed"), list) or actor_roles.get("primary") not in actor_roles.get("allowed", []):
         problems.append("use-case contract actor link roles are invalid")
-    if use_cases.get("requirement_link_roles") != ["BEHAVIOR", "CONSTRAINT"]:
+        actor_roles = {"allowed": [], "primary": None}
+    requirement_roles = use_cases.get("requirement_link_roles")
+    if not isinstance(requirement_roles, list) or not all(isinstance(value, str) and value for value in requirement_roles):
         problems.append("use-case contract requirement link roles are invalid")
-    if use_cases.get("scenario_types") != ["MAIN", "ALTERNATIVE", "EXCEPTION"]:
+        requirement_roles = []
+    scenario_types = use_cases.get("scenario_types", {})
+    if not isinstance(scenario_types, dict) or not isinstance(scenario_types.get("allowed"), list) or scenario_types.get("main") not in scenario_types.get("allowed", []):
         problems.append("use-case contract scenario types are invalid")
-    return problems
+        scenario_types = {"allowed": [], "main": None}
+    relations = contract.get("traceability", {}).get("relations") if isinstance(contract.get("traceability"), dict) else None
+    if not isinstance(relations, list) or not all(isinstance(value, dict) for value in relations):
+        problems.append("use-case contract traceability relations are invalid")
+        relations = []
+    relation_fields = {"link_role", "relation", "from", "to", "derived_from", "requires_at_least_one"}
+    if any(set(relation) - relation_fields or relation.get("link_role") not in requirement_roles for relation in relations):
+        problems.append("use-case contract traceability relation uses an undeclared requirement-link role")
+    return problems, {
+        "patterns": patterns,
+        "actor_kinds": actor_kinds,
+        "actor_fields": actor_fields,
+        "use_case_fields": use_case_fields,
+        "actor_roles": actor_roles,
+        "requirement_roles": requirement_roles,
+        "scenario_types": scenario_types,
+        "relations": relations,
+    }
 
 
-def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[str, list[str]], list[str], list[str]]:
+def check_use_case_model(model: dict, requirement_ids: set[str], vocabulary: dict) -> tuple[dict[str, list[str]], list[str], list[str]]:
     """Validate actors, use cases, scenarios, and their bounded references."""
     problems: list[str] = []
     orphans = {
@@ -706,16 +734,16 @@ def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[s
         if not isinstance(actor, dict):
             problems.append(f"{label} is not an object")
             continue
-        missing = [field for field in REQUIRED_ACTOR_FIELDS if not str(actor.get(field, "")).strip()]
+        missing = [field for field in vocabulary["actor_fields"] if not str(actor.get(field, "")).strip()]
         if missing:
             problems.append(f"{label} missing fields: {missing}")
             continue
         aid = actor["id"]
-        if not ACTOR_ID_RE.fullmatch(aid) or aid in actor_ids:
+        if not isinstance(aid, str) or not re.fullmatch(vocabulary["patterns"].get("actor", r"(?!)"), aid) or aid in actor_ids:
             orphans["invalid_or_duplicate_actor_ids"].append(aid)
             continue
         actor_ids.add(aid)
-        if actor["kind"] not in {"HUMAN_ROLE", "EXTERNAL_SYSTEM"}:
+        if actor["kind"] not in vocabulary["actor_kinds"]:
             problems.append(f"{aid}: invalid actor kind {actor['kind']!r}")
 
     use_cases = model.get("use_cases")
@@ -730,12 +758,12 @@ def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[s
         if not isinstance(use_case, dict):
             problems.append(f"{label} is not an object")
             continue
-        missing = [field for field in REQUIRED_USE_CASE_FIELDS if field not in use_case]
+        missing = [field for field in vocabulary["use_case_fields"] if field not in use_case]
         if missing:
             problems.append(f"{label} missing fields: {missing}")
             continue
         uid = use_case["id"]
-        if not isinstance(uid, str) or not USE_CASE_ID_RE.fullmatch(uid) or uid in seen_use_cases:
+        if not isinstance(uid, str) or not re.fullmatch(vocabulary["patterns"].get("use_case", r"(?!)"), uid) or uid in seen_use_cases:
             orphans["invalid_or_duplicate_use_case_ids"].append(str(uid))
             continue
         seen_use_cases.add(uid)
@@ -764,9 +792,9 @@ def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[s
             linked_actors.add(aid)
             if aid not in actor_ids:
                 orphans["unknown_use_case_actor_references"].append(f"{uid}->{aid}")
-            if role not in {"PRIMARY", "SUPPORTING"}:
+            if role not in vocabulary["actor_roles"]["allowed"]:
                 problems.append(f"{uid}: invalid actor link role {role!r}")
-            if role == "PRIMARY":
+            if role == vocabulary["actor_roles"]["primary"]:
                 primary_actors += 1
         if primary_actors == 0:
             problems.append(f"{uid}: actor_links must contain at least one PRIMARY actor")
@@ -787,9 +815,9 @@ def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[s
             linked_requirements.add(rid)
             if rid not in requirement_ids:
                 orphans["unknown_use_case_requirement_references"].append(f"{uid}->{rid}")
-            if role not in {"BEHAVIOR", "CONSTRAINT"}:
+            if role not in vocabulary["requirement_roles"]:
                 problems.append(f"{uid}: invalid requirement link role {role!r}")
-            if role == "BEHAVIOR":
+            if any(relation.get("link_role") == role and relation.get("requires_at_least_one") for relation in vocabulary["relations"]):
                 behavior_links += 1
         if behavior_links == 0:
             orphans["use_cases_without_behavior_requirements"].append(uid)
@@ -804,12 +832,13 @@ def check_use_case_model(model: dict, requirement_ids: set[str]) -> tuple[dict[s
                 problems.append(f"{uid}: invalid scenario {scenario!r}")
                 continue
             sid = scenario["id"]
-            if not isinstance(sid, str) or not re.fullmatch(rf"{re.escape(uid)}-S[0-9]{{3}}", sid) or sid in seen_scenarios:
+            scenario_pattern = vocabulary["patterns"].get("scenario", r"(?!)").replace("{use_case_id}", re.escape(uid))
+            if not isinstance(sid, str) or not re.fullmatch(scenario_pattern, sid) or sid in seen_scenarios:
                 problems.append(f"{uid}: invalid or duplicate scenario id {sid!r}")
             seen_scenarios.add(str(sid))
-            if scenario["type"] not in {"MAIN", "ALTERNATIVE", "EXCEPTION"}:
+            if scenario["type"] not in vocabulary["scenario_types"]["allowed"]:
                 problems.append(f"{uid}: invalid scenario type {scenario['type']!r}")
-            if scenario["type"] == "MAIN":
+            if scenario["type"] == vocabulary["scenario_types"]["main"]:
                 main_scenarios += 1
             if not isinstance(scenario["title"], str) or not scenario["title"].strip():
                 problems.append(f"{uid}: scenario {sid!r} title must be a non-empty string")
@@ -846,7 +875,8 @@ def main() -> int:
     use_case_contract = load_json(USE_CASE_CONTRACT_PATH)
     use_case_model = load_json(USE_CASE_MODEL_PATH)
 
-    problems += check_use_case_contract(use_case_contract)
+    contract_problems, use_case_vocabulary = check_use_case_contract(use_case_contract)
+    problems += contract_problems
 
     gate_by_id, gate_problems = check_gates(gates_doc)
     problems += gate_problems
@@ -893,9 +923,27 @@ def main() -> int:
         by_id, epics, set(gate_by_id), registry, retired_gate_ids
     )
     use_case_orphans, use_case_problems, use_case_ids = check_use_case_model(
-        use_case_model, set(by_id)
+        use_case_model, set(by_id), use_case_vocabulary
     )
     problems += use_case_problems
+
+    relation_fields = ("relation", "from", "to", "derived_from")
+    expected_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in use_case_vocabulary["relations"]
+    ]
+    declared_relations = trace.get("derived_relations", [])
+    matched_relations = [
+        {field: relation.get(field) for field in relation_fields}
+        for relation in declared_relations
+        if relation.get("derived_from") in {
+            expected["derived_from"] for expected in expected_relations
+        }
+    ]
+    if matched_relations != expected_relations:
+        problems.append(
+            "use-case contract traceability relations do not match traceability matrix"
+        )
 
     computed = {
         **req_orphans,

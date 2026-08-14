@@ -410,6 +410,33 @@ def mutate_stale_use_case_index(tree: Path) -> None:
     write_json(tree, TRACE, trace)
 
 
+def mutate_contract_actor_identifier_pattern(tree: Path) -> None:
+    contract = read_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json")
+    contract["identifiers"]["actor"]["pattern"] = "^ACT-SERVICE-[0-9]{3}$"
+    write_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json", contract)
+
+
+def mutate_contract_actor_kind(tree: Path) -> None:
+    contract = read_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json")
+    contract["actors"]["allowed_kinds"] = ["EXTERNAL_SYSTEM"]
+    write_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json", contract)
+
+
+def mutate_contract_required_actor_field(tree: Path) -> None:
+    contract = read_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json")
+    contract["actors"]["required_fields"].append("description")
+    write_json(tree, "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json", contract)
+
+
+def mutate_matrix_use_case_relation(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    for relation in trace["derived_relations"]:
+        if relation.get("derived_from") == "use_cases[].requirement_links with role BEHAVIOR":
+            relation["relation"] = "CONSTRAINS"
+            break
+    write_json(tree, TRACE, trace)
+
+
 CASES = [
     ("duplicate requirement id", mutate_duplicate_id, "duplicate requirement id"),
     ("unknown gate reference", mutate_unknown_gate, "unknown_gate_references"),
@@ -470,6 +497,14 @@ USE_CASE_CASES = [
      "scenario_requirements_outside_parent_use_case"),
     ("stale use-case future-node index", mutate_stale_use_case_index,
      "future_nodes.use_cases must exactly match"),
+    ("contract actor identifier pattern drift", mutate_contract_actor_identifier_pattern,
+     "invalid_or_duplicate_actor_ids"),
+    ("contract actor kind drift", mutate_contract_actor_kind,
+     "invalid actor kind"),
+    ("contract required actor field drift", mutate_contract_required_actor_field,
+     "missing fields"),
+    ("contract and matrix relation drift", mutate_matrix_use_case_relation,
+     "use-case contract traceability relations do not match traceability matrix"),
 ]
 
 

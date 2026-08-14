@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "format": "JSON",
   "status": "PREPARED",
   "implementation_authority": "NOT_GRANTED",
@@ -11,9 +11,18 @@
   "model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
   "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
   "identifiers": {
-    "actor": "ACT-<STABLE-NAME>",
-    "use_case": "UC-<DOMAIN>-NNN",
-    "scenario": "<USE-CASE-ID>-SNNN"
+    "actor": {
+      "format": "ACT-<STABLE-NAME>",
+      "pattern": "^ACT-[A-Z][A-Z0-9-]*$"
+    },
+    "use_case": {
+      "format": "UC-<DOMAIN>-NNN",
+      "pattern": "^UC-[A-Z][A-Z0-9-]*-[0-9]{3}$"
+    },
+    "scenario": {
+      "format": "<USE-CASE-ID>-SNNN",
+      "pattern": "^{use_case_id}-S[0-9]{3}$"
+    }
   },
   "actors": {
     "allowed_kinds": [
@@ -39,19 +48,25 @@
       "requirement_links",
       "scenarios"
     ],
-    "actor_link_roles": [
-      "PRIMARY",
-      "SUPPORTING"
-    ],
+    "actor_link_roles": {
+      "allowed": [
+        "PRIMARY",
+        "SUPPORTING"
+      ],
+      "primary": "PRIMARY"
+    },
     "requirement_link_roles": [
       "BEHAVIOR",
       "CONSTRAINT"
     ],
-    "scenario_types": [
-      "MAIN",
-      "ALTERNATIVE",
-      "EXCEPTION"
-    ],
+    "scenario_types": {
+      "allowed": [
+        "MAIN",
+        "ALTERNATIVE",
+        "EXCEPTION"
+      ],
+      "main": "MAIN"
+    },
     "rules": [
       "Every use case has at least one PRIMARY actor link.",
       "Every use case has at least one BEHAVIOR requirement link.",
@@ -63,8 +78,23 @@
     ]
   },
   "traceability": {
-    "behavior_relation": "USE_CASE --REFINES--> REQUIREMENT",
-    "constraint_relation": "REQUIREMENT --CONSTRAINS--> USE_CASE",
+    "relations": [
+      {
+        "link_role": "BEHAVIOR",
+        "relation": "REFINES",
+        "from": "USE_CASE",
+        "to": "REQUIREMENT",
+        "derived_from": "use_cases[].requirement_links with role BEHAVIOR",
+        "requires_at_least_one": true
+      },
+      {
+        "link_role": "CONSTRAINT",
+        "relation": "CONSTRAINS",
+        "from": "REQUIREMENT",
+        "to": "USE_CASE",
+        "derived_from": "use_cases[].requirement_links with role CONSTRAINT"
+      }
+    ],
     "future_node_index": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.use_cases is an exact validator-recomputed index of model use-case IDs."
   }
 }
