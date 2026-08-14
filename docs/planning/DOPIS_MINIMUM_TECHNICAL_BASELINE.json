@@ -4,7 +4,7 @@
   "baseline_id": "DOPIS-PLAN-003",
   "status": "PREPARED",
   "implementation_authority": "NOT_GRANTED",
-  "prompt": "docs/governance/prompts/DOPIS-PROMPT-007-v0.1.0.md",
+  "prompt": "docs/governance/prompts/DOPIS-PROMPT-007-v0.1.1.md",
   "accepted_base": "main@831571be7164076a84367e15ee4e5ee173d38faf",
   "evidence_note": "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md",
   "canonical_source_references": [
@@ -87,16 +87,14 @@
     },
     {
       "id": "TB-API-001",
-      "concern": "HTTP/API contract surface",
-      "classification": "NEW_MINIMUM_BASELINE",
-      "decision": "Use JSON REST semantics over HTTP with FastAPI-generated OpenAPI as the API description surface, and respect RFC 9110 method/status semantics.",
-      "rationale": "Discovery names OpenAPI support as FastAPI rationale but does not fix the contract style or standard; this is a genuinely new minimum decision needed before any endpoint work exists.",
+      "concern": "API contract style",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "Promote discovery's provisional REST API style into the baseline candidate: use JSON REST semantics over HTTP.",
+      "rationale": "Discovery §3.2 records 'API style: REST' as a provisional direction; no concrete canonical contradiction was found, so PLAN-003 promotes it rather than re-deciding it.",
       "source_references": [
-        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.1",
-        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#1",
-        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#4"
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §3.2"
       ],
-      "downstream_rule": "Endpoint inventories and per-story API contracts are not populated by this packet; later technical contracts must not invent method/status conventions that contradict RFC 9110."
+      "downstream_rule": "Later technical contracts implement within JSON REST over HTTP unless a concrete canonical contradiction is later found and recorded as an Owner decision."
     },
     {
       "id": "TB-API-002",
@@ -117,12 +115,26 @@
       "downstream_rule": "A technical contract must not reuse a Pydantic transport model as an ORM model or vice versa."
     },
     {
+      "id": "TB-API-004",
+      "concern": "HTTP/API description surface and method/status semantics",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Use FastAPI-generated OpenAPI as the API description surface, and respect RFC 9110 method/status semantics.",
+      "rationale": "Discovery names OpenAPI support as FastAPI rationale but does not itself fix RFC 9110 method/status conventions or mandate OpenAPI as the description surface; this is a genuinely new minimum decision needed before any endpoint work exists.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.1",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#1",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#4"
+      ],
+      "downstream_rule": "Endpoint inventories and per-story API contracts are not populated by this packet; later technical contracts must not invent method/status conventions that contradict RFC 9110."
+    },
+    {
       "id": "TB-DATA-001",
       "concern": "Authoritative persisted data store",
-      "classification": "INHERITED_ACCEPTED",
+      "classification": "PROMOTE_PROVISIONAL",
       "decision": "PostgreSQL is the authoritative operational data store for persisted MVP state; frontend mocks/hard-coded data are not an operational source of truth. Schema evolution uses Alembic migrations.",
-      "rationale": "Matches discovery's proposed local stack and the current frontend's explicitly prototype/mock status.",
+      "rationale": "Discovery §3.2 records, as provisional, that the menu source of truth is PostgreSQL rather than hard-coded frontend files, and the current frontend is explicitly prototype/mock status (§13.1/§13.2); this decision, together with PostgreSQL and Alembic promoted under TB-BACKEND-001, is promoted from provisional rather than newly decided or independently accepted.",
       "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §3.2",
         "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.2",
         "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.2",
         "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.1"
@@ -162,15 +174,14 @@
     },
     {
       "id": "TB-AUTH-001",
-      "concern": "Server-enforced authorization",
-      "classification": "NEW_MINIMUM_BASELINE",
-      "decision": "Server-enforced authentication and authorization are mandatory; frontend route guards are never sufficient. Every protected operation must enforce object/function authorization on the backend according to accepted actor authority.",
-      "rationale": "OWASP API Security Top 10 2023 requires object- and function-level authorization enforced server-side; discovery already requires protecting kitchen/admin endpoints and enforcing role/session boundaries, but does not itself state the frontend-vs-backend enforcement rule.",
+      "concern": "Server-enforced authentication",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "Promote discovery's provisional staff-authentication direction into the baseline candidate: authentication must have real backend enforcement; a frontend route guard alone is never sufficient.",
+      "rationale": "Discovery §3.2 already records, as provisional, that staff authentication has real backend enforcement and is not only a frontend route guard; PLAN-003 promotes this direction rather than re-deciding it.",
       "source_references": [
-        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §11.7",
-        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#6"
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §3.2"
       ],
-      "downstream_rule": "Any staff/admin/kitchen-facing technical contract must implement backend-side object/function authorization; a frontend-only guard never satisfies this."
+      "downstream_rule": "Any staff/admin/kitchen-facing technical contract must implement backend-side authentication; a frontend-only guard never satisfies this."
     },
     {
       "id": "TB-AUTH-002",
@@ -182,14 +193,36 @@
       "downstream_rule": "The protected-staff vertical contract must implement session handling within this baseline unless a later Owner decision changes it."
     },
     {
+      "id": "TB-AUTH-004",
+      "concern": "Object/function-level authorization per protected operation",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Every protected operation must enforce object/function authorization on the backend according to accepted actor authority.",
+      "rationale": "OWASP API Security Top 10 2023 requires object- and function-level authorization enforced server-side; discovery §3.2/§11.7 requires backend-enforced authentication and protecting kitchen/admin endpoints, but does not itself state the object/function-level authorization rule, so this is a genuinely new minimum decision.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §11.7",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#6"
+      ],
+      "downstream_rule": "Any staff/admin/kitchen-facing technical contract must implement backend-side object/function authorization for every protected operation; a frontend-only guard never satisfies this."
+    },
+    {
       "id": "TB-AUTH-003",
-      "concern": "Cookie domain/origin, identity provisioning, credential-reset, session storage implementation",
+      "concern": "Cookie domain/origin configuration",
       "classification": "DEFERRED",
-      "decision": "Exact cookie domain/origin settings, identity provisioning, credential-reset flow, and session-storage implementation are not fixed in this packet.",
-      "rationale": "These depend on production hosting/topology, which remains deferred.",
+      "decision": "Exact cookie domain/origin settings are not fixed in this packet.",
+      "rationale": "These parameters depend on production hosting/topology, which remains deferred.",
       "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3"],
       "downstream_rule": "Resolved by the protected-staff vertical technical contract once production topology is decided, unless already fixed canonically before then.",
       "deferred_detail": "Blocked on the still-open production hosting/topology decision (§13.3)."
+    },
+    {
+      "id": "TB-AUTH-005",
+      "concern": "Identity provisioning, credential-reset flow, session-storage implementation",
+      "classification": "DEFERRED",
+      "decision": "Identity provisioning, credential-reset flow, and session-storage implementation are not fixed in this packet. No concrete credential/session implementation is chosen.",
+      "rationale": "These are protected-staff vertical implementation detail, not production-hosting/topology detail; discovery ties only cookie domain/origin to the environment boundary (§13.3), so the protected-staff vertical technical contract must be able to resolve identity provisioning, credential/reset behavior, and session-storage implementation before production hosting is chosen.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3", "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §3.2"],
+      "downstream_rule": "Resolved by the protected-staff vertical technical contract, independent of and not blocked on the production hosting/topology decision.",
+      "deferred_detail": "Resolved by the protected-staff vertical technical contract before production hosting is chosen."
     },
     {
       "id": "TB-STATE-001",
@@ -233,10 +266,14 @@
       "concern": "SMS provider selection",
       "classification": "DEFERRED",
       "decision": "No SMS provider is selected in this packet.",
-      "rationale": "Discovery lists SMS provider among the production-readiness decisions still open.",
-      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3"],
-      "downstream_rule": "Resolved as part of production-readiness decisions/provisioning.",
-      "deferred_detail": "Blocked on production-readiness provisioning and Owner decision (§13.3)."
+      "rationale": "Discovery §13.3 lists SMS provider among still-open decisions, but accepted requirements FR-COMMS-001 and FR-COMMS-002 are MUST_MVP with readiness_milestone PILOT and require real SMS outcomes for the first operational pilot; selection/provisioning is not a production-hosting prerequisite and must resolve by the communications/messaging vertical's pilot-readiness provisioning, before the first real pilot order.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3",
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json#FR-COMMS-001",
+        "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json#FR-COMMS-002"
+      ],
+      "downstream_rule": "Resolved by the communications/messaging vertical's pilot-readiness provisioning, no later than before the first real pilot order; production hosting is not a prerequisite to selecting/provisioning the SMS provider.",
+      "deferred_detail": "Must be selected/provisioned by the communications/messaging vertical's pilot-readiness milestone, ahead of the first real pilot order (FR-COMMS-001, FR-COMMS-002)."
     },
     {
       "id": "TB-ENV-001",
@@ -334,9 +371,15 @@
     },
     {
       "decision_id": "TB-AUTH-003",
-      "topic": "Exact cookie domain/origin, identity provisioning, credential-reset flow, session-storage implementation",
+      "topic": "Exact cookie domain/origin configuration",
       "blocking_reason": "Depends on the still-open production hosting/topology decision.",
       "resolved_by": "The protected-staff vertical technical contract, once production topology is decided."
+    },
+    {
+      "decision_id": "TB-AUTH-005",
+      "topic": "Identity provisioning, credential-reset flow, session-storage implementation",
+      "blocking_reason": "Not yet resolved by a technical contract; not blocked on production hosting.",
+      "resolved_by": "The protected-staff vertical technical contract, before production hosting is chosen."
     },
     {
       "decision_id": "TB-REALTIME-001",
@@ -347,8 +390,8 @@
     {
       "decision_id": "TB-INTEGRATION-003",
       "topic": "SMS provider selection",
-      "blocking_reason": "Discovery lists SMS provider among open production-readiness decisions requiring external provisioning.",
-      "resolved_by": "Production-readiness decisions/provisioning (discovery §13.3)."
+      "blocking_reason": "No provider is selected yet in this packet; accepted requirements FR-COMMS-001/FR-COMMS-002 require real SMS outcomes at PILOT readiness.",
+      "resolved_by": "The communications/messaging vertical's pilot-readiness provisioning, before the first real pilot order (not production hosting)."
     },
     {
       "decision_id": "TB-ENV-002",

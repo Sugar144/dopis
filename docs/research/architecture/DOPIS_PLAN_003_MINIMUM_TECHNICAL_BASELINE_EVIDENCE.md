@@ -46,7 +46,7 @@ restating canonical requirements or reopening business discovery.
 
 - **Principle:** Session Management: keep session tokens inaccessible to JavaScript (e.g., `HttpOnly` cookies), apply `Secure`/`SameSite` cookie attributes, and pair cookie-based sessions with CSRF protection. API Security Top 10: enforce object-level and function-level authorization on the server for every protected operation; never trust client-side authorization alone.
 - **Applicability:** Grounds the baseline's browser authentication/authorization decisions — server-enforced session-based auth with credentials inaccessible to ordinary frontend JavaScript, secure cookie properties, CSRF protection, and mandatory backend object/function authorization on every protected operation. Directly supports discovery §11.7's requirement to "protect kitchen and administration endpoints" and "enforce role and session boundaries."
-- **Does not decide:** exact cookie domain/origin values, identity-provisioning mechanism, or credential-reset flow — these depend on the still-deferred production hosting topology (discovery §13.3) and remain for the protected-staff vertical contract.
+- **Does not decide:** exact cookie domain/origin values, which depend on the still-deferred production hosting topology (discovery §13.3); nor the identity-provisioning mechanism or credential-reset flow, which the protected-staff vertical contract must resolve independent of, and without waiting for, production hosting.
 
 ## 7. Docker official Compose documentation
 
