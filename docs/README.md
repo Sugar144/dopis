@@ -39,7 +39,7 @@ Current generated baseline: version `0.6`, Owner-approved and derived from disco
 - `traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json`: machine-checkable actor, use-case, scenario, and requirement traceability contract.
 - `planning/DOPIS_USE_CASE_MODEL.json`: MVP actor/use-case/scenario inventory; its IDs are validator-reconciled with `future_nodes.use_cases`.
 - `traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json`: machine-checkable product-story and product-acceptance-criterion vocabulary, traceability, and invariant contract; it does not grant implementation authority.
-- `backlog/DOPIS_STORIES.json`: intentionally empty PLAN-002A product-story backlog; its story and acceptance-criterion IDs are validator-reconciled with `future_nodes.stories` and `future_nodes.acceptance_criteria` before a later authorised population packet.
+- `backlog/DOPIS_STORIES.json`: populated PLAN-002B product-story backlog; its story and acceptance-criterion IDs are validator-reconciled with `future_nodes.stories` and `future_nodes.acceptance_criteria`.
 - `reviews/`: independent audit reports for specification milestones.
 
 Validate with `python scripts/validate_specification.py` and `python scripts/test_validate_specification.py`.
