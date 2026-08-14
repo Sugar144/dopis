@@ -33,6 +33,8 @@ ARTIFACTS = [
     "docs/current/requirements/DOPIS_EXCLUSIONS.json",
     "docs/backlog/DOPIS_EPICS.json",
     "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json",
+    "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json",
+    "docs/planning/DOPIS_USE_CASE_MODEL.json",
     VALIDATOR,
 ]
 
@@ -40,6 +42,7 @@ REGISTRY = "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json"
 GATES = "docs/current/requirements/DOPIS_VALIDATION_GATES.json"
 EPICS = "docs/backlog/DOPIS_EPICS.json"
 TRACE = "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json"
+USE_CASE_MODEL = "docs/planning/DOPIS_USE_CASE_MODEL.json"
 BASELINE_MD = "docs/current/DOPIS_MVP_REQUIREMENTS.md"
 
 
@@ -65,6 +68,40 @@ def run(tree: Path) -> subprocess.CompletedProcess:
         text=True,
         cwd=str(tree),
     )
+
+
+def populate_valid_use_case_model(tree: Path) -> None:
+    """Create a disposable, minimal model using only real requirement IDs."""
+    model = read_json(tree, USE_CASE_MODEL)
+    model["actors"] = [{
+        "id": "ACT-CUSTOMER",
+        "title": "Customer",
+        "kind": "HUMAN_ROLE",
+    }]
+    model["use_cases"] = [{
+        "id": "UC-ORDERING-001",
+        "title": "Browse published menu",
+        "goal": "View the currently published menu.",
+        "trigger": "The customer wants to review the menu.",
+        "actor_links": [{"actor_id": "ACT-CUSTOMER", "role": "PRIMARY"}],
+        "preconditions": [],
+        "success_outcome": "The customer can view the published menu.",
+        "requirement_links": [
+            {"requirement_id": "FR-ORDER-001", "role": "BEHAVIOR"},
+            {"requirement_id": "FR-ORDER-002", "role": "CONSTRAINT"},
+        ],
+        "scenarios": [{
+            "id": "UC-ORDERING-001-S001",
+            "type": "MAIN",
+            "title": "Browse the published menu",
+            "steps": ["The customer views the currently published menu."],
+            "requirement_ids": ["FR-ORDER-001"],
+        }],
+    }]
+    write_json(tree, USE_CASE_MODEL, model)
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["use_cases"] = ["UC-ORDERING-001"]
+    write_json(tree, TRACE, trace)
 
 
 # --- mutations -------------------------------------------------------------
@@ -342,6 +379,37 @@ def mutate_weak_statement(tree: Path) -> None:
     write_json(tree, REGISTRY, data)
 
 
+def mutate_use_case_without_behavior_requirement(tree: Path) -> None:
+    model = read_json(tree, USE_CASE_MODEL)
+    model["use_cases"][0]["requirement_links"][0]["role"] = "CONSTRAINT"
+    write_json(tree, USE_CASE_MODEL, model)
+
+
+def mutate_use_case_unknown_requirement(tree: Path) -> None:
+    model = read_json(tree, USE_CASE_MODEL)
+    model["use_cases"][0]["requirement_links"][0]["requirement_id"] = "FR-NOWHERE-999"
+    model["use_cases"][0]["scenarios"][0]["requirement_ids"] = ["FR-NOWHERE-999"]
+    write_json(tree, USE_CASE_MODEL, model)
+
+
+def mutate_use_case_unknown_actor(tree: Path) -> None:
+    model = read_json(tree, USE_CASE_MODEL)
+    model["use_cases"][0]["actor_links"][0]["actor_id"] = "ACT-NOWHERE"
+    write_json(tree, USE_CASE_MODEL, model)
+
+
+def mutate_scenario_requirement_outside_parent(tree: Path) -> None:
+    model = read_json(tree, USE_CASE_MODEL)
+    model["use_cases"][0]["scenarios"][0]["requirement_ids"] = ["DATA-ORDER-001"]
+    write_json(tree, USE_CASE_MODEL, model)
+
+
+def mutate_stale_use_case_index(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["use_cases"] = []
+    write_json(tree, TRACE, trace)
+
+
 CASES = [
     ("duplicate requirement id", mutate_duplicate_id, "duplicate requirement id"),
     ("unknown gate reference", mutate_unknown_gate, "unknown_gate_references"),
@@ -391,6 +459,19 @@ CASES = [
      "does not link with effect BLOCK"),
 ]
 
+USE_CASE_CASES = [
+    ("use case without a BEHAVIOR requirement", mutate_use_case_without_behavior_requirement,
+     "use_cases_without_behavior_requirements"),
+    ("use case with an unknown requirement", mutate_use_case_unknown_requirement,
+     "unknown_use_case_requirement_references"),
+    ("use case with an unknown actor", mutate_use_case_unknown_actor,
+     "unknown_use_case_actor_references"),
+    ("scenario requirement outside parent use-case links", mutate_scenario_requirement_outside_parent,
+     "scenario_requirements_outside_parent_use_case"),
+    ("stale use-case future-node index", mutate_stale_use_case_index,
+     "future_nodes.use_cases must exactly match"),
+]
+
 
 def main() -> int:
     failures: list[str] = []
@@ -407,7 +488,19 @@ def main() -> int:
                 f"{result.stderr}"
             )
         else:
-            print("ok   control: unmutated artifacts pass")
+            print("ok   control: real empty PLAN-001A model passes")
+
+        populated = base / "populated-model"
+        build_tree(populated)
+        populate_valid_use_case_model(populated)
+        result = run(populated)
+        if result.returncode != 0:
+            failures.append(
+                "populated model: valid disposable actor/use-case/scenario fixture "
+                f"must pass, got exit {result.returncode}\n{result.stderr}"
+            )
+        else:
+            print("ok   populated model: valid disposable model passes")
 
         for index, (name, mutate, expected) in enumerate(CASES):
             tree = base / f"case{index:02d}"
@@ -427,13 +520,32 @@ def main() -> int:
                 continue
             print(f"ok   {name}: rejected with a message naming {expected!r}")
 
+        for index, (name, mutate, expected) in enumerate(USE_CASE_CASES):
+            tree = base / f"use-case{index:02d}"
+            build_tree(tree)
+            populate_valid_use_case_model(tree)
+            mutate(tree)
+            result = run(tree)
+            if result.returncode == 0:
+                failures.append(f"{name}: validator passed a defective fixture")
+                print(f"FAIL {name}: validator passed a defective fixture")
+                continue
+            output = result.stdout + result.stderr
+            if expected not in output:
+                failures.append(
+                    f"{name}: rejected, but no message matching {expected!r}\n{output}"
+                )
+                print(f"FAIL {name}: rejected without a recognisable message")
+                continue
+            print(f"ok   {name}: rejected with a message naming {expected!r}")
+
     print()
     if failures:
-        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {len(CASES) + 1} cases", file=sys.stderr)
+        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {len(CASES) + len(USE_CASE_CASES) + 2} cases", file=sys.stderr)
         for failure in failures:
             print(f"  - {failure}", file=sys.stderr)
         return 1
-    print(f"PASS: {len(CASES)} defect fixtures rejected, control fixture accepted")
+    print(f"PASS: {len(CASES) + len(USE_CASE_CASES)} defect fixtures rejected, two control fixtures accepted")
     print("      no fixture state written to the repository")
     return 0
 

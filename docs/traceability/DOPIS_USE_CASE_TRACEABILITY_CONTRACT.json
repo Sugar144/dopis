@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "format": "JSON",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "purpose": "Defines the minimum machine-checkable actor, use-case, scenario, and requirement traceability contract for a future MVP use-case model. It does not create a Dopis use-case inventory or grant implementation authority.",
+  "design_references": [
+    "OMG UML 2.5.1",
+    "ISO/IEC/IEEE 29148:2018"
+  ],
+  "model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
+  "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+  "identifiers": {
+    "actor": "ACT-<STABLE-NAME>",
+    "use_case": "UC-<DOMAIN>-NNN",
+    "scenario": "<USE-CASE-ID>-SNNN"
+  },
+  "actors": {
+    "allowed_kinds": [
+      "HUMAN_ROLE",
+      "EXTERNAL_SYSTEM"
+    ],
+    "required_fields": [
+      "id",
+      "title",
+      "kind"
+    ],
+    "rule": "Actors are human roles or genuinely external systems; a device alone is not an actor."
+  },
+  "use_cases": {
+    "required_fields": [
+      "id",
+      "title",
+      "goal",
+      "trigger",
+      "actor_links",
+      "preconditions",
+      "success_outcome",
+      "requirement_links",
+      "scenarios"
+    ],
+    "actor_link_roles": [
+      "PRIMARY",
+      "SUPPORTING"
+    ],
+    "requirement_link_roles": [
+      "BEHAVIOR",
+      "CONSTRAINT"
+    ],
+    "scenario_types": [
+      "MAIN",
+      "ALTERNATIVE",
+      "EXCEPTION"
+    ],
+    "rules": [
+      "Every use case has at least one PRIMARY actor link.",
+      "Every use case has at least one BEHAVIOR requirement link.",
+      "Requirement identifiers resolve to the accepted requirements registry and occur at most once per use case.",
+      "Every use case has exactly one MAIN scenario.",
+      "Scenario requirement identifiers resolve and are a subset of their parent use case requirement links.",
+      "Scenario steps describe observable behavior and do not prescribe UI design, classes, APIs, database structure, or architecture.",
+      "Use cases refine requirements; they do not own requirements or imply implementation readiness."
+    ]
+  },
+  "traceability": {
+    "behavior_relation": "USE_CASE --REFINES--> REQUIREMENT",
+    "constraint_relation": "REQUIREMENT --CONSTRAINS--> USE_CASE",
+    "future_node_index": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.use_cases is an exact validator-recomputed index of model use-case IDs."
+  }
+}
