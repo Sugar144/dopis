@@ -6,6 +6,24 @@ Canonical business truth is `current/DOPIS_TECHNICAL_DISCOVERY.md` version `0.19
 
 Consolidation does **not** grant implementation authority.
 
+## External governance framework
+
+Dopis is an external consumer of the immutable GOV-GEN revision recorded in
+`../framework-lock.json`. Its controlled RC.1-to-RC.2 transition is recorded in
+`../framework-upgrade.json`; the project-owned L1 instance is
+`governance/configuration.yaml`. Acquire and verify the framework with
+`python3 scripts/acquire-framework.py`; then run its official consumer check with
+`python3 <acquired-framework-root>/tools/validate_consumer.py --consumer . --framework <acquired-framework-root> --lock framework-lock.json`.
+
+Material execution prompts are held under `governance/prompts/`; governed-work
+learning is held under `governance/learning/`. These project-owned custody
+surfaces support the external process contract without duplicating it.
+
+GOV-GEN governs repository execution and process semantics. It does not replace
+Dopis discovery, requirements, business decisions, epics, validation gates,
+exclusions, traceability, architecture decisions, or product-specific validators,
+and it grants no implementation authority.
+
 ## Requirements baseline
 
 Derived from the canonical discovery. `BASELINED` never means implementation authority.
