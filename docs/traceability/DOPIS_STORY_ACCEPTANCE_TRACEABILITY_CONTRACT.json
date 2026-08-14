@@ -1,0 +1,110 @@
+{
+  "schema_version": "1.0",
+  "format": "JSON",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "purpose": "Defines the minimum machine-checkable product-story and product-acceptance-criterion traceability contract for a future Dopis backlog. It does not create stories or acceptance criteria and does not grant implementation authority.",
+  "design_references": [
+    "ISO/IEC/IEEE 29148:2018",
+    "Cucumber Gherkin Reference"
+  ],
+  "backlog_artifact": "docs/backlog/DOPIS_STORIES.json",
+  "use_case_model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
+  "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+  "identifiers": {
+    "story": {
+      "format": "ST-<DOMAIN>-NNN",
+      "pattern": "^ST-[A-Z][A-Z0-9-]*-[0-9]{3}$"
+    },
+    "acceptance_criterion": {
+      "format": "<STORY-ID>-ACNNN",
+      "pattern": "^{story_id}-AC[0-9]{3}$"
+    }
+  },
+  "stories": {
+    "required_fields": [
+      "id",
+      "title",
+      "actor_id",
+      "actor_goal",
+      "value_outcome",
+      "parent_use_case_id",
+      "parent_scenario_ids",
+      "requirement_links",
+      "dependencies",
+      "acceptance_criteria"
+    ],
+    "requirement_link_roles": [
+      "BEHAVIOR",
+      "CONSTRAINT"
+    ],
+    "rules": [
+      "A story represents one coherent actor-visible product outcome derived from exactly one accepted use case; it is a planning decomposition, not a new requirement or implementation task.",
+      "The story actor is linked by its parent use case, and every parent scenario belongs to that use case.",
+      "Every story has at least one BEHAVIOR requirement link; each requirement link resolves and exactly matches a parent-use-case link by identifier and role.",
+      "Dependencies resolve to other stories, are not self-referential, are acyclic, and express behavioral planning dependency only.",
+      "Every populated story has at least one product acceptance criterion."
+    ]
+  },
+  "acceptance_criteria": {
+    "required_fields": [
+      "id",
+      "title",
+      "context",
+      "event",
+      "expected_outcomes",
+      "requirement_ids"
+    ],
+    "rules": [
+      "Context, event, and expected outcomes are the Given-, When-, and Then-equivalents of observable product behavior or business outcomes.",
+      "Requirement identifiers resolve and are a subset of their parent story requirement links.",
+      "Acceptance criteria do not prescribe APIs, classes, database structure, deployment topology, framework choice, architecture, or test implementation."
+    ]
+  },
+  "traceability": {
+    "relations": [
+      {
+        "relation": "REFINES",
+        "from": "STORY",
+        "to": "USE_CASE",
+        "derived_from": "stories[].parent_use_case_id"
+      },
+      {
+        "link_role": "BEHAVIOR",
+        "relation": "REFINES",
+        "from": "STORY",
+        "to": "REQUIREMENT",
+        "derived_from": "stories[].requirement_links with role BEHAVIOR"
+      },
+      {
+        "link_role": "CONSTRAINT",
+        "relation": "CONSTRAINS",
+        "from": "REQUIREMENT",
+        "to": "STORY",
+        "derived_from": "stories[].requirement_links with role CONSTRAINT"
+      },
+      {
+        "relation": "DEPENDS_ON",
+        "from": "STORY",
+        "to": "STORY",
+        "derived_from": "stories[].dependencies"
+      },
+      {
+        "relation": "REFINES",
+        "from": "ACCEPTANCE_CRITERION",
+        "to": "STORY",
+        "derived_from": "stories[].acceptance_criteria"
+      },
+      {
+        "relation": "REFINES",
+        "from": "ACCEPTANCE_CRITERION",
+        "to": "REQUIREMENT",
+        "derived_from": "stories[].acceptance_criteria[].requirement_ids"
+      }
+    ],
+    "future_node_indexes": {
+      "stories": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.stories is an exact validator-recomputed index of backlog story IDs.",
+      "acceptance_criteria": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.acceptance_criteria is an exact validator-recomputed index of backlog acceptance-criterion IDs."
+    }
+  }
+}

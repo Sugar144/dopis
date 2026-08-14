@@ -40,6 +40,14 @@
     "use_case_model": {
       "artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
       "version": "1.0"
+    },
+    "story_acceptance_traceability_contract": {
+      "artifact": "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json",
+      "version": "1.0"
+    },
+    "stories": {
+      "artifact": "docs/backlog/DOPIS_STORIES.json",
+      "version": "1.0"
     }
   },
   "node_types": [
@@ -142,6 +150,48 @@
       "to": "USE_CASE",
       "derived_from": "use_cases[].requirement_links with role CONSTRAINT",
       "checked": "Every referenced requirement resolves; constraint links are derived from the use-case model and do not imply implementation authority."
+    },
+    {
+      "relation": "REFINES",
+      "from": "STORY",
+      "to": "USE_CASE",
+      "derived_from": "stories[].parent_use_case_id",
+      "checked": "Every story refines exactly one accepted use case."
+    },
+    {
+      "relation": "REFINES",
+      "from": "STORY",
+      "to": "REQUIREMENT",
+      "derived_from": "stories[].requirement_links with role BEHAVIOR",
+      "checked": "Every story has at least one BEHAVIOR requirement link that exactly matches a parent-use-case link."
+    },
+    {
+      "relation": "CONSTRAINS",
+      "from": "REQUIREMENT",
+      "to": "STORY",
+      "derived_from": "stories[].requirement_links with role CONSTRAINT",
+      "checked": "Every constraint link exactly matches a parent-use-case link and does not imply implementation authority."
+    },
+    {
+      "relation": "DEPENDS_ON",
+      "from": "STORY",
+      "to": "STORY",
+      "derived_from": "stories[].dependencies",
+      "checked": "Every behavioral planning dependency resolves, is not self-referential, and forms no cycle."
+    },
+    {
+      "relation": "REFINES",
+      "from": "ACCEPTANCE_CRITERION",
+      "to": "STORY",
+      "derived_from": "stories[].acceptance_criteria",
+      "checked": "Every acceptance criterion belongs to exactly one story."
+    },
+    {
+      "relation": "REFINES",
+      "from": "ACCEPTANCE_CRITERION",
+      "to": "REQUIREMENT",
+      "derived_from": "stories[].acceptance_criteria[].requirement_ids",
+      "checked": "Every acceptance-criterion requirement resolves and is linked by its parent story."
     }
   ],
   "coverage_rules": {
@@ -209,7 +259,18 @@
     "unknown_use_case_requirement_references": [],
     "unknown_use_case_actor_references": [],
     "use_cases_without_exactly_one_main_scenario": [],
-    "scenario_requirements_outside_parent_use_case": []
+    "scenario_requirements_outside_parent_use_case": [],
+    "invalid_or_duplicate_story_ids": [],
+    "unknown_story_parent_use_cases": [],
+    "story_scenarios_outside_parent_use_case": [],
+    "story_actors_outside_parent_use_case": [],
+    "story_requirements_outside_parent_use_case": [],
+    "stories_without_behavior_requirements": [],
+    "stories_without_acceptance_criteria": [],
+    "unknown_story_dependencies": [],
+    "story_dependency_cycles": [],
+    "invalid_or_duplicate_acceptance_criterion_ids": [],
+    "acceptance_criterion_requirements_outside_parent_story": []
   },
   "derived_counts": {
     "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",
