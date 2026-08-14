@@ -1134,6 +1134,7 @@ def check_vertical_slices(
     tb_ids: set[str],
     tb_deferred_ids: set[str],
     vocabulary: dict,
+    source_reference_ids: set[str],
 ) -> tuple[dict[str, list[str]], list[str], list[str]]:
     """Validate the vertical-slice delivery-planning model against its contract."""
     problems: list[str] = []
@@ -1146,6 +1147,9 @@ def check_vertical_slices(
         "unknown_slice_dependencies": [],
         "slice_dependency_cycles": [],
         "missing_induced_slice_dependencies": [],
+        "dependency_rationale_for_undeclared_dependency": [],
+        "invalid_dependency_rationale_entries": [],
+        "unjustified_additional_slice_dependencies": [],
         "slice_readiness_gate_union_drift": [],
         "unknown_slice_technical_baseline_references": [],
         "non_deferred_ids_in_deferred_baseline_refs": [],
@@ -1189,6 +1193,7 @@ def check_vertical_slices(
     slice_of_story: dict[str, str] = {}
     story_membership_count: dict[str, int] = {}
     declared_dependencies: dict[str, list[str]] = {}
+    slice_dependency_rationale: dict[str, set[str]] = {}
     slice_by_id: dict[str, dict] = {}
 
     for index, slice_ in enumerate(slices):
@@ -1272,6 +1277,34 @@ def check_vertical_slices(
             deps = []
         declared_dependencies[vid] = deps
 
+        rationale_map = slice_["dependency_rationale"]
+        valid_rationale_targets: set[str] = set()
+        if not isinstance(rationale_map, dict):
+            problems.append(f"{vid}: dependency_rationale must be an object")
+            rationale_map = {}
+        for dep_id, entry in rationale_map.items():
+            if not isinstance(dep_id, str) or dep_id not in deps:
+                orphans["dependency_rationale_for_undeclared_dependency"].append(
+                    f"{vid}->{dep_id}"
+                )
+                continue
+            rationale_text = entry.get("rationale") if isinstance(entry, dict) else None
+            source_refs = entry.get("source_refs") if isinstance(entry, dict) else None
+            valid_rationale = isinstance(rationale_text, str) and bool(rationale_text.strip())
+            valid_sources = (
+                isinstance(source_refs, list)
+                and bool(source_refs)
+                and all(
+                    isinstance(ref, str) and ref in source_reference_ids
+                    for ref in source_refs
+                )
+            )
+            if valid_rationale and valid_sources:
+                valid_rationale_targets.add(dep_id)
+            else:
+                orphans["invalid_dependency_rationale_entries"].append(f"{vid}->{dep_id}")
+        slice_dependency_rationale[vid] = valid_rationale_targets
+
     for sid, count in story_membership_count.items():
         if count > 1:
             orphans["stories_assigned_to_multiple_slices"].append(sid)
@@ -1291,6 +1324,7 @@ def check_vertical_slices(
     if cycle:
         orphans["slice_dependency_cycles"].append(" -> ".join(cycle))
 
+    induced_slice_edges: set[tuple[str, str]] = set()
     for sid, story_deps in story_dependencies.items():
         origin_slice = slice_of_story.get(sid)
         if origin_slice is None:
@@ -1299,10 +1333,20 @@ def check_vertical_slices(
             target_slice = slice_of_story.get(dep_sid)
             if target_slice is None or target_slice == origin_slice:
                 continue
+            induced_slice_edges.add((origin_slice, target_slice))
             if target_slice not in declared_dependencies.get(origin_slice, []):
                 orphans["missing_induced_slice_dependencies"].append(
                     f"{origin_slice}->{target_slice} (induced by {sid}->{dep_sid})"
                 )
+
+    for vid, deps in declared_dependencies.items():
+        for dep in deps:
+            if dep == vid or dep not in seen_slice_ids:
+                continue
+            if (vid, dep) in induced_slice_edges:
+                continue
+            if dep not in slice_dependency_rationale.get(vid, set()):
+                orphans["unjustified_additional_slice_dependencies"].append(f"{vid}->{dep}")
 
     order = model.get("recommended_delivery_order")
     if not isinstance(order, list) or not all(isinstance(value, str) for value in order):
@@ -1423,8 +1467,22 @@ def main() -> int:
             gates |= {gate for _, gate in req["validation_links"]}
         story_gates[story["id"]] = gates
 
+    source_reference_ids = (
+        set(by_id)
+        | set(use_case_ids)
+        | set(story_ids)
+        | set(acceptance_criterion_ids)
+        | set(tb_ids)
+    )
     vs_orphans, vs_problems, vs_ids = check_vertical_slices(
-        vs_model, set(story_ids), stories, story_gates, tb_ids, tb_deferred_ids, vs_vocabulary
+        vs_model,
+        set(story_ids),
+        stories,
+        story_gates,
+        tb_ids,
+        tb_deferred_ids,
+        vs_vocabulary,
+        source_reference_ids,
     )
     problems += vs_problems
 

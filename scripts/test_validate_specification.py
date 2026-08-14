@@ -153,6 +153,7 @@ def populate_valid_story_backlog(tree: Path) -> None:
         "actor_ids": ["ACT-CUSTOMER"],
         "story_ids": ["ST-CATALOG-001"],
         "dependencies": [],
+        "dependency_rationale": {},
         "acceptance_boundary": "Menu information observable to the customer is accurate and current.",
         "readiness_gate_ids": [],
         "technical_baseline_refs": [],
@@ -168,11 +169,16 @@ def populate_valid_story_backlog(tree: Path) -> None:
 
 
 def populate_valid_vertical_slice_fixture(tree: Path) -> None:
-    """Two disposable stories (one dependent on the other) covered by two slices.
+    """Three disposable stories covered by three slices.
 
-    Reuses the single-story fixture and adds a second real-use-case-backed story
-    whose accepted dependency on the first crosses slice boundaries, so the
-    induced-dependency rule has something real to check.
+    Reuses the single-story fixture and adds:
+    - a second real-use-case-backed story whose accepted dependency on the
+      first crosses slice boundaries, so the induced-dependency rule has
+      something real to check;
+    - a third story with no story-level dependency, whose slice nonetheless
+      declares a hard dependency on the first slice justified only through
+      dependency_rationale, so the additional-dependency justification rule
+      has a genuine non-induced edge to check.
     """
     populate_valid_story_backlog(tree)
     backlog = read_json(tree, STORIES)
@@ -195,11 +201,34 @@ def populate_valid_vertical_slice_fixture(tree: Path) -> None:
             "requirement_ids": ["FR-ORDER-002"],
         }],
     })
+    backlog["stories"].append({
+        "id": "ST-EXTRA-001",
+        "title": "Review a related recommendation",
+        "actor_id": "ACT-CUSTOMER",
+        "actor_goal": "Review a recommendation related to an existing basket item.",
+        "value_outcome": "The customer sees a recommendation without any automatic basket change.",
+        "parent_use_case_id": "UC-CATALOG-001",
+        "parent_scenario_ids": ["UC-CATALOG-001-S001"],
+        "requirement_links": [{"requirement_id": "FR-ORDER-001", "role": "BEHAVIOR"}],
+        "dependencies": [],
+        "acceptance_criteria": [{
+            "id": "ST-EXTRA-001-AC001",
+            "title": "Customer reviews a recommendation",
+            "context": "A customer has a basket containing an eligible item.",
+            "event": "The customer reviews the recommendation.",
+            "expected_outcomes": ["The recommendation is observable to the customer."],
+            "requirement_ids": ["FR-ORDER-001"],
+        }],
+    })
     write_json(tree, STORIES, backlog)
     trace = read_json(tree, TRACE)
-    trace["future_nodes"]["stories"] = ["ST-CATALOG-001", "ST-ORDER-001"]
-    trace["future_nodes"]["acceptance_criteria"] = ["ST-CATALOG-001-AC001", "ST-ORDER-001-AC001"]
-    trace["future_nodes"]["vertical_slices"] = ["VS-CATALOG-001", "VS-ORDER-001"]
+    trace["future_nodes"]["stories"] = ["ST-CATALOG-001", "ST-EXTRA-001", "ST-ORDER-001"]
+    trace["future_nodes"]["acceptance_criteria"] = [
+        "ST-CATALOG-001-AC001", "ST-EXTRA-001-AC001", "ST-ORDER-001-AC001",
+    ]
+    trace["future_nodes"]["vertical_slices"] = [
+        "VS-CATALOG-001", "VS-EXTRA-001", "VS-ORDER-001",
+    ]
     write_json(tree, TRACE, trace)
 
     model = read_json(tree, VS_MODEL)
@@ -211,6 +240,7 @@ def populate_valid_vertical_slice_fixture(tree: Path) -> None:
             "actor_ids": ["ACT-CUSTOMER"],
             "story_ids": ["ST-CATALOG-001"],
             "dependencies": [],
+            "dependency_rationale": {},
             "acceptance_boundary": "The basket contains only an allowed, currently available configuration.",
             "readiness_gate_ids": [],
             "technical_baseline_refs": [],
@@ -223,13 +253,43 @@ def populate_valid_vertical_slice_fixture(tree: Path) -> None:
             "actor_ids": ["ACT-CUSTOMER"],
             "story_ids": ["ST-ORDER-001"],
             "dependencies": ["VS-CATALOG-001"],
+            "dependency_rationale": {},
             "acceptance_boundary": "The basket becomes a submitted order with a feasible pickup commitment.",
             "readiness_gate_ids": [],
             "technical_baseline_refs": [],
             "deferred_baseline_decision_refs": [],
         },
+        {
+            "id": "VS-EXTRA-001",
+            "title": "Customer reviews a related recommendation",
+            "observable_outcome": (
+                "The customer reviews a recommendation related to an existing "
+                "basket item without an automatic basket change."
+            ),
+            "actor_ids": ["ACT-CUSTOMER"],
+            "story_ids": ["ST-EXTRA-001"],
+            "dependencies": ["VS-CATALOG-001"],
+            "dependency_rationale": {
+                "VS-CATALOG-001": {
+                    "rationale": (
+                        "ST-EXTRA-001 declares no story-level dependency, so this is "
+                        "not an induced dependency. Its accepted context requires an "
+                        "existing eligible basket item, which only VS-CATALOG-001's "
+                        "catalog/basket behavior produces."
+                    ),
+                    "source_refs": ["ST-CATALOG-001"],
+                },
+            },
+            "acceptance_boundary": (
+                "The recommendation is observable to the customer and any basket "
+                "change happens only through the customer's confirmed choice."
+            ),
+            "readiness_gate_ids": [],
+            "technical_baseline_refs": [],
+            "deferred_baseline_decision_refs": [],
+        },
     ]
-    model["recommended_delivery_order"] = ["VS-CATALOG-001", "VS-ORDER-001"]
+    model["recommended_delivery_order"] = ["VS-CATALOG-001", "VS-ORDER-001", "VS-EXTRA-001"]
     write_json(tree, VS_MODEL, model)
 
 
@@ -757,6 +817,39 @@ def mutate_vs_recommended_order_dependency_violation(tree: Path) -> None:
     write_json(tree, VS_MODEL, model)
 
 
+def mutate_vs_unjustified_additional_dependency(tree: Path) -> None:
+    """Strip VS-EXTRA-001's justification for its non-induced dependency.
+
+    The dependency on VS-CATALOG-001 stays declared, but with no rationale/
+    source backing left, so the validator must reject it even though it is a
+    structurally valid slice-id reference with no cycle and no missing
+    induced edge.
+    """
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"] = {}
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_dependency_rationale_for_undeclared_dependency(tree: Path) -> None:
+    """Keep a rationale entry for a dependency VS-EXTRA-001 no longer declares."""
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependencies"] = []
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_invalid_dependency_rationale_entry(tree: Path) -> None:
+    """Keep the declared dependency but drop its source_refs, leaving it unjustified."""
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"]["VS-CATALOG-001"]["source_refs"] = []
+    write_json(tree, VS_MODEL, model)
+
+
 VS_CASES = [
     ("unknown story reference in a slice", mutate_vs_unknown_story_reference,
      "unknown_slice_story_references"),
@@ -785,6 +878,13 @@ VS_CASES = [
      "recommended_order_duplicate_slices"),
     ("recommended order violating a hard dependency", mutate_vs_recommended_order_dependency_violation,
      "recommended_order_dependency_violations"),
+    ("unjustified additional slice dependency", mutate_vs_unjustified_additional_dependency,
+     "unjustified_additional_slice_dependencies"),
+    ("dependency_rationale for an undeclared dependency",
+     mutate_vs_dependency_rationale_for_undeclared_dependency,
+     "dependency_rationale_for_undeclared_dependency"),
+    ("dependency_rationale entry missing source_refs", mutate_vs_invalid_dependency_rationale_entry,
+     "invalid_dependency_rationale_entries"),
 ]
 
 

@@ -302,6 +302,9 @@
     "unknown_slice_dependencies": [],
     "slice_dependency_cycles": [],
     "missing_induced_slice_dependencies": [],
+    "dependency_rationale_for_undeclared_dependency": [],
+    "invalid_dependency_rationale_entries": [],
+    "unjustified_additional_slice_dependencies": [],
     "slice_readiness_gate_union_drift": [],
     "unknown_slice_technical_baseline_references": [],
     "non_deferred_ids_in_deferred_baseline_refs": [],
@@ -405,6 +408,7 @@
       "VS-ACCESS-STAFF-001",
       "VS-ASSISTED-ORDER-001",
       "VS-CAPACITY-001",
+      "VS-CAPACITY-CONTROL-001",
       "VS-CATALOG-ADMIN-001",
       "VS-COLLECTION-001",
       "VS-INCIDENTS-001",
@@ -416,7 +420,8 @@
       "VS-SAFETY-001",
       "VS-SHIFT-CLOSE-001",
       "VS-STOCK-001",
-      "VS-TRACKING-001"
+      "VS-TRACKING-001",
+      "VS-UPSELL-001"
     ],
     "architecture_decisions": [],
     "contracts": [],
