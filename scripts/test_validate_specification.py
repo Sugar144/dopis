@@ -37,6 +37,9 @@ ARTIFACTS = [
     "docs/traceability/DOPIS_STORY_ACCEPTANCE_TRACEABILITY_CONTRACT.json",
     "docs/planning/DOPIS_USE_CASE_MODEL.json",
     "docs/backlog/DOPIS_STORIES.json",
+    "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json",
+    "docs/traceability/DOPIS_VERTICAL_SLICE_TRACEABILITY_CONTRACT.json",
+    "docs/planning/DOPIS_VERTICAL_SLICES.json",
     VALIDATOR,
 ]
 
@@ -47,6 +50,8 @@ TRACE = "docs/traceability/DOPIS_TRACEABILITY_MATRIX.json"
 USE_CASE_MODEL = "docs/planning/DOPIS_USE_CASE_MODEL.json"
 STORIES = "docs/backlog/DOPIS_STORIES.json"
 BASELINE_MD = "docs/current/DOPIS_MVP_REQUIREMENTS.md"
+TECHNICAL_BASELINE = "docs/planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json"
+VS_MODEL = "docs/planning/DOPIS_VERTICAL_SLICES.json"
 
 
 def build_tree(destination: Path) -> None:
@@ -105,10 +110,15 @@ def populate_valid_use_case_model(tree: Path) -> None:
     backlog = read_json(tree, STORIES)
     backlog["stories"] = []
     write_json(tree, STORIES, backlog)
+    vs_model = read_json(tree, VS_MODEL)
+    vs_model["slices"] = []
+    vs_model["recommended_delivery_order"] = []
+    write_json(tree, VS_MODEL, vs_model)
     trace = read_json(tree, TRACE)
     trace["future_nodes"]["use_cases"] = ["UC-ORDERING-001"]
     trace["future_nodes"]["stories"] = []
     trace["future_nodes"]["acceptance_criteria"] = []
+    trace["future_nodes"]["vertical_slices"] = []
     write_json(tree, TRACE, trace)
 
 
@@ -135,10 +145,152 @@ def populate_valid_story_backlog(tree: Path) -> None:
         }],
     }]
     write_json(tree, STORIES, backlog)
+    vs_model = read_json(tree, VS_MODEL)
+    vs_model["slices"] = [{
+        "id": "VS-CATALOG-001",
+        "title": "Customer browses menu information",
+        "observable_outcome": "The customer can make an informed menu choice.",
+        "actor_ids": ["ACT-CUSTOMER"],
+        "story_ids": ["ST-CATALOG-001"],
+        "dependencies": [],
+        "dependency_rationale": {},
+        "acceptance_boundary": "Menu information observable to the customer is accurate and current.",
+        "readiness_gate_ids": [],
+        "technical_baseline_refs": [],
+        "deferred_baseline_decision_refs": [],
+    }]
+    vs_model["recommended_delivery_order"] = ["VS-CATALOG-001"]
+    write_json(tree, VS_MODEL, vs_model)
     trace = read_json(tree, TRACE)
     trace["future_nodes"]["stories"] = ["ST-CATALOG-001"]
     trace["future_nodes"]["acceptance_criteria"] = ["ST-CATALOG-001-AC001"]
+    trace["future_nodes"]["vertical_slices"] = ["VS-CATALOG-001"]
     write_json(tree, TRACE, trace)
+
+
+def populate_valid_vertical_slice_fixture(tree: Path) -> None:
+    """Three disposable stories covered by three slices.
+
+    Reuses the single-story fixture and adds:
+    - a second real-use-case-backed story whose accepted dependency on the
+      first crosses slice boundaries, so the induced-dependency rule has
+      something real to check;
+    - a third story with no story-level dependency, whose slice nonetheless
+      declares a hard dependency on the first slice justified only through
+      dependency_rationale, so the additional-dependency justification rule
+      has a genuine non-induced edge to check.
+    """
+    populate_valid_story_backlog(tree)
+    backlog = read_json(tree, STORIES)
+    backlog["stories"].append({
+        "id": "ST-ORDER-001",
+        "title": "Submit a feasible guest pickup order",
+        "actor_id": "ACT-CUSTOMER",
+        "actor_goal": "Place a pickup order with a feasible commitment.",
+        "value_outcome": "The customer receives the order outcome and pickup commitment.",
+        "parent_use_case_id": "UC-ORDER-001",
+        "parent_scenario_ids": ["UC-ORDER-001-S001"],
+        "requirement_links": [{"requirement_id": "FR-ORDER-002", "role": "BEHAVIOR"}],
+        "dependencies": ["ST-CATALOG-001"],
+        "acceptance_criteria": [{
+            "id": "ST-ORDER-001-AC001",
+            "title": "Customer submits a feasible order",
+            "context": "A guest customer has a valid basket and checkout is available.",
+            "event": "The customer submits the order.",
+            "expected_outcomes": ["The customer receives the resulting order status."],
+            "requirement_ids": ["FR-ORDER-002"],
+        }],
+    })
+    backlog["stories"].append({
+        "id": "ST-EXTRA-001",
+        "title": "Review a related recommendation",
+        "actor_id": "ACT-CUSTOMER",
+        "actor_goal": "Review a recommendation related to an existing basket item.",
+        "value_outcome": "The customer sees a recommendation without any automatic basket change.",
+        "parent_use_case_id": "UC-CATALOG-001",
+        "parent_scenario_ids": ["UC-CATALOG-001-S001"],
+        "requirement_links": [{"requirement_id": "FR-ORDER-001", "role": "BEHAVIOR"}],
+        "dependencies": [],
+        "acceptance_criteria": [{
+            "id": "ST-EXTRA-001-AC001",
+            "title": "Customer reviews a recommendation",
+            "context": "A customer has a basket containing an eligible item.",
+            "event": "The customer reviews the recommendation.",
+            "expected_outcomes": ["The recommendation is observable to the customer."],
+            "requirement_ids": ["FR-ORDER-001"],
+        }],
+    })
+    write_json(tree, STORIES, backlog)
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["stories"] = ["ST-CATALOG-001", "ST-EXTRA-001", "ST-ORDER-001"]
+    trace["future_nodes"]["acceptance_criteria"] = [
+        "ST-CATALOG-001-AC001", "ST-EXTRA-001-AC001", "ST-ORDER-001-AC001",
+    ]
+    trace["future_nodes"]["vertical_slices"] = [
+        "VS-CATALOG-001", "VS-EXTRA-001", "VS-ORDER-001",
+    ]
+    write_json(tree, TRACE, trace)
+
+    model = read_json(tree, VS_MODEL)
+    model["slices"] = [
+        {
+            "id": "VS-CATALOG-001",
+            "title": "Customer configures a menu item",
+            "observable_outcome": "A valid, informed configuration is in the customer's basket.",
+            "actor_ids": ["ACT-CUSTOMER"],
+            "story_ids": ["ST-CATALOG-001"],
+            "dependencies": [],
+            "dependency_rationale": {},
+            "acceptance_boundary": "The basket contains only an allowed, currently available configuration.",
+            "readiness_gate_ids": [],
+            "technical_baseline_refs": [],
+            "deferred_baseline_decision_refs": [],
+        },
+        {
+            "id": "VS-ORDER-001",
+            "title": "Customer submits a feasible pickup order",
+            "observable_outcome": "A feasible order is submitted with its pickup commitment.",
+            "actor_ids": ["ACT-CUSTOMER"],
+            "story_ids": ["ST-ORDER-001"],
+            "dependencies": ["VS-CATALOG-001"],
+            "dependency_rationale": {},
+            "acceptance_boundary": "The basket becomes a submitted order with a feasible pickup commitment.",
+            "readiness_gate_ids": [],
+            "technical_baseline_refs": [],
+            "deferred_baseline_decision_refs": [],
+        },
+        {
+            "id": "VS-EXTRA-001",
+            "title": "Customer reviews a related recommendation",
+            "observable_outcome": (
+                "The customer reviews a recommendation related to an existing "
+                "basket item without an automatic basket change."
+            ),
+            "actor_ids": ["ACT-CUSTOMER"],
+            "story_ids": ["ST-EXTRA-001"],
+            "dependencies": ["VS-CATALOG-001"],
+            "dependency_rationale": {
+                "VS-CATALOG-001": {
+                    "rationale": (
+                        "ST-EXTRA-001 declares no story-level dependency, so this is "
+                        "not an induced dependency. Its accepted context requires an "
+                        "existing eligible basket item, which only VS-CATALOG-001's "
+                        "catalog/basket behavior produces."
+                    ),
+                    "source_refs": ["ST-CATALOG-001"],
+                },
+            },
+            "acceptance_boundary": (
+                "The recommendation is observable to the customer and any basket "
+                "change happens only through the customer's confirmed choice."
+            ),
+            "readiness_gate_ids": [],
+            "technical_baseline_refs": [],
+            "deferred_baseline_decision_refs": [],
+        },
+    ]
+    model["recommended_delivery_order"] = ["VS-CATALOG-001", "VS-ORDER-001", "VS-EXTRA-001"]
+    write_json(tree, VS_MODEL, model)
 
 
 # --- mutations -------------------------------------------------------------
@@ -567,6 +719,193 @@ def mutate_matrix_story_relation(tree: Path) -> None:
     write_json(tree, TRACE, trace)
 
 
+def _vs_model(tree: Path) -> dict:
+    return read_json(tree, VS_MODEL)
+
+
+def mutate_vs_unknown_story_reference(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["slices"][0]["story_ids"].append("ST-NOWHERE-001")
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_duplicate_story_assignment(tree: Path) -> None:
+    """Assign ST-ORDER-001 to both slices instead of only its own."""
+    model = _vs_model(tree)
+    model["slices"][0]["story_ids"].append("ST-ORDER-001")
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_uncovered_story(tree: Path) -> None:
+    """Drop ST-ORDER-001 from every slice so it is no longer covered."""
+    model = _vs_model(tree)
+    model["slices"] = [s for s in model["slices"] if s["id"] != "VS-ORDER-001"]
+    model["recommended_delivery_order"] = ["VS-CATALOG-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_actor_union_drift(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["slices"][0]["actor_ids"] = ["ACT-STAFF-MEMBER"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_unknown_dependency(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["slices"][1]["dependencies"] = ["VS-NOWHERE-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_dependency_cycle(tree: Path) -> None:
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-CATALOG-001":
+            slice_["dependencies"] = ["VS-ORDER-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_missing_induced_dependency(tree: Path) -> None:
+    """Drop the dependency induced by ST-ORDER-001's accepted story dependency."""
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-ORDER-001":
+            slice_["dependencies"] = []
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_readiness_gate_drift(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["slices"][0]["readiness_gate_ids"] = ["JV-PILOT"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_unknown_technical_baseline_reference(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["slices"][0]["technical_baseline_refs"] = ["TB-NOWHERE-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_non_deferred_in_deferred_refs(tree: Path) -> None:
+    """TB-STATE-001 is PROMOTE_PROVISIONAL, not DEFERRED."""
+    model = _vs_model(tree)
+    model["slices"][0]["deferred_baseline_decision_refs"] = ["TB-STATE-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_stale_future_nodes_index(tree: Path) -> None:
+    trace = read_json(tree, TRACE)
+    trace["future_nodes"]["vertical_slices"] = []
+    write_json(tree, TRACE, trace)
+
+
+def mutate_vs_recommended_order_missing_slice(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["recommended_delivery_order"] = ["VS-CATALOG-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_recommended_order_duplicate_slice(tree: Path) -> None:
+    model = _vs_model(tree)
+    model["recommended_delivery_order"] = ["VS-CATALOG-001", "VS-CATALOG-001", "VS-ORDER-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_recommended_order_dependency_violation(tree: Path) -> None:
+    """Place the dependent slice before the slice it depends on."""
+    model = _vs_model(tree)
+    model["recommended_delivery_order"] = ["VS-ORDER-001", "VS-CATALOG-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_unjustified_additional_dependency(tree: Path) -> None:
+    """Strip VS-EXTRA-001's justification for its non-induced dependency.
+
+    The dependency on VS-CATALOG-001 stays declared, but with no rationale/
+    source backing left, so the validator must reject it even though it is a
+    structurally valid slice-id reference with no cycle and no missing
+    induced edge.
+    """
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"] = {}
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_dependency_rationale_for_undeclared_dependency(tree: Path) -> None:
+    """Keep a rationale entry for a dependency VS-EXTRA-001 no longer declares."""
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependencies"] = []
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_invalid_dependency_rationale_entry(tree: Path) -> None:
+    """Keep the declared dependency but drop its source_refs, leaving it unjustified."""
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"]["VS-CATALOG-001"]["source_refs"] = []
+    write_json(tree, VS_MODEL, model)
+
+
+def mutate_vs_dependency_rationale_technical_baseline_source(tree: Path) -> None:
+    """Cite a resolvable TB-* decision id, a namespace the contract does not permit.
+
+    TB-STATE-001 is a real, resolvable technical-baseline decision id. The
+    contract limits dependency_rationale.source_refs to requirement,
+    use-case, story, or acceptance-criterion ids, so a resolvable TB-* id
+    must still be rejected even though it exists in the repository.
+    """
+    model = _vs_model(tree)
+    for slice_ in model["slices"]:
+        if slice_["id"] == "VS-EXTRA-001":
+            slice_["dependency_rationale"]["VS-CATALOG-001"]["source_refs"] = ["TB-STATE-001"]
+    write_json(tree, VS_MODEL, model)
+
+
+VS_CASES = [
+    ("unknown story reference in a slice", mutate_vs_unknown_story_reference,
+     "unknown_slice_story_references"),
+    ("story assigned to more than one slice", mutate_vs_duplicate_story_assignment,
+     "stories_assigned_to_multiple_slices"),
+    ("accepted story not covered by any slice", mutate_vs_uncovered_story,
+     "uncovered_accepted_stories"),
+    ("slice actor_ids drift from member-story union", mutate_vs_actor_union_drift,
+     "slice_actor_union_drift"),
+    ("slice dependency on an unknown slice", mutate_vs_unknown_dependency,
+     "unknown_slice_dependencies"),
+    ("slice dependency cycle", mutate_vs_dependency_cycle, "slice_dependency_cycles"),
+    ("missing induced cross-slice dependency", mutate_vs_missing_induced_dependency,
+     "missing_induced_slice_dependencies"),
+    ("slice readiness_gate_ids drift", mutate_vs_readiness_gate_drift,
+     "slice_readiness_gate_union_drift"),
+    ("unknown technical-baseline reference", mutate_vs_unknown_technical_baseline_reference,
+     "unknown_slice_technical_baseline_references"),
+    ("non-DEFERRED id in deferred_baseline_decision_refs", mutate_vs_non_deferred_in_deferred_refs,
+     "non_deferred_ids_in_deferred_baseline_refs"),
+    ("stale vertical-slice future-node index", mutate_vs_stale_future_nodes_index,
+     "future_nodes.vertical_slices must exactly match"),
+    ("recommended order missing a slice", mutate_vs_recommended_order_missing_slice,
+     "recommended_order_missing_slices"),
+    ("recommended order duplicating a slice", mutate_vs_recommended_order_duplicate_slice,
+     "recommended_order_duplicate_slices"),
+    ("recommended order violating a hard dependency", mutate_vs_recommended_order_dependency_violation,
+     "recommended_order_dependency_violations"),
+    ("unjustified additional slice dependency", mutate_vs_unjustified_additional_dependency,
+     "unjustified_additional_slice_dependencies"),
+    ("dependency_rationale for an undeclared dependency",
+     mutate_vs_dependency_rationale_for_undeclared_dependency,
+     "dependency_rationale_for_undeclared_dependency"),
+    ("dependency_rationale entry missing source_refs", mutate_vs_invalid_dependency_rationale_entry,
+     "invalid_dependency_rationale_entries"),
+    ("dependency_rationale source_refs citing a technical-baseline id",
+     mutate_vs_dependency_rationale_technical_baseline_source,
+     "invalid_dependency_rationale_entries"),
+]
+
+
 CASES = [
     ("duplicate requirement id", mutate_duplicate_id, "duplicate requirement id"),
     ("unknown gate reference", mutate_unknown_gate, "unknown_gate_references"),
@@ -708,6 +1047,18 @@ def main() -> int:
         else:
             print("ok   populated story: valid disposable story backlog passes")
 
+        populated_vs = base / "populated-vertical-slice"
+        build_tree(populated_vs)
+        populate_valid_vertical_slice_fixture(populated_vs)
+        result = run(populated_vs)
+        if result.returncode != 0:
+            failures.append(
+                "populated vertical slice: valid disposable two-slice, two-story "
+                f"fixture must pass, got exit {result.returncode}\n{result.stderr}"
+            )
+        else:
+            print("ok   populated vertical slice: valid disposable model passes")
+
         for index, (name, mutate, expected) in enumerate(CASES):
             tree = base / f"case{index:02d}"
             build_tree(tree)
@@ -764,13 +1115,33 @@ def main() -> int:
                 continue
             print(f"ok   {name}: rejected with a message naming {expected!r}")
 
+        for index, (name, mutate, expected) in enumerate(VS_CASES):
+            tree = base / f"vs{index:02d}"
+            build_tree(tree)
+            populate_valid_vertical_slice_fixture(tree)
+            mutate(tree)
+            result = run(tree)
+            if result.returncode == 0:
+                failures.append(f"{name}: validator passed a defective fixture")
+                print(f"FAIL {name}: validator passed a defective fixture")
+                continue
+            output = result.stdout + result.stderr
+            if expected not in output:
+                failures.append(
+                    f"{name}: rejected, but no message matching {expected!r}\n{output}"
+                )
+                print(f"FAIL {name}: rejected without a recognisable message")
+                continue
+            print(f"ok   {name}: rejected with a message naming {expected!r}")
+
+    total_cases = len(CASES) + len(USE_CASE_CASES) + len(STORY_CASES) + len(VS_CASES)
     print()
     if failures:
-        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {len(CASES) + len(USE_CASE_CASES) + len(STORY_CASES) + 3} cases", file=sys.stderr)
+        print(f"NEGATIVE TESTS FAILED: {len(failures)} of {total_cases + 4} cases", file=sys.stderr)
         for failure in failures:
             print(f"  - {failure}", file=sys.stderr)
         return 1
-    print(f"PASS: {len(CASES) + len(USE_CASE_CASES) + len(STORY_CASES)} defect fixtures rejected, three control fixtures accepted")
+    print(f"PASS: {total_cases} defect fixtures rejected, four control fixtures accepted")
     print("      no fixture state written to the repository")
     return 0
 

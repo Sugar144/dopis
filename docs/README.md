@@ -53,6 +53,17 @@ vertical-slice and technical-contract design without designing implementation de
 - `research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md`: primary-source evidence note.
 - `planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json`: machine-readable baseline decisions, deferred decisions, and non-goals.
 
+## Vertical-slice delivery planning
+
+DOPIS-PLAN-004 prepared the first-MVP vertical-slice delivery-planning model. `PREPARED`
+and `implementation_authority: NOT_GRANTED` on both artifacts below mean this is planning
+only: it grants no implementation, ADR, technical-acceptance, test, task, or
+execution-packet authority, and it does not resolve any open validation gate or deferred
+technical-baseline decision.
+
+- `traceability/DOPIS_VERTICAL_SLICE_TRACEABILITY_CONTRACT.json`: machine-checkable vertical-slice vocabulary, traceability, and invariant contract.
+- `planning/DOPIS_VERTICAL_SLICES.json`: the populated vertical-slice model and its non-binding recommended delivery order; its slice IDs are validator-reconciled with `future_nodes.vertical_slices`.
+
 ## Historical documents
 
 - `archive/PRD-Dopis-v1.md`: initial product requirements, retained for historical context.
