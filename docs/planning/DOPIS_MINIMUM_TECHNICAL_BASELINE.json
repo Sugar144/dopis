@@ -1,0 +1,385 @@
+{
+  "schema_version": "1.0",
+  "format": "JSON",
+  "baseline_id": "DOPIS-PLAN-003",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "prompt": "docs/governance/prompts/DOPIS-PROMPT-007-v0.1.0.md",
+  "accepted_base": "main@831571be7164076a84367e15ee4e5ee173d38faf",
+  "evidence_note": "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md",
+  "canonical_source_references": [
+    "AGENTS.md",
+    "framework-lock.json",
+    "docs/README.md",
+    "docs/current/DOPIS_TECHNICAL_DISCOVERY.md",
+    "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+    "docs/current/requirements/DOPIS_VALIDATION_GATES.json",
+    "docs/current/requirements/DOPIS_EXCLUSIONS.json",
+    "docs/planning/DOPIS_USE_CASE_MODEL.json",
+    "docs/backlog/DOPIS_STORIES.json",
+    "frontend/package.json"
+  ],
+  "decision_classification_vocabulary": [
+    "INHERITED_ACCEPTED",
+    "PROMOTE_PROVISIONAL",
+    "NEW_MINIMUM_BASELINE",
+    "DEFERRED"
+  ],
+  "decisions": [
+    {
+      "id": "TB-TOPOLOGY-001",
+      "concern": "Repository and application topology",
+      "classification": "INHERITED_ACCEPTED",
+      "decision": "Preserve one Git repository with independently structured, independently buildable frontend and backend applications.",
+      "rationale": "Already the accepted monorepo decision; PLAN-003 does not reopen it.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.2"],
+      "downstream_rule": "Vertical-slice and technical-contract work must keep frontend and backend independently buildable/deployable within this one repository."
+    },
+    {
+      "id": "TB-TOPOLOGY-002",
+      "concern": "Infrastructure topology scope for the first MVP",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Do not introduce microservices, Kubernetes, a service mesh, a message broker, or another repository for the first MVP.",
+      "rationale": "Proportionate to a two-person pilot and the accepted monorepo/modular-monolith direction; production topology itself remains deferred (§13.3, EXC-PRODUCTION-HOSTING), and multi-service infrastructure would prematurely design implementation detail this packet is not authorised to set.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.2",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3",
+        "docs/current/requirements/DOPIS_EXCLUSIONS.json#EXC-PRODUCTION-HOSTING"
+      ],
+      "downstream_rule": "A future proposal to adopt any of these requires a new material Owner decision; it must not be adopted silently by a vertical slice or technical contract."
+    },
+    {
+      "id": "TB-FRONTEND-001",
+      "concern": "Frontend stack",
+      "classification": "INHERITED_ACCEPTED",
+      "decision": "Preserve Vue 3, Vite, Vue Router, Tailwind CSS, JavaScript, and scoped composable-first state management (`useCart.js`) as the current frontend direction. Do not migrate to TypeScript or Pinia in this packet; Pinia stays conditional on demonstrated shared-state pressure. Do not upgrade dependency versions.",
+      "rationale": "Matches verified repository state; PLAN-003 does not reopen the frontend stack.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.1",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.4",
+        "frontend/package.json"
+      ],
+      "downstream_rule": "Pinia introduction remains gated on the demonstrated shared-state triggers already listed in §4.4 (authenticated staff session, persisted/revalidated cart state, API-backed catalog caching, checkout lifecycle, order tracking, live kitchen-panel state)."
+    },
+    {
+      "id": "TB-BACKEND-001",
+      "concern": "Backend stack and application shape",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "Promote Python/FastAPI, Pydantic transport validation, SQLAlchemy 2, Alembic, and PostgreSQL from discovery's provisional recommendation into the baseline candidate. Use one modular-monolith backend application for the first MVP.",
+      "rationale": "Discovery marks this stack a 'provisional framework decision' and 'proposed backend stack'; no concrete canonical contradiction was found, so PLAN-003 promotes it rather than re-deciding it.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.1",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.2"
+      ],
+      "downstream_rule": "Later technical contracts implement within this stack unless a concrete canonical contradiction is later found and recorded as an Owner decision."
+    },
+    {
+      "id": "TB-BACKEND-002",
+      "concern": "Module and dependency boundaries",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Define module/dependency boundaries conceptually, not as an implementation folder tree. Domain/application behavior must not depend directly on HTTP routers, ORM persistence objects, or provider SDKs.",
+      "rationale": "Discovery's §5.3 module list is shaped like a folder tree; PLAN-003 restates it as a dependency-direction rule so later contracts are not forced into a specific tree while still bounding coupling, consistent with FastAPI's `APIRouter`-per-area / dependency-injection pattern.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.3",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#1"
+      ],
+      "downstream_rule": "A technical contract may choose its own folder layout as long as domain/application code stays independent of routers, ORM objects, and provider SDKs."
+    },
+    {
+      "id": "TB-API-001",
+      "concern": "HTTP/API contract surface",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Use JSON REST semantics over HTTP with FastAPI-generated OpenAPI as the API description surface, and respect RFC 9110 method/status semantics.",
+      "rationale": "Discovery names OpenAPI support as FastAPI rationale but does not fix the contract style or standard; this is a genuinely new minimum decision needed before any endpoint work exists.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.1",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#1",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#4"
+      ],
+      "downstream_rule": "Endpoint inventories and per-story API contracts are not populated by this packet; later technical contracts must not invent method/status conventions that contradict RFC 9110."
+    },
+    {
+      "id": "TB-API-002",
+      "concern": "HTTP error model",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Use one consistent machine-readable HTTP error model based on RFC 9457 Problem Details rather than inventing unrelated error envelopes per endpoint.",
+      "rationale": "No canonical source fixes an error format; a single standard format avoids per-endpoint drift.",
+      "source_references": ["docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#5"],
+      "downstream_rule": "Any endpoint error response defined by a later technical contract must conform to the Problem Details shape."
+    },
+    {
+      "id": "TB-API-003",
+      "concern": "Transport/persistence/domain model separation",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Keep transport request/response models distinct from persistence models and domain behavior.",
+      "rationale": "Follows directly from the SQLAlchemy 2 unit-of-work pattern and the FastAPI dependency/router separation; prevents ORM or transport concerns leaking into domain rules.",
+      "source_references": ["docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#1", "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#2"],
+      "downstream_rule": "A technical contract must not reuse a Pydantic transport model as an ORM model or vice versa."
+    },
+    {
+      "id": "TB-DATA-001",
+      "concern": "Authoritative persisted data store",
+      "classification": "INHERITED_ACCEPTED",
+      "decision": "PostgreSQL is the authoritative operational data store for persisted MVP state; frontend mocks/hard-coded data are not an operational source of truth. Schema evolution uses Alembic migrations.",
+      "rationale": "Matches discovery's proposed local stack and the current frontend's explicitly prototype/mock status.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.2",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.2",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.1"
+      ],
+      "downstream_rule": "No vertical slice may treat frontend mock/hard-coded data as an operational source of truth once backend endpoints exist."
+    },
+    {
+      "id": "TB-DATA-002",
+      "concern": "Transactional consistency invariant",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Any operation whose accepted outcome depends on coordinated order, stock, capacity, hold, payment, or handover state must define one explicit transactional consistency boundary.",
+      "rationale": "SQLAlchemy 2's explicit transaction-scope model and PostgreSQL's application-level consistency guidance both require the invariant to be named even before a mechanism is chosen.",
+      "source_references": [
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#2",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#3"
+      ],
+      "downstream_rule": "Each technical contract touching one of these concerns must name its consistency boundary explicitly before implementation."
+    },
+    {
+      "id": "TB-DATA-003",
+      "concern": "Isolation level, locking, and retry mechanism",
+      "classification": "DEFERRED",
+      "decision": "No universal isolation level, row-lock recipe, advisory-lock strategy, optimistic-versioning scheme, or retry algorithm is chosen in this packet.",
+      "rationale": "PostgreSQL Chapter 13 makes clear the correct mechanism is workload-specific; choosing one universally would prematurely design implementation detail.",
+      "source_references": ["docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#3"],
+      "downstream_rule": "Each later technical contract selects the smallest correct mechanism for its own invariant and proves concurrent behavior where required.",
+      "deferred_detail": "Resolved per-invariant by the technical contract that owns it, using real PostgreSQL behavior."
+    },
+    {
+      "id": "TB-DATA-004",
+      "concern": "Cache/coordination store",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Do not introduce Redis or another cache/coordination store without a demonstrated need.",
+      "rationale": "Discovery's proposed local stack lists only optional development add-ons (Adminer/pgAdmin, seed scripts, fake SMS adapter, Mailpit, local object storage); no cache/coordination store is among them.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.2"],
+      "downstream_rule": "A technical contract proposing a cache/coordination store must first demonstrate the need it solves."
+    },
+    {
+      "id": "TB-AUTH-001",
+      "concern": "Server-enforced authorization",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Server-enforced authentication and authorization are mandatory; frontend route guards are never sufficient. Every protected operation must enforce object/function authorization on the backend according to accepted actor authority.",
+      "rationale": "OWASP API Security Top 10 2023 requires object- and function-level authorization enforced server-side; discovery already requires protecting kitchen/admin endpoints and enforcing role/session boundaries, but does not itself state the frontend-vs-backend enforcement rule.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §11.7",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#6"
+      ],
+      "downstream_rule": "Any staff/admin/kitchen-facing technical contract must implement backend-side object/function authorization; a frontend-only guard never satisfies this."
+    },
+    {
+      "id": "TB-AUTH-002",
+      "concern": "Browser session security baseline",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Use a browser-session security baseline that keeps session credentials inaccessible to ordinary frontend JavaScript and applies secure cookie properties and CSRF protection appropriate to the eventual same-origin/cross-origin deployment topology. Do not adopt localStorage bearer tokens as the default architecture.",
+      "rationale": "OWASP Session Management Cheat Sheet: HttpOnly/Secure/SameSite cookies plus CSRF protection are the baseline defense for browser session credentials; localStorage tokens are exposed to XSS.",
+      "source_references": ["docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#6"],
+      "downstream_rule": "The protected-staff vertical contract must implement session handling within this baseline unless a later Owner decision changes it."
+    },
+    {
+      "id": "TB-AUTH-003",
+      "concern": "Cookie domain/origin, identity provisioning, credential-reset, session storage implementation",
+      "classification": "DEFERRED",
+      "decision": "Exact cookie domain/origin settings, identity provisioning, credential-reset flow, and session-storage implementation are not fixed in this packet.",
+      "rationale": "These depend on production hosting/topology, which remains deferred.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3"],
+      "downstream_rule": "Resolved by the protected-staff vertical technical contract once production topology is decided, unless already fixed canonically before then.",
+      "deferred_detail": "Blocked on the still-open production hosting/topology decision (§13.3)."
+    },
+    {
+      "id": "TB-STATE-001",
+      "concern": "Frontend/server state authority",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "The backend is authoritative for persisted catalog, orders, availability, stock, capacity, payment state, and auditable operational state. Frontend state may cache or stage interaction state but must revalidate against authoritative server state at accepted consistency boundaries. This does not by itself mandate a global client store.",
+      "rationale": "Promotes the reference-project concepts discovery already retained as useful: server-side resolution of current product data/prices and cart revalidation before checkout.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.3"],
+      "downstream_rule": "A vertical slice introducing Pinia must justify it by one of the shared-state triggers in TB-FRONTEND-001, not by this state-authority rule alone."
+    },
+    {
+      "id": "TB-REALTIME-001",
+      "concern": "Realtime operational updates transport",
+      "classification": "DEFERRED",
+      "decision": "Do not prematurely choose SSE versus WebSockets. The backend must expose queryable authoritative state and preserve a polling-compatible fallback. Realtime push must not become the source of truth or leak into domain rules.",
+      "rationale": "Discovery already lists this as 'pending decision'; PLAN-003 preserves rather than resolves it.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.2"],
+      "downstream_rule": "The exact transport is chosen by the first vertical slice that materially needs live kitchen updates.",
+      "deferred_detail": "Resolved by the first vertical slice needing live kitchen updates."
+    },
+    {
+      "id": "TB-INTEGRATION-001",
+      "concern": "External integration boundaries",
+      "classification": "INHERITED_ACCEPTED",
+      "decision": "Preserve provider-neutral boundaries for SMS/operational messaging, Epson-compatible receipt printing, and payment-terminal interaction. Provider-specific credentials, device identifiers, protocols, and SDK details stay outside domain behavior and outside committed secrets.",
+      "rationale": "Matches discovery's accepted integration boundary.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §6.6"],
+      "downstream_rule": "A technical contract for any of these integrations must keep provider-specific detail behind a provider-neutral adapter."
+    },
+    {
+      "id": "TB-INTEGRATION-002",
+      "concern": "Payment-terminal fallback and card-data boundary",
+      "classification": "INHERITED_ACCEPTED",
+      "decision": "Preserve the accepted APOS A8 manual-total fallback until Comercia provisioning and real-device evidence support a richer adapter implementation. Dopis stores no card data.",
+      "rationale": "Matches discovery's accepted current payment-terminal handling.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §6.6", "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §11.7"],
+      "downstream_rule": "No technical contract may design a richer APOS A8 adapter before Comercia provisioning and real-device evidence exist."
+    },
+    {
+      "id": "TB-INTEGRATION-003",
+      "concern": "SMS provider selection",
+      "classification": "DEFERRED",
+      "decision": "No SMS provider is selected in this packet.",
+      "rationale": "Discovery lists SMS provider among the production-readiness decisions still open.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3"],
+      "downstream_rule": "Resolved as part of production-readiness decisions/provisioning.",
+      "deferred_detail": "Blocked on production-readiness provisioning and Owner decision (§13.3)."
+    },
+    {
+      "id": "TB-ENV-001",
+      "concern": "Local development environment orchestration",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "Use Docker Compose as the local backend/PostgreSQL orchestration baseline while keeping the frontend independently runnable/buildable.",
+      "rationale": "Promotes discovery's 'Proposed local stack' into the baseline candidate; no contradiction found.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.2",
+        "docs/research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md#7"
+      ],
+      "downstream_rule": "Local environment technical work implements within Docker Compose unless a concrete contradiction is later found."
+    },
+    {
+      "id": "TB-ENV-002",
+      "concern": "Production hosting and deployment topology",
+      "classification": "DEFERRED",
+      "decision": "Production hosting, reverse proxy, TLS termination, public domain configuration, scaling topology, and production container orchestration remain deferred. Do not infer production architecture from the GitHub Pages demo deployment.",
+      "rationale": "Discovery explicitly defers this; matches the accepted exclusion for production hosting.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3",
+        "docs/current/requirements/DOPIS_EXCLUSIONS.json#EXC-PRODUCTION-HOSTING"
+      ],
+      "downstream_rule": "Resolved by a dedicated future production-readiness Owner decision and its gates, not inferred from the current static demo.",
+      "deferred_detail": "Blocked on a future production-readiness Owner decision (§13.3, EXC-PRODUCTION-HOSTING)."
+    },
+    {
+      "id": "TB-CONFIG-001",
+      "concern": "Secrets and operational-threshold configuration",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Keep secrets out of Git and inject environment-specific secrets/configuration externally. Operational thresholds that canonical requirements mark configurable/calibratable must remain configuration/data, not hard-coded architecture decisions.",
+      "rationale": "Discovery's repository structure already anticipates `.env.example` for externally injected configuration, and §6.20 requires calibratable operational thresholds to stay in a bounded, adjustable register rather than becoming fixed code.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §4.2",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §6.20"
+      ],
+      "downstream_rule": "No technical contract may hard-code a value that §6.20 or an accepted requirement marks configurable/calibratable, or commit a secret to the repository."
+    },
+    {
+      "id": "TB-CONFIG-002",
+      "concern": "Observability vendor / logging platform",
+      "classification": "DEFERRED",
+      "decision": "No observability vendor or logging platform is chosen in this packet.",
+      "rationale": "Discovery lists monitoring and alerting among the still-open production-readiness decisions.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §13.3"],
+      "downstream_rule": "Resolved once production-readiness monitoring/alerting needs are validated.",
+      "deferred_detail": "Blocked on production-readiness monitoring/alerting decisions (§13.3)."
+    },
+    {
+      "id": "TB-TIME-001",
+      "concern": "Timezone and event-instant representation",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Business scheduling is interpreted in the Dopis local timezone (Europe/Madrid). Persisted event instants are timezone-aware and must have an unambiguous UTC representation.",
+      "rationale": "Discovery states Dopis operates as a physical pizzeria in Les Planes, Sant Cugat, Spain, but does not itself state a timezone-handling rule; this is the minimum stable data semantic needed before any scheduling/order-lifecycle persistence can be built.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §1"],
+      "downstream_rule": "Any technical contract persisting a business-scheduling instant must store it timezone-aware with an unambiguous UTC representation and interpret local business rules in Europe/Madrid."
+    },
+    {
+      "id": "TB-MONEY-001",
+      "concern": "Monetary value representation",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Monetary values use an exact representation suitable for EUR and must never depend on binary floating-point arithmetic.",
+      "rationale": "Dopis operates in Spain and its accepted domain model prices/totals orders in EUR; no canonical source states a representation, and floating-point currency arithmetic is a documented source of order-total and payment-reconciliation defects.",
+      "source_references": [
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §1",
+        "docs/current/DOPIS_TECHNICAL_DISCOVERY.md §6.6"
+      ],
+      "downstream_rule": "Any technical contract handling price, total, or payment amounts must use an exact (non-binary-float) numeric representation end to end, including at persistence and transport boundaries."
+    },
+    {
+      "id": "TB-AUDIT-001",
+      "concern": "Audit records versus diagnostic logs",
+      "classification": "NEW_MINIMUM_BASELINE",
+      "decision": "Keep domain audit records required by accepted requirements distinct from diagnostic application logs. Diagnostic logs must not become a second business source of truth and must avoid unnecessary personal/sensitive data.",
+      "rationale": "Discovery already requires auditability for material corrections and administrative changes and cautions against unnecessary sensitive-data retention; PLAN-003 makes explicit that this is a distinct concern from ordinary application/diagnostic logging.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §11.7"],
+      "downstream_rule": "A technical contract must not satisfy a domain-audit requirement by pointing at diagnostic application logs, or vice versa."
+    },
+    {
+      "id": "TB-TEST-001",
+      "concern": "Backend testing tool",
+      "classification": "PROMOTE_PROVISIONAL",
+      "decision": "The baseline may name pytest for backend testing because it is part of the provisional stack. This packet does not author technical acceptance tests or a full test strategy. Later technical contracts must prove transactional/concurrency invariants at the smallest affected surface and use real PostgreSQL behavior where database semantics matter.",
+      "rationale": "Discovery's proposed backend stack already names pytest and the HTTPX test client; PLAN-003 promotes only the tool name, not a strategy.",
+      "source_references": ["docs/current/DOPIS_TECHNICAL_DISCOVERY.md §5.2"],
+      "downstream_rule": "Test strategy and technical acceptance tests remain future governed artifacts, authored by later technical contracts, not by this packet."
+    }
+  ],
+  "deferred_decisions": [
+    {
+      "decision_id": "TB-DATA-003",
+      "topic": "Universal transaction isolation level / row-lock / advisory-lock / optimistic-versioning / retry mechanism",
+      "blocking_reason": "The correct mechanism is workload-specific per PostgreSQL documentation; no single invariant analysis exists yet to ground one universal choice.",
+      "resolved_by": "The technical contract owning each concurrency-sensitive invariant, proving concurrent behavior where required."
+    },
+    {
+      "decision_id": "TB-AUTH-003",
+      "topic": "Exact cookie domain/origin, identity provisioning, credential-reset flow, session-storage implementation",
+      "blocking_reason": "Depends on the still-open production hosting/topology decision.",
+      "resolved_by": "The protected-staff vertical technical contract, once production topology is decided."
+    },
+    {
+      "decision_id": "TB-REALTIME-001",
+      "topic": "SSE versus WebSockets for realtime operational updates",
+      "blocking_reason": "No vertical slice yet has a proven material need for live kitchen updates; choosing now would prematurely couple transport to domain design.",
+      "resolved_by": "The first vertical slice that materially needs live kitchen updates."
+    },
+    {
+      "decision_id": "TB-INTEGRATION-003",
+      "topic": "SMS provider selection",
+      "blocking_reason": "Discovery lists SMS provider among open production-readiness decisions requiring external provisioning.",
+      "resolved_by": "Production-readiness decisions/provisioning (discovery §13.3)."
+    },
+    {
+      "decision_id": "TB-ENV-002",
+      "topic": "Production hosting, reverse proxy, TLS, public domain, scaling topology, production orchestration",
+      "blocking_reason": "Explicitly deferred by canonical discovery and the accepted production-hosting exclusion; not decidable within this packet's authority.",
+      "resolved_by": "A future dedicated production-readiness Owner decision and its gates."
+    },
+    {
+      "decision_id": "TB-CONFIG-002",
+      "topic": "Observability vendor / logging platform",
+      "blocking_reason": "Discovery lists monitoring and alerting among open production-readiness decisions; no operational load exists yet to size the need.",
+      "resolved_by": "Production-readiness monitoring/alerting decisions (discovery §13.3)."
+    }
+  ],
+  "non_goals": [
+    "Production hosting/provider/topology",
+    "SMS provider selection",
+    "SSE versus WebSockets transport selection",
+    "Exact endpoint inventory",
+    "Exact database schema",
+    "Universal transaction isolation/locking algorithm",
+    "Queue/background-worker/cache technology selection",
+    "Detailed staff credential lifecycle",
+    "Provider-specific printer/payment-terminal implementation",
+    "Online payment architecture",
+    "Pinia/TypeScript migration",
+    "Kubernetes/microservices adoption",
+    "Vertical slices",
+    "ADRs and per-vertical technical contracts",
+    "Technical acceptance criteria",
+    "Tests/tasks/execution packets",
+    "Application implementation"
+  ]
+}

@@ -44,6 +44,15 @@ Current generated baseline: version `0.6`, Owner-approved and derived from disco
 
 Validate with `python scripts/validate_specification.py` and `python scripts/test_validate_specification.py`.
 
+## Minimum technical baseline
+
+DOPIS-PLAN-003 prepared one compact minimum technical baseline that constrains later
+vertical-slice and technical-contract design without designing implementation detail.
+`PREPARED` grants no implementation authority.
+
+- `research/architecture/DOPIS_PLAN_003_MINIMUM_TECHNICAL_BASELINE_EVIDENCE.md`: primary-source evidence note.
+- `planning/DOPIS_MINIMUM_TECHNICAL_BASELINE.json`: machine-readable baseline decisions, deferred decisions, and non-goals.
+
 ## Historical documents
 
 - `archive/PRD-Dopis-v1.md`: initial product requirements, retained for historical context.
