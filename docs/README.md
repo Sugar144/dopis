@@ -36,6 +36,8 @@ Current generated baseline: version `0.6`, Owner-approved and derived from disco
 - `current/requirements/DOPIS_EXCLUSIONS.json`: machine-checkable first-MVP exclusions.
 - `backlog/DOPIS_EPICS.json`: business-capability epic map.
 - `traceability/DOPIS_TRACEABILITY_MATRIX.json`: traceability contract and orphan expectations.
+- `traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json`: machine-checkable actor, use-case, scenario, and requirement traceability contract.
+- `planning/DOPIS_USE_CASE_MODEL.json`: intentionally empty future use-case inventory; its IDs are validator-reconciled with `future_nodes.use_cases`.
 - `reviews/`: independent audit reports for specification milestones.
 
 Validate with `python scripts/validate_specification.py` and `python scripts/test_validate_specification.py`.

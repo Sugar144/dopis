@@ -1,0 +1,100 @@
+{
+  "schema_version": "1.1",
+  "format": "JSON",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "purpose": "Defines the minimum machine-checkable actor, use-case, scenario, and requirement traceability contract for a future MVP use-case model. It does not create a Dopis use-case inventory or grant implementation authority.",
+  "design_references": [
+    "OMG UML 2.5.1",
+    "ISO/IEC/IEEE 29148:2018"
+  ],
+  "model_artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
+  "accepted_requirements_artifact": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+  "identifiers": {
+    "actor": {
+      "format": "ACT-<STABLE-NAME>",
+      "pattern": "^ACT-[A-Z][A-Z0-9-]*$"
+    },
+    "use_case": {
+      "format": "UC-<DOMAIN>-NNN",
+      "pattern": "^UC-[A-Z][A-Z0-9-]*-[0-9]{3}$"
+    },
+    "scenario": {
+      "format": "<USE-CASE-ID>-SNNN",
+      "pattern": "^{use_case_id}-S[0-9]{3}$"
+    }
+  },
+  "actors": {
+    "allowed_kinds": [
+      "HUMAN_ROLE",
+      "EXTERNAL_SYSTEM"
+    ],
+    "required_fields": [
+      "id",
+      "title",
+      "kind"
+    ],
+    "rule": "Actors are human roles or genuinely external systems; a device alone is not an actor."
+  },
+  "use_cases": {
+    "required_fields": [
+      "id",
+      "title",
+      "goal",
+      "trigger",
+      "actor_links",
+      "preconditions",
+      "success_outcome",
+      "requirement_links",
+      "scenarios"
+    ],
+    "actor_link_roles": {
+      "allowed": [
+        "PRIMARY",
+        "SUPPORTING"
+      ],
+      "primary": "PRIMARY"
+    },
+    "requirement_link_roles": [
+      "BEHAVIOR",
+      "CONSTRAINT"
+    ],
+    "scenario_types": {
+      "allowed": [
+        "MAIN",
+        "ALTERNATIVE",
+        "EXCEPTION"
+      ],
+      "main": "MAIN"
+    },
+    "rules": [
+      "Every use case has at least one PRIMARY actor link.",
+      "Every use case has at least one BEHAVIOR requirement link.",
+      "Requirement identifiers resolve to the accepted requirements registry and occur at most once per use case.",
+      "Every use case has exactly one MAIN scenario.",
+      "Scenario requirement identifiers resolve and are a subset of their parent use case requirement links.",
+      "Scenario steps describe observable behavior and do not prescribe UI design, classes, APIs, database structure, or architecture.",
+      "Use cases refine requirements; they do not own requirements or imply implementation readiness."
+    ]
+  },
+  "traceability": {
+    "relations": [
+      {
+        "link_role": "BEHAVIOR",
+        "relation": "REFINES",
+        "from": "USE_CASE",
+        "to": "REQUIREMENT",
+        "derived_from": "use_cases[].requirement_links with role BEHAVIOR",
+        "requires_at_least_one": true
+      },
+      {
+        "link_role": "CONSTRAINT",
+        "relation": "CONSTRAINS",
+        "from": "REQUIREMENT",
+        "to": "USE_CASE",
+        "derived_from": "use_cases[].requirement_links with role CONSTRAINT"
+      }
+    ],
+    "future_node_index": "DOPIS_TRACEABILITY_MATRIX.json future_nodes.use_cases is an exact validator-recomputed index of model use-case IDs."
+  }
+}

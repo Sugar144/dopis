@@ -32,6 +32,14 @@
     "human_readable_baseline": {
       "artifact": "docs/current/DOPIS_MVP_REQUIREMENTS.md",
       "version": "0.6"
+    },
+    "use_case_traceability_contract": {
+      "artifact": "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json",
+      "version": "1.1"
+    },
+    "use_case_model": {
+      "artifact": "docs/planning/DOPIS_USE_CASE_MODEL.json",
+      "version": "1.0"
     }
   },
   "node_types": [
@@ -120,6 +128,20 @@
       "to": "REQUIREMENT",
       "derived_from": "requirements[].dependencies",
       "checked": "Every dependency resolves, is not self-referential, and forms no cycle."
+    },
+    {
+      "relation": "REFINES",
+      "from": "USE_CASE",
+      "to": "REQUIREMENT",
+      "derived_from": "use_cases[].requirement_links with role BEHAVIOR",
+      "checked": "Every use case has at least one BEHAVIOR requirement link and every referenced requirement resolves."
+    },
+    {
+      "relation": "CONSTRAINS",
+      "from": "REQUIREMENT",
+      "to": "USE_CASE",
+      "derived_from": "use_cases[].requirement_links with role CONSTRAINT",
+      "checked": "Every referenced requirement resolves; constraint links are derived from the use-case model and do not imply implementation authority."
     }
   ],
   "coverage_rules": {
@@ -180,7 +202,14 @@
     "tasks_without_requirements": [],
     "tasks_without_acceptance_criteria": [],
     "tests_without_acceptance_targets": [],
-    "stale_superseded_links": []
+    "stale_superseded_links": [],
+    "invalid_or_duplicate_actor_ids": [],
+    "invalid_or_duplicate_use_case_ids": [],
+    "use_cases_without_behavior_requirements": [],
+    "unknown_use_case_requirement_references": [],
+    "unknown_use_case_actor_references": [],
+    "use_cases_without_exactly_one_main_scenario": [],
+    "scenario_requirements_outside_parent_use_case": []
   },
   "derived_counts": {
     "notice": "These are integrity checksums, not assumptions. The validator recomputes each value from the artifacts and fails on any mismatch, so a stale number cannot pass.",

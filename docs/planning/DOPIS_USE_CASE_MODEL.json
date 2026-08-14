@@ -1,0 +1,10 @@
+{
+  "schema_version": "1.0",
+  "format": "JSON",
+  "status": "PREPARED",
+  "implementation_authority": "NOT_GRANTED",
+  "contract": "docs/traceability/DOPIS_USE_CASE_TRACEABILITY_CONTRACT.json",
+  "accepted_requirements": "docs/current/requirements/DOPIS_MVP_REQUIREMENTS.json",
+  "actors": [],
+  "use_cases": []
+}
