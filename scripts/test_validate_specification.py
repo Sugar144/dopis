@@ -501,6 +501,12 @@ def mutate_story_without_behavior_requirement(tree: Path) -> None:
     mutate_story_requirement_role_drift(tree)
 
 
+def mutate_story_without_requirements(tree: Path) -> None:
+    data = read_json(tree, STORIES)
+    data["stories"][0]["requirement_links"] = []
+    write_json(tree, STORIES, data)
+
+
 def mutate_story_without_acceptance_criterion(tree: Path) -> None:
     data = read_json(tree, STORIES)
     data["stories"][0]["acceptance_criteria"] = []
@@ -635,6 +641,8 @@ STORY_CASES = [
      "story_actors_outside_parent_use_case"),
     ("story requirement role drift", mutate_story_requirement_role_drift,
      "story_requirements_outside_parent_use_case"),
+    ("story without requirement links", mutate_story_without_requirements,
+     "stories_without_requirements"),
     ("story without a BEHAVIOR requirement", mutate_story_without_behavior_requirement,
      "stories_without_behavior_requirements"),
     ("story without acceptance criteria", mutate_story_without_acceptance_criterion,

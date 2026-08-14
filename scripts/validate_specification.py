@@ -927,7 +927,8 @@ def check_stories(backlog: dict, model: dict, requirement_ids: set[str], vocabul
     orphans = {
         "invalid_or_duplicate_story_ids": [], "unknown_story_parent_use_cases": [],
         "story_scenarios_outside_parent_use_case": [], "story_actors_outside_parent_use_case": [],
-        "story_requirements_outside_parent_use_case": [], "stories_without_behavior_requirements": [],
+        "story_requirements_outside_parent_use_case": [], "stories_without_requirements": [],
+        "stories_without_behavior_requirements": [],
         "stories_without_acceptance_criteria": [], "unknown_story_dependencies": [],
         "story_dependency_cycles": [], "invalid_or_duplicate_acceptance_criterion_ids": [],
         "acceptance_criterion_requirements_outside_parent_story": [],
@@ -985,6 +986,7 @@ def check_stories(backlog: dict, model: dict, requirement_ids: set[str], vocabul
         if not isinstance(links, list) or not links:
             problems.append(f"{sid}: requirement_links must be a non-empty list")
             links = []
+            orphans["stories_without_requirements"].append(sid)
         story_requirements: set[str] = set()
         behavior_links = 0
         for link in links:
@@ -1164,7 +1166,6 @@ def main() -> int:
         "closed_gates_used_as_blockers": closed_blockers,
         "contradicted_exclusions": contradicted,
         "registry_and_markdown_disagreements": md_disagreements,
-        "stories_without_requirements": [],
         "tasks_without_requirements": [],
         "tasks_without_acceptance_criteria": [],
         "tests_without_acceptance_targets": [],
