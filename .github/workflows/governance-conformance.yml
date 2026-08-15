@@ -32,6 +32,19 @@ jobs:
           --framework "$GOV_GEN_FRAMEWORK_ROOT"
           --lock framework-lock.json
 
+      - name: Validate capability composition
+        run: |
+          python "$GOV_GEN_FRAMEWORK_ROOT/tools/validate_capability_stack.py" capability-stack.json
+          python3 - <<'PY'
+          import json
+          lock = json.load(open("framework-lock.json", encoding="utf-8"))
+          stack = json.load(open("capability-stack.json", encoding="utf-8"))
+          gg = next(c for c in stack["components"] if c["component_id"] == "general-governance")
+          if gg["commit_sha"] != lock["framework"]["commit_sha"]:
+              raise SystemExit("FAIL: capability stack GG commit does not match framework-lock.json")
+          print("PASS: capability stack GG binding matches framework lock")
+          PY
+
       - name: Validate Dopis specifications
         run: |
           python scripts/validate_specification.py

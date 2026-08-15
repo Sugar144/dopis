@@ -1,0 +1,41 @@
+{
+  "schema_version": "1.0.0",
+  "stack_id": "DOPIS-GOV-STACK-001",
+  "component_set_sha256": "d9743cba0d3ea4039be2ebce90228912077887c103d4b0001508686ce38fa812",
+  "status": "ACTIVE",
+  "components": [
+    {
+      "component_id": "general-governance",
+      "role": "GOVERNANCE_FRAMEWORK",
+      "repository": "Sugar144/general-governance",
+      "commit_sha": "cbc60b3abaccf719b8d88b550afd6688c8bcf53a",
+      "version": "0.1.0-rc.3",
+      "contract": "capability-composition/1.0.0",
+      "binding_path": "framework-lock.json",
+      "governance_authority": "OWN_DOMAIN_ONLY"
+    },
+    {
+      "component_id": "cwg",
+      "role": "GOVERNANCE_CAPABILITY",
+      "repository": "Sugar144/concurrent-repository-work-governance",
+      "commit_sha": "c11040409a29bcc913f1e34ea624c2ed01208916",
+      "contract": "CWG-ADOPTION-INTERFACE-001",
+      "governance_authority": "OWN_DOMAIN_ONLY"
+    },
+    {
+      "component_id": "aet",
+      "role": "EVIDENCE_OBSERVABILITY_CAPABILITY",
+      "repository": "Sugar144/ai-execution-telemetry",
+      "commit_sha": "78d6ddee648bde1a98f0c169c7b7e10ce0df7fa7",
+      "version": "0.1.0",
+      "contract": "TelemetryObservation/0.1.0",
+      "governance_authority": "NONE"
+    }
+  ],
+  "compatibility_evidence": [
+    {
+      "path": "docs/governance/capability-stack-compatibility.json",
+      "sha256": "dc5eba531788a0d008f11ad75c67b5b42a367772b35b3659db5668c7675c5a4b"
+    }
+  ]
+}

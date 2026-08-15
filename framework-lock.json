@@ -2,9 +2,9 @@
   "schema_version": "2.0.0",
   "framework": {
     "repository": "Sugar144/general-governance",
-    "version": "0.1.0-rc.2",
-    "commit_sha": "b7f399d629e50087868dd21a1cab9620c785607a",
-    "release_manifest_sha256": "49bcd2705a18b2d5f6dde2b998b5ba4e17f254b2f8cce3cd95303f034da78ad8"
+    "version": "0.1.0-rc.3",
+    "commit_sha": "cbc60b3abaccf719b8d88b550afd6688c8bcf53a",
+    "release_manifest_sha256": "ef07fb56c00c894325c726dbf6f9218ff3295767c0a5cc1b85d2b0c44d41029e"
   },
   "consumer": {
     "configuration_path": "docs/governance/configuration.yaml"
