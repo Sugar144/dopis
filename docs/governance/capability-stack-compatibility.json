@@ -1,19 +1,19 @@
 {
   "schema_version": "1.0.0",
-  "component_set_sha256": "d9743cba0d3ea4039be2ebce90228912077887c103d4b0001508686ce38fa812",
+  "component_set_sha256": "46b4f299fd73d3f1c0d1a65f19efe91fef4b2d3717d5f86495b965815b3e4c7d",
   "result": "PASS",
   "adopter": "Sugar144/dopis",
   "scope": "cross-component semantic compatibility only",
   "basis": [
     "General Governance 0.1.0-rc.3 capability-composition contract at cbc60b3abaccf719b8d88b550afd6688c8bcf53a preserves independent component authority.",
     "CWG adoption interface at c11040409a29bcc913f1e34ea624c2ed01208916 is provider-neutral and retains authority only for concurrent repository-work governance.",
-    "AET Neutral Telemetry Contract 0.1.0 at 78d6ddee648bde1a98f0c169c7b7e10ce0df7fa7 projects observations/evidence and explicitly projects no governance or acceptance.",
+    "AET 0.1.0 at 6ce78569520214e6c2be6a07d9e862102fea7a41 includes the Owner-accepted AET-P2 evidence producer while retaining TelemetryObservation as evidence-only and projecting no governance or acceptance.",
     "No component requires normative ownership of another; their authority domains are non-conflicting under the adopter composition boundary."
   ],
   "does_not_claim": [
     "CWG adopter/runtime conformance",
-    "AET collector or provider-adapter implementation readiness",
+    "AET empirical capture success in this adopter",
     "production readiness",
-    "implementation acceptance"
+    "OPD or Promptfoo readiness"
   ]
 }
