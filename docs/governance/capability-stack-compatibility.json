@@ -1,0 +1,19 @@
+{
+  "schema_version": "1.0.0",
+  "component_set_sha256": "d9743cba0d3ea4039be2ebce90228912077887c103d4b0001508686ce38fa812",
+  "result": "PASS",
+  "adopter": "Sugar144/dopis",
+  "scope": "cross-component semantic compatibility only",
+  "basis": [
+    "General Governance 0.1.0-rc.3 capability-composition contract at cbc60b3abaccf719b8d88b550afd6688c8bcf53a preserves independent component authority.",
+    "CWG adoption interface at c11040409a29bcc913f1e34ea624c2ed01208916 is provider-neutral and retains authority only for concurrent repository-work governance.",
+    "AET Neutral Telemetry Contract 0.1.0 at 78d6ddee648bde1a98f0c169c7b7e10ce0df7fa7 projects observations/evidence and explicitly projects no governance or acceptance.",
+    "No component requires normative ownership of another; their authority domains are non-conflicting under the adopter composition boundary."
+  ],
+  "does_not_claim": [
+    "CWG adopter/runtime conformance",
+    "AET collector or provider-adapter implementation readiness",
+    "production readiness",
+    "implementation acceptance"
+  ]
+}
