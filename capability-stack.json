@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "stack_id": "DOPIS-GOV-STACK-001",
-  "component_set_sha256": "d9743cba0d3ea4039be2ebce90228912077887c103d4b0001508686ce38fa812",
+  "component_set_sha256": "46b4f299fd73d3f1c0d1a65f19efe91fef4b2d3717d5f86495b965815b3e4c7d",
   "status": "ACTIVE",
   "components": [
     {
@@ -26,7 +26,7 @@
       "component_id": "aet",
       "role": "EVIDENCE_OBSERVABILITY_CAPABILITY",
       "repository": "Sugar144/ai-execution-telemetry",
-      "commit_sha": "78d6ddee648bde1a98f0c169c7b7e10ce0df7fa7",
+      "commit_sha": "6ce78569520214e6c2be6a07d9e862102fea7a41",
       "version": "0.1.0",
       "contract": "TelemetryObservation/0.1.0",
       "governance_authority": "NONE"
@@ -35,7 +35,7 @@
   "compatibility_evidence": [
     {
       "path": "docs/governance/capability-stack-compatibility.json",
-      "sha256": "dc5eba531788a0d008f11ad75c67b5b42a367772b35b3659db5668c7675c5a4b"
+      "sha256": "8c10d7b3d66dce6f0f630c05a4b25b676762ea687eb063620b99d43a5df880f8"
     }
   ]
 }
