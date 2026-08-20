@@ -1,0 +1,45 @@
+schema_version: 0.1.0
+project: dopis
+
+canonical_projection: PROJECT_STATE.yaml
+canonical_business_authority: docs/current/DOPIS_TECHNICAL_DISCOVERY.md
+roadmap: ROADMAP.md
+
+current:
+  phase: PRE_IMPLEMENTATION_PLANNING
+  position: POST_PLAN_004_PRE_IMPLEMENTATION
+  status: FIRST_MVP_VERTICAL_SLICE_PLAN_PREPARED
+  next_gate: OWNER_DECISION_FOR_NEXT_TECHNICAL_PLANNING_STEP
+
+completed:
+  business_discovery:
+    version: "0.19"
+    status: CLOSED
+  requirements_baseline:
+    version: "0.6"
+    status: BASELINED_OWNER_APPROVED
+  plan_003_minimum_technical_baseline: PREPARED
+  plan_004_vertical_slice_model: PREPARED_INTEGRATED
+
+planning:
+  vertical_slice_count: 18
+  story_count: 25
+  acceptance_criterion_count: 27
+  implementation_authority: NOT_GRANTED
+  technical_contract_planning: NOT_STARTED
+  adr_planning: NOT_STARTED
+  technical_acceptance_planning: NOT_STARTED
+  test_planning: NOT_STARTED
+  task_planning: NOT_STARTED
+  execution_packet_planning: NOT_STARTED
+
+governance:
+  capability_stack:
+    id: DOPIS-GOV-STACK-001
+    status: ACTIVE
+
+authority:
+  implementation: NOT_GRANTED
+  real_customer_pilot: NOT_GRANTED
+  production_deployment: NOT_GRANTED
+  public_launch: NOT_GRANTED

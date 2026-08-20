@@ -1,0 +1,34 @@
+name: Project State Integrity
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  project-state-integrity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Collect pull request inputs
+        shell: bash
+        env:
+          PSI_PR_BODY: ${{ github.event.pull_request.body }}
+          PSI_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PSI_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          printf '%s\n' "${PSI_PR_BODY:-}" > "${RUNNER_TEMP}/psi-pr-body.txt"
+          git diff --name-only "${PSI_BASE_SHA}" "${PSI_HEAD_SHA}" > "${RUNNER_TEMP}/psi-changed-files.txt"
+
+      - name: Validate project state impact
+        run: |
+          python scripts/project_state_integrity.py \
+            --config project-state-integrity.json \
+            --pr-body-file "${RUNNER_TEMP}/psi-pr-body.txt" \
+            --changed-files-file "${RUNNER_TEMP}/psi-changed-files.txt"
