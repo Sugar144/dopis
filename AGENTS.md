@@ -115,3 +115,16 @@ acceptance, merge, release, or canonical status without durable evidence for it.
 - Independent audits and reviews: `docs/reviews/`.
 - Specification validators: `scripts/validate_specification.py`,
   `scripts/test_validate_specification.py`.
+
+## Project state integrity
+
+This repository adopts the project-local state/roadmap integrity contract declared in `project-state-integrity.json`.
+
+- Before material work, read `project-state-integrity.json` and the configured state and roadmap surfaces.
+- Every pull request must contain exactly one `Project-State-Impact: none|state|roadmap|both` declaration.
+- If merging the change would materially change accepted/canonical project truth — including phase, milestone, status, active or next gate, integrated work, material blocker, or tracked authority state — the same pull request must update at least one configured state path and declare `state` or `both`.
+- If the project plan itself changes materially — including phase structure, sequencing, dependencies, deferral, cancellation, or newly defined future work — the same pull request must update at least one configured roadmap path and declare `roadmap` or `both`.
+- `none` is valid only when neither canonical project truth nor roadmap structure changes; it must never be used to avoid required state bookkeeping.
+- When a richer canonical state ledger exists, preserve its existing authority and keep the compact configured projection synchronized with material changes; the projection does not replace historical evidence.
+- State/roadmap bookkeeping records an already-authorized or accepted result. It does not grant merge, acceptance, phase advancement, release, publication, risk acceptance, or any other authority.
+- Run the repository's Project State Integrity checker/workflow before completion. The checker validates declared/file consistency only; the implementer and reviewer remain responsible for the semantic impact classification.
